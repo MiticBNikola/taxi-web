@@ -7,6 +7,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { LayoutModule } from './_layout/layout.module';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {AuthModule} from './auth/auth.module';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     LayoutModule,
     DashboardModule,
     BrowserAnimationsModule,
+    AuthModule
   ],
   providers: [],
   bootstrap: [AppComponent]

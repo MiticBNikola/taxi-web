@@ -1,23 +1,21 @@
 <div class="row">
   <div class="col-md-8 offset-md-2 pt-5">
     <div class="card">
-      <div class="card-header bg-white">
-        <h3>Log In</h3>
+      <div class="card-header bg-white d-flex justify-content-center">
+        <h2>Log In</h2>
       </div>
       <div class="card-body">
         <form [formGroup]="loginForm" (ngSubmit)="login(loginForm)">
           <div class="form-group">
-            <mat-form-field>
+            <mat-form-field class="toast-bottom-full-width">
               <mat-label>Email address</mat-label>
-              <input type="email" matInput class="form-control" id="email" formControlName="email"
-                     placeholder="Ex. user@gmail.com">
+              <input type="email" formControlName="email" placeholder="Ex. user@gmail.com" matInput/>
             </mat-form-field>
           </div>
           <div class="form-group">
-            <mat-form-field>
-              <mat-label for="password">Password</mat-label>
-              <input type="password" class="form-control" id="password" formControlName="password"
-                     placeholder="Password">
+            <mat-form-field class="toast-bottom-full-width">
+              <mat-label>Password</mat-label>
+              <input type="password" formControlName="password" placeholder="Password" matInput/>
             </mat-form-field>
           </div>
           <button *ngIf="!isLoading" type="submit" class="btn btn-primary">Submit</button>
@@ -25,7 +23,7 @@
 
         <div *ngIf="isLoading" class="row my-4">
           <div class="col-12">
-            <mat-spinner style="margin: auto"></mat-spinner>
+            <mat-spinner style="margin: auto"></mat-spinner>s
           </div>
         </div>
       </div>

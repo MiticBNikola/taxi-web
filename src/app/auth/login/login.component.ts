@@ -19,19 +19,19 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.getCSRFToken();
+    this.getCSRFToken();
     this.defineForm();
     this.isLoading = false;
   }
 
-  // private getCSRFToken() {
-  //   this.authService.getCSRFCookie()
-  //     .subscribe(
-  //       response => {
-  //       },
-  //       error => console.log(error)
-  //     );
-  // }
+  private getCSRFToken() {
+    this.authService.getCSRFCookie()
+      .subscribe(
+        response => {
+        },
+        error => console.log(error)
+      );
+  }
 
   private defineForm(): void {
     this.loginForm = this.fb.group({

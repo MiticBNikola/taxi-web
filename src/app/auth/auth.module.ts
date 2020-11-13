@@ -9,6 +9,10 @@ import {MatInputModule} from '@angular/material/input';
 import {CommonModule} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpClientModule} from '@angular/common/http';
+import { StoreModule } from '@ngrx/store';
+import * as fromAuth from './reducers';
+import {authReducer} from './reducers';
+// import {AuthGuard} from './auth.guard';
 
 
 @NgModule({
@@ -20,12 +24,14 @@ import {HttpClientModule} from '@angular/common/http';
     MatProgressSpinnerModule,
     ReactiveFormsModule,
     MatInputModule,
+    StoreModule.forFeature(fromAuth.authFeatureKey, authReducer),
   ],
   exports: [
     HttpClientModule
   ],
   providers: [
-    AuthService
+    AuthService,
+    // AuthGuard
   ]
 })
 export class AuthModule {

@@ -18,12 +18,12 @@
               <input type="password" formControlName="password" placeholder="Password" matInput/>
             </mat-form-field>
           </div>
-          <button *ngIf="!isLoading" type="submit" class="btn btn-primary">Submit</button>
+          <button *ngIf="!isLoading" type="submit" class="btn btn-primary">Log in</button>
         </form>
 
         <div *ngIf="isLoading" class="row my-4">
           <div class="col-12">
-            <mat-spinner style="margin: auto"></mat-spinner>s
+            <mat-spinner style="margin: auto"></mat-spinner>
           </div>
         </div>
       </div>

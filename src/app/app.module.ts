@@ -8,6 +8,17 @@ import { LayoutModule } from './_layout/layout.module';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {AuthModule} from './auth/auth.module';
+import { StoreModule } from '@ngrx/store';
+import { metaReducers, reducers } from './reducers';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { environment } from '../environments/environment';
+import {EntityDataModule} from '@ngrx/data';
+import { entityConfig } from './entity-metadata';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import {HTTP_INTERCEPTORS} from '@angular/common/http';
+import {HeaderInterceptor} from './_shared/interceptors/headInterceptor';
+import {MAT_DATE_LOCALE} from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -23,9 +34,16 @@ import {AuthModule} from './auth/auth.module';
     LayoutModule,
     DashboardModule,
     BrowserAnimationsModule,
-    AuthModule
+    AuthModule,
+    StoreModule.forRoot(reducers, { metaReducers }),
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
+    EntityDataModule.forRoot({}),
+    EffectsModule.forRoot([]),
+    StoreRouterConnectingModule.forRoot()
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: HeaderInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -10,10 +10,11 @@ import {CommonModule} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpClientModule} from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
-import * as fromAuth from './reducers';
 import {authReducer} from './reducers';
-// import {AuthGuard} from './auth.guard';
-
+import {AuthGuard} from './auth.guard';
+import {EffectsModule} from '@ngrx/effects';
+import {AuthEffects} from './auth.effects';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
   declarations: [LoginComponent, RegisterComponent],
@@ -24,14 +25,16 @@ import {authReducer} from './reducers';
     MatProgressSpinnerModule,
     ReactiveFormsModule,
     MatInputModule,
-    StoreModule.forFeature(fromAuth.authFeatureKey, authReducer),
+    StoreModule.forFeature('auth', authReducer),
+    EffectsModule.forFeature([AuthEffects]),
+    RouterModule,
   ],
   exports: [
     HttpClientModule
   ],
   providers: [
     AuthService,
-    // AuthGuard
+    AuthGuard
   ]
 })
 export class AuthModule {

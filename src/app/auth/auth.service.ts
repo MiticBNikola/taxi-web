@@ -14,7 +14,16 @@ export class AuthService {
   public login(user): Observable<User> {
     return this.http.post<User>(environment.API_URL + '/login', user);
   }
+  public logout() {
+    return this.http.post(environment.API_URL + '/logout', {});
+  }
+  public register(user): Observable<User> {
+    return this.http.post<User>(environment.API_URL + '/register', user);
+  }
   public getCSRFCookie() {
     return this.http.get(environment.API_DOMAIN + '/sanctum/csrf-cookie');
+  }
+  public user(): Observable<User> {
+    return this.http.get<User>(environment.API_URL + '/user');
   }
 }

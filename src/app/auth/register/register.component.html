@@ -1,1 +1,44 @@
-<p>register works!</p>
+<div class="row">
+  <div class="col-md-8 offset-md-2 pt-5">
+    <div class="card">
+      <div class="card-header bg-white d-flex justify-content-center">
+        <h2>Registruj se</h2>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="registerForm" (ngSubmit)="register(registerForm)">
+          <div class="form-group">
+            <mat-form-field class="toast-bottom-full-width">
+              <mat-label>Ime</mat-label>
+              <input type="text" formControlName="name" placeholder="Npr. Petar Petrović" required matInput/>
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <mat-form-field class="toast-bottom-full-width">
+              <mat-label>Email adresa</mat-label>
+              <input type="email" formControlName="email" placeholder="Npr. user@gmail.com" required matInput/>
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <mat-form-field class="toast-bottom-full-width">
+              <mat-label>Lozinka</mat-label>
+              <input type="password" formControlName="password" placeholder="Lozinka" required matInput/>
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <mat-form-field class="toast-bottom-full-width">
+              <mat-label>Ponovljena lozinka</mat-label>
+              <input type="password" formControlName="password_confirmation" placeholder="Lozinka" required matInput/>
+            </mat-form-field>
+          </div>
+          <button *ngIf="!isLoading" type="submit" class="btn btn-primary">Registruj se</button>
+        </form>
+
+        <div *ngIf="isLoading" class="row my-4">
+          <div class="col-12">
+            <mat-spinner style="margin: auto"></mat-spinner>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,16 +1,37 @@
-<div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
-  <div class="container">
-    <ng-container>
-      <div>
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/dashboard">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/login">Login</a>
-          </li>
-        </ul>
+<ng-container>
+  <mat-sidenav-container style="height: 100%">
+    <mat-sidenav #start>
+      <mat-nav-list (click)="start.close()">
+        <a mat-list-item routerLink="/">
+          <mat-icon>home</mat-icon>
+          <span>Početna stranica</span>
+        </a>
+        <a mat-list-item routerLink="/dashboard">
+          <mat-icon>map</mat-icon>
+          <span>Poruči vozilo</span>
+        </a>
+        <a mat-list-item routerLink="/login" *ngIf="isLoggedOut$ | async">
+          <mat-icon>account_circle</mat-icon>
+          <span>Prijavi se</span>
+        </a>
+        <a mat-list-item (click)="logout()" *ngIf="isLoggedIn$ | async">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Odjavi se</span>
+        </a>
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content class="bg-dark">
+      <mat-toolbar color="primary" class="d-flex">
+        <button class="menu-button" mat-icon-button (click)="start.open('mouse')">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <div class="d-flex flex-grow-1 justify-content-center">
+          <span>Elfak Taxi</span>
+        </div>
+      </mat-toolbar>
+      <div class="container bg-dark" style="margin-top: 70px">
+        <router-outlet></router-outlet>
       </div>
-    </ng-container>
-  </div>
-</div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</ng-container>

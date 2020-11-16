@@ -7,18 +7,18 @@ import {
 } from '@ngrx/store';
 import {environment} from '../../../environments/environment';
 import {AuthActions} from '../action-types';
+import {User} from '../../_shared/models/User';
 
-export const authFeatureKey = 'auth';
 
 export interface AuthState {
-
+  user: User;
 }
 
 export const initialAuthState: AuthState = {
   user: undefined
 };
 
-export const reducers: ActionReducerMap<AuthState> = {};
+// export const reducers: ActionReducerMap<AuthState> = {};
 
 export const authReducer = createReducer(
   initialAuthState,

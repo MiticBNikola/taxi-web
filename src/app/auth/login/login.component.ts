@@ -27,6 +27,8 @@ export class LoginComponent implements OnInit {
     this.getCSRFToken();
     this.defineForm();
     this.isLoading = false;
+
+    this.authService.user().subscribe(res => console.log(res));
   }
 
   private getCSRFToken() {

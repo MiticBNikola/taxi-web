@@ -1,0 +1,21 @@
+#phone {
+  background-color: var(--mainColor);
+  padding: 0 4px 0 4px;
+}
+
+div {
+  position: absolute;
+  bottom: 0;
+  margin: 0 0 50px 50px;
+  width: 40%;
+}
+
+a {
+  color: #211616;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--mainColor);
+  text-decoration: none;
+}

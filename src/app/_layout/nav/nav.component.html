@@ -1,37 +1,27 @@
 <ng-container>
-  <mat-sidenav-container style="height: 100%">
-    <mat-sidenav #start>
-      <mat-nav-list (click)="start.close()">
-        <a mat-list-item routerLink="/">
-          <mat-icon>home</mat-icon>
-          <span>Početna stranica</span>
-        </a>
-        <a mat-list-item routerLink="/dashboard">
-          <mat-icon>map</mat-icon>
-          <span>Poruči vozilo</span>
-        </a>
-        <a mat-list-item routerLink="/login" *ngIf="isLoggedOut$ | async">
-          <mat-icon>account_circle</mat-icon>
-          <span>Prijavi se</span>
-        </a>
-        <a mat-list-item (click)="logout()" *ngIf="isLoggedIn$ | async">
-          <mat-icon>exit_to_app</mat-icon>
-          <span>Odjavi se</span>
-        </a>
-      </mat-nav-list>
-    </mat-sidenav>
-    <mat-sidenav-content class="bg-dark">
-      <mat-toolbar color="primary" class="d-flex">
-        <button class="menu-button" mat-icon-button (click)="start.open('mouse')">
-          <mat-icon>menu</mat-icon>
-        </button>
-        <div class="d-flex flex-grow-1 justify-content-center">
-          <span>Elfak Taxi</span>
-        </div>
-      </mat-toolbar>
-      <div class="container bg-dark" style="margin-top: 70px">
-        <router-outlet></router-outlet>
-      </div>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+  <div id="myNavbar" class="myOrange">
+    <a routerLink="/home">
+      <img src="assets/images/header.png" alt="ElFak Taxi"/>
+    </a>
+    <a routerLink="/home" class="aNavbar">
+<!--      <mat-icon>home</mat-icon>-->
+      <span>POČETNA</span>
+    </a>
+    <a routerLink="/dashboard" class="aNavbar">
+<!--      <mat-icon class="navbarA">map</mat-icon>-->
+      <span>PORUČI VOZILO</span>
+    </a>
+    <a routerLink="/login" *ngIf="isLoggedOut$ | async" class="aNavbar">
+<!--      <mat-icon>account_circle</mat-icon>-->
+      <span>PRIJAVI SE</span>
+    </a>
+    <a (click)="logout()" *ngIf="isLoggedIn$ | async" class="aNavbar">
+<!--      <mat-icon>exit_to_app</mat-icon>-->
+      <span>ODJAVI SE</span>
+    </a>
+    <a routerLink="/register" *ngIf="isLoggedOut$ | async" class="aNavbar">
+<!--      <mat-icon>exit_to_app</mat-icon>-->
+      <span>REGISTRUJ SE</span>
+    </a>
+  </div>
 </ng-container>

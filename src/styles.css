@@ -1,4 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
+html, body {
+  height: 100%;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  font-family: Impact, Charcola, sans-serif;
+  font-variant: small-caps;
+  color: #211616;
+  text-transform: uppercase;
+}
+
+:root {
+  --mainColor: #ff9800;
+}
+
+.myOrange {
+  background-color: rgb(255, 206, 0);
+}
+
+.myGray{
+  background-color: rgb(96, 96, 96);
+}
+
+.myGrayTransparent {
+  background-color: rgba(96,96,96,0.8);
+}
+
+.bg {
+  background-image: url("assets/images/interior.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  height: 100%;
+  padding: 50px 0 50px 0;
+}
+

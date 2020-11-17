@@ -7,12 +7,16 @@ import {MatListModule} from '@angular/material/list';
 import {MatIconModule} from '@angular/material/icon';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
+import { FooterComponent } from './footer/footer.component';
+import { HeaderComponent } from './header/header.component';
 
 
 
 @NgModule({
   declarations: [
-    NavComponent
+    NavComponent,
+    FooterComponent,
+    HeaderComponent
   ],
   imports: [
     CommonModule,
@@ -24,7 +28,9 @@ import {MatButtonModule} from '@angular/material/button';
     MatButtonModule
   ],
   exports: [
-    NavComponent
+    NavComponent,
+    FooterComponent,
+    HeaderComponent
   ]
 })
 export class LayoutModule { }

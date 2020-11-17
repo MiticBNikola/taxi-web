@@ -1,0 +1,24 @@
+.pattern {
+  display: block;
+  height: 20px;
+  overflow: hidden;
+  position: fixed;
+  margin-top: 50px;
+  z-index: 1;
+}
+
+.pattern #header-pattern rect{
+  stroke: none;
+  fill: #fff;
+}
+
+.pattern #header-mask rect {
+  stroke: none;
+  fill: url(#header-pattern);
+}
+
+.pattern #header-image {
+  stroke: none;
+  fill: #ffce00;
+  mask: url(#header-mask);
+}

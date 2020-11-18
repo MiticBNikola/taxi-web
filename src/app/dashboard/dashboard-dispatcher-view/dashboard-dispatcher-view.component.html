@@ -1,0 +1,42 @@
+<div class="d-flex justify-content-between">
+  <div class="card myGrayTransparent" style="width: 45%">
+    <div class="card-header text-center myGrayTransparent">
+      <h3>Mušterije</h3>
+    </div>
+    <div class="card-body">
+      <div>
+        <p>Zahtevi</p>
+        <div>
+          <section class="example-section">
+          <span class="example-list-section">
+            <mat-checkbox class="example-margin"
+                          [color]="input.color"
+                          [checked]="allSelected"
+                          [indeterminate]="someSelected()"
+                          (change)="setAll($event.checked)">
+              {{input.name}}
+            </mat-checkbox>
+          </span>
+            <span class="example-list-section">
+            <ul>
+              <li *ngFor="let customer of input.customers" style="list-style-type: none">
+                <mat-checkbox [(ngModel)]="customer.selected"
+                              [ngModelOptions]="{standalone: true}"
+                              [color]="customer.color"
+                              (ngModelChange)="updateAllComplete()">
+                  {{customer.name}}
+                </mat-checkbox>
+              </li>
+            </ul>
+          </span>
+          </section>
+        </div>
+      </div>
+      <div>
+        <p>Vožnja u toku</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="mt-5 border border-dark rounded-lg" id="map" style="height: 500px; width: 100%;">
+</div>

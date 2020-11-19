@@ -1,6 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {DashboardModule} from './dashboard/dashboard.module';
@@ -18,10 +17,15 @@ import {RouterState, StoreRouterConnectingModule} from '@ngrx/router-store';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {HeaderInterceptor} from './_shared/interceptors/headInterceptor';
 import {HomeModule} from './home/home.module';
+import {CommonModule} from '@angular/common';
+import {UserModule} from './user/user.module';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import {MatDialogModule} from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     CommonModule,
@@ -30,13 +34,11 @@ import {HomeModule} from './home/home.module';
     ToastrModule.forRoot(),
     AppRoutingModule,
 
-    ToastrModule.forRoot(),
-
     LayoutModule,
+    AuthModule,
     DashboardModule,
     HomeModule,
-    BrowserAnimationsModule,
-    AuthModule,
+    UserModule,
     StoreModule.forRoot(reducers, {
       metaReducers,
       runtimeChecks: {
@@ -46,13 +48,14 @@ import {HomeModule} from './home/home.module';
         strictStateSerializability: true
       }
     }),
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
+    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
     EntityDataModule.forRoot({}),
     EffectsModule.forRoot([]),
     StoreRouterConnectingModule.forRoot({
       stateKey: 'router',
       routerState: RouterState.Minimal
-    })
+    }),
+    MatDialogModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: HeaderInterceptor, multi: true }

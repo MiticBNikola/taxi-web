@@ -1,0 +1,6 @@
+<h3 mat-dialog-title class="text-center">Da li ste sigurni?</h3>
+<div mat-dialog-content class="text-center">Nećete moći da povratite obrisani nalog!</div>
+<div mat-dialog-actions class="mt-5 d-flex flex-wrap justify-content-around">
+  <button class="btn btn-dark mt-2" mat-dialog-close (click)="onNoClick()">Close</button>
+  <button class="btn btn-danger mt-2" (click)="onDeleteClick()">Delete</button>
+</div>

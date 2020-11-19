@@ -1,9 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ToastrService} from 'ngx-toastr';
 import {Input} from '../../_shared/models/Input';
 import {FormGroup} from '@angular/forms';
 import {User} from '../../_shared/models/User';
-import {UserService} from '../../user/user.service';
 
 @Component({
   selector: 'app-dashboard-dispatcher-view',
@@ -12,16 +10,20 @@ import {UserService} from '../../user/user.service';
 })
 export class DashboardDispatcherViewComponent implements OnInit {
   public center: google.maps.LatLngLiteral = {
-    lat: 43.32472,
-    lng: 21.90333,
+    lat: 43.320994,
+    lng: 21.895730,
   };
   public map: google.maps.Map;
 
   public form: FormGroup;
   public customers: User[] = [{id: 1, name: 'Mika', email: ''}, {id: 2, name: 'Pera', email: ''}];
+  public customersInTaxi = [];
+  public drivers: User[] = [];
+  public activeDrivers: User[] = [];
+  public nonActiveDrivers: User[] = [];
   public allSelected = false;
   public input: Input = {
-    name: 'All',
+    name: 'Svi',
     selected: false,
     color: 'warn',
     customers: []
@@ -32,7 +34,7 @@ export class DashboardDispatcherViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.initMap();
-    this.populateInputWorkers();
+    this.populateInputCustomers();
   }
 
   initMap(): void {
@@ -43,7 +45,7 @@ export class DashboardDispatcherViewComponent implements OnInit {
         zoomControl: true,
         scrollwheel: true,
         gestureHandling: 'cooperative',
-        zoom: 15,
+        zoom: 14,
         maxZoom: 30,
         minZoom: 12,
         backgroundColor: 'bg-secondary',
@@ -53,24 +55,28 @@ export class DashboardDispatcherViewComponent implements OnInit {
     );
   }
 
-  submitForm(): void {
+  locateCustomer() {
+
   }
 
+  locateDrivers() {
 
-  populateInputWorkers() {
+  }
+
+  populateInputCustomers() {
     this.customers.map(customer => {
-        this.input.customers.push({
-          id: customer.id,
-          name: customer.name,
-          selected: false,
-          color: 'warn'
-        });
+      this.input.customers.push({
+        id: customer.id,
+        name: customer.name,
+        selected: false,
+        color: 'warn'
+      });
     });
     let tmpSelectAll = true;
     this.input.customers.map(single => {
       tmpSelectAll = tmpSelectAll && single.selected;
     });
-    tmpSelectAll ? this.allSelected = true : this.allSelected = false;
+    tmpSelectAll ? (this.customers.length === 0 ? this.allSelected = false : this.allSelected = true) : this.allSelected = false;
   }
 
   someSelected(): boolean {
@@ -90,6 +96,18 @@ export class DashboardDispatcherViewComponent implements OnInit {
 
   updateAllComplete() {
     this.allSelected = this.input.customers != null && this.input.customers.every(worker => worker.selected);
+  }
+
+  acceptCustomerRequests() {
+    const newCustomers = this.input.customers
+      .filter(customer => {
+        if (customer.selected === true) {
+          return customer;
+        }
+      });
+    if (newCustomers.length > 0) {
+      this.customersInTaxi.push(newCustomers);
+    }
   }
 }
 

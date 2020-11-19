@@ -4,10 +4,10 @@
 }
 
 div {
-  position: absolute;
-  bottom: 0;
-  margin: 0 0 50px 50px;
-  width: 40%;
+  /*position: absolute;*/
+  /*bottom: 0;*/
+  margin: 15vh 0 15vh 5vw;
+  width: 60vw;
 }
 
 a {

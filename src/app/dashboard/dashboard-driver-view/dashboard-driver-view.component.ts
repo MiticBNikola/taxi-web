@@ -14,8 +14,8 @@ export class DashboardDriverViewComponent implements OnInit {
   public finishMarker: google.maps.Marker;
   public geocoder: google.maps.Geocoder = new google.maps.Geocoder();
   public center: google.maps.LatLngLiteral = {
-    lat: 43.32472,
-    lng: 21.90333,
+    lat: 43.320994,
+    lng: 21.895730,
   };
   public map: google.maps.Map;
 

@@ -1,12 +1,16 @@
 #myNavbar {
+  width: 100vw;
+  position: relative;
+  /*margin-top: 0;*/
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -ms-flex-align: center;
   align-items: center;
+  -ms-flex-pack: justify;
   justify-content: space-between;
-  position: fixed;
-  margin-top: 0;
-  padding: 0 30px 0 10px;
-  width: 100%;
-  height: 50px;
+  padding: 0.5rem 1rem;
   z-index: 1;
 }
 
@@ -35,4 +39,8 @@
     );
   text-decoration: none;
   color: dimgray;
+}
+
+i {
+  color: var(--textColor);
 }

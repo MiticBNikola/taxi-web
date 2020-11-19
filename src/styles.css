@@ -6,11 +6,15 @@ html, body {
 body, button {
   font-family: Impact, Charcola, sans-serif;
   font-variant: small-caps;
-  color: #211616;
+  color: var(--textColor);
   text-transform: uppercase;
 }
 
+h1 {
+  font-size: 6vw;
+}
 :root {
+  --textColor: #211616;
   --mainColor: #ff9800;
 }
 
@@ -22,12 +26,12 @@ body, button {
   background-color: var(--mainColor);
 }
 
-.myGray{
+.myGray {
   background-color: rgb(96, 96, 96);
 }
 
 .myGrayTransparent {
-  background-color: rgba(96,96,96,0.8);
+  background-color: rgba(96, 96, 96, 0.8);
 }
 
 .bg {
@@ -36,7 +40,8 @@ body, button {
   background-size: cover;
   /*background-attachment: fixed;*/
   /*height: 100%;*/
-  padding: 50px 0 50px 0;
-  min-height: 100%;
+  padding: 70px 0 50px 0;
+  margin-top: -20px;
+  min-height: 80vh;
 }
 

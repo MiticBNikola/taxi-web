@@ -17,6 +17,8 @@ export class NavComponent implements OnInit {
   isLoggedIn$: Observable<boolean>;
   isLoggedOut$: Observable<boolean>;
 
+  toggleNavbar = true;
+
   constructor(private store: Store<AppState>,
               private authService: AuthService,
               private router: Router) {

@@ -1,1 +1,87 @@
-<p>user-editor works!</p>
+<div class="card myGrayTransparent" style="margin: 15vh 15vw 15vh 15vw;">
+  <div class="card-header myGrayTransparent">
+    <div class="card-title text-center mb-0">
+      <h5 class="mb-0">Podešavanja</h5>
+    </div>
+  </div>
+
+  <div class="card-body">
+
+    <div *ngIf="isLoading" class="row">
+      <div class="col-12">
+        <mat-spinner style="margin: auto"></mat-spinner>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading" [formGroup]="form">
+      <div class="row">
+        <div class="d-flex flex-wrap">
+          <div class="col-md-4">
+            <mat-form-field>
+              <mat-label>Ime</mat-label>
+              <input matInput formControlName="name">
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field>
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email">
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field>
+              <mat-label>Telefonski broj</mat-label>
+              <input matInput formControlName="phoneNumber">
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field>
+              <mat-label>Stručna sprema</mat-label>
+              <input matInput formControlName="professionalQualifications">
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field>
+              <mat-label>Vozačka dozvola</mat-label>
+              <input matInput formControlName="drivingLicenceCategory">
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field>
+              <mat-label>Broj vozačke dozvole</mat-label>
+              <input matInput formControlName="drivingLicenceNumber">
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field>
+              <mat-label>Stara lozinka</mat-label>
+              <input matInput type="password" formControlName="professionalQualifications">
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field>
+              <mat-label>Nova lozinka</mat-label>
+              <input matInput type="password" formControlName="drivingLicenceCategory">
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field>
+              <mat-label>Nova lozinka</mat-label>
+              <input matInput type="password" formControlName="drivingLicenceNumber">
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="col-md-12 d-flex justify-content-around flex-wrap">
+          <button type="button" class="btn btn-dark mt-2" style="font-weight: normal" routerLink="/user">
+            Otkaži
+          </button>
+          <button type="button" class="btn myOrange mt-2" (click)="edit()">
+            Prihvati izmene
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

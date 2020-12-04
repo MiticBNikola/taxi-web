@@ -14,7 +14,7 @@ import {environment} from '../environments/environment';
 import {EntityDataModule} from '@ngrx/data';
 import {EffectsModule} from '@ngrx/effects';
 import {RouterState, StoreRouterConnectingModule} from '@ngrx/router-store';
-import {HTTP_INTERCEPTORS} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientXsrfModule} from '@angular/common/http';
 import {HeaderInterceptor} from './_shared/interceptors/headInterceptor';
 import {HomeModule} from './home/home.module';
 import {CommonModule} from '@angular/common';
@@ -28,6 +28,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     ConfirmDialogComponent
   ],
   imports: [
+    HttpClientXsrfModule,
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,

@@ -18,6 +18,7 @@ export class DashboardDriverViewComponent implements OnInit {
     lng: 21.895730,
   };
   public map: google.maps.Map;
+  showMap = false;
 
   constructor(public toastrService: ToastrService,
               public fb: FormBuilder) {

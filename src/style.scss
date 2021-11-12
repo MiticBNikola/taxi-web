@@ -1,35 +1,31 @@
+@import 'variables';
+@import 'utils';
+
 /* You can add global styles to this file, and also import other style files */
 html, body {
+
   height: 100%;
 }
 
+body {
+
+  background: url("./assets/images/taxi-on-street.jpg");
+  background-size: cover;
+}
+
 body, button {
-  font-family: 'Popins', sans-serif;
-  color: var(--textColor);
+
+  font-family: 'American Typewriter', serif;
+  color: var(--dirty-white);
 }
 
-:root {
-  --textColor: #211616;
-  --mainColor: #ff9800;
-}
+.my-gray-transparent-background {
 
-.myOrange {
-  background-color: rgb(255, 206, 0);
-}
-
-.myStrongOrange {
-  background-color: var(--mainColor);
-}
-
-.myGray {
-  background-color: rgb(96, 96, 96);
-}
-
-.myGrayTransparent {
-  background-color: rgba(96, 96, 96, 0.8);
+  background-color: var(--dark-gray);
 }
 
 .bg {
+
   background-image: url("assets/images/interior.jpg");
   background-repeat: no-repeat;
   background-size: cover;
@@ -39,4 +35,21 @@ body, button {
   margin-top: -20px;
   min-height: 80vh;
 }
+
+.form-control {
+
+  background: var(--dirty-white);
+  border-radius: var(--border-radius);
+}
+
+a {
+
+  color: var(--orange);
+}
+
+a:hover {
+
+  color: var(--mainColor);
+}
+
 

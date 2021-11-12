@@ -1,89 +1,103 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {AuthService} from '../auth.service';
-import {finalize, tap} from 'rxjs/operators';
-import {noop} from 'rxjs';
-import {Store} from '@ngrx/store';
-import {AppState} from '../../reducers';
-import {Router} from '@angular/router';
-import {login} from '../auth.actions';
-import {ToastrService} from 'ngx-toastr';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AuthService } from '../auth.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../reducers';
+import { register } from '../auth.actions';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
-})
+             selector:    'app-register',
+             templateUrl: './register.component.html',
+             styleUrls:   ['./register.component.css']
+           })
 export class RegisterComponent implements OnInit {
-  public registerForm: FormGroup;
-  public isLoading = true;
+
+  registerForm: FormGroup;
+  submitted = false;
+  isLoading = true;
 
   constructor(private authService: AuthService,
-              private fb: FormBuilder,
-              private store: Store<AppState>,
-              private router: Router,
-              private toastrService: ToastrService) {
+              private formBuilder: FormBuilder,
+              private store: Store<AppState>) {
   }
 
+  /**
+   * Start component.
+   *
+   * @return void
+   */
   ngOnInit(): void {
-    this.getCSRFToken();
-    this.defineForm();
-    this.isLoading = false;
+
+    this.buildRegistrationForm();
   }
 
-  getCSRFToken() {
-    this.authService.getCSRFCookie()
-      .subscribe(
-        response => {
-        },
-        error => console.log(error)
-      );
+  /**
+   * Build registration form.
+   *
+   * @return void
+   */
+  buildRegistrationForm(): void {
+
+    this.registerForm = this.formBuilder.group({
+                                                 name:                 [
+                                                   '',
+                                                   [Validators.required]
+                                                 ],
+                                                 email:                [
+                                                   '',
+                                                   [
+                                                     Validators.required,
+                                                     Validators.email
+                                                   ]
+                                                 ],
+                                                 password:             [
+                                                   '',
+                                                   [
+                                                     Validators.required,
+                                                     Validators.minLength(8)
+                                                   ]
+                                                 ],
+                                                 passwordConfirmation: [
+                                                   '',
+                                                   [Validators.required]
+                                                 ]
+                                               }, {validators: this.passwordsMatch});
   }
 
-  defineForm(): void {
-    this.registerForm = this.fb.group({
-      name: [null, [Validators.required]],
-      email: [null, [Validators.required, Validators.email]],
-      password: [null, [Validators.required, Validators.minLength(8)]],
-      password_confirmation: [null, [Validators.required]]
-    });
+  /**
+   * Check if password and password confirmation are the same.
+   *
+   *  @param registrationFrom Register form data
+   *
+   *  @return ValidationErrors | null
+   */
+  passwordsMatch(registrationFrom: FormGroup): ValidationErrors | null {
+
+    const password             = registrationFrom.controls.password.value;
+    const passwordConfirmation = registrationFrom.controls.passwordConfirmation.value;
+
+    return password === passwordConfirmation ? null : {passwordsNotMatched: true};
   }
 
-  public register(form): void {
-    if (form.invalid || this.checkPasswords(form)) {
-      this.getFormValidationErrors(form);
+  /**
+   * If register form is valid, dispatch register.
+   *
+   * @return void
+   */
+  public register(): void {
+
+    if (this.registerForm.invalid) {
+      this.submitted = true;
       return;
     }
-    this.isLoading = true;
-    this.authService.register(form.value)
-      .pipe(
-        finalize(() => this.isLoading = false),
-        tap(user => {
-          this.store.dispatch(login({user}));
-          this.router.navigate(['/dashboard']);
-        }))
-      .subscribe(
-        noop,
-        error => console.log(error)
-      );
+    this.store.dispatch(register({
+                                   user: {
+                                     name:                 this.registerForm.controls.name.value,
+                                     email:                this.registerForm.controls.email.value,
+                                     password:             this.registerForm.controls.password.value,
+                                     passwordConfirmation: this.registerForm.controls.passwordConfirmation.value,
+                                   }
+                                 }));
   }
 
-  getFormValidationErrors(form): void {
-    Object.keys(form.controls).forEach(key => {
-      const controlErrors: ValidationErrors = form.get(key).errors;
-      if (controlErrors != null) {
-        this.toastrService.error('Polje: ' + key + ', greška: ' + Object.keys(controlErrors)[0]);
-      }
-    });
-  }
-
-  checkPasswords(form: FormGroup): boolean {
-    const password = form.get('password').value;
-    const confirmPassword = form.get('password_confirmation').value;
-    if (password !== confirmPassword) {
-      this.toastrService.error('Lozinka i ponovljena lozinka se ne poklapaju!');
-      return true;
-    }
-    return false;
-  }
 }

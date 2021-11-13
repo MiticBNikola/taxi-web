@@ -1,3 +1,5 @@
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/regular';
 @import 'variables';
 @import 'utils';
 
@@ -52,4 +54,13 @@ a:hover {
   color: var(--mainColor);
 }
 
+button {
+
+  width: 100%;
+}
+
+.modal-content {
+
+  background: transparent;
+}
 

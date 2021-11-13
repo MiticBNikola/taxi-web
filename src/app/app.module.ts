@@ -1,5 +1,7 @@
+import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { SharedModule } from './_shared/shared.modal';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -14,21 +16,19 @@ import { environment } from '../environments/environment';
 import { EntityDataModule } from '@ngrx/data';
 import { EffectsModule } from '@ngrx/effects';
 import { RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
-import { HTTP_INTERCEPTORS, HttpClientXsrfModule } from '@angular/common/http';
-import { HeaderInterceptor } from './_shared/interceptors/headInterceptor';
 import { HomeModule } from './home/home.module';
 import { CommonModule } from '@angular/common';
 import { UserModule } from './user/user.module';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
             declarations: [
               AppComponent,
-              ConfirmDialogComponent
+              ConfirmDialogComponent,
             ],
             imports:      [
-              // HttpClientXsrfModule,
               CommonModule,
               BrowserModule,
               BrowserAnimationsModule,
@@ -59,15 +59,12 @@ import { MatDialogModule } from '@angular/material/dialog';
                                                     stateKey:    'router',
                                                     routerState: RouterState.Minimal
                                                   }),
-              MatDialogModule
+              MatDialogModule,
+              NgbModule,
+              ReactiveFormsModule,
+              SharedModule
             ],
-            providers:    [
-              {
-                provide:  HTTP_INTERCEPTORS,
-                useClass: HeaderInterceptor,
-                multi:    true
-              }
-            ],
+            providers:    [],
             bootstrap:    [AppComponent]
           })
 export class AppModule {

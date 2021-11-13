@@ -5,6 +5,22 @@
   border-radius: var(--border-radius);
 }
 
+.btn-primary {
+
+  background: var(--orange);
+  color: var(--dark);
+}
+
+.btn-primary:hover {
+
+  background: var(--mainColor);
+}
+
+.pointer {
+
+  cursor: pointer;
+}
+
 .my-orange-background {
 
   background-color: var(--orange);

@@ -1,67 +1,119 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../auth.service';
-import {Router} from '@angular/router';
-import {finalize, tap} from 'rxjs/operators';
-import {Store} from '@ngrx/store';
-import {AppState} from '../../reducers';
-import {noop} from 'rxjs';
-import {login} from '../auth.actions';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
+import { ForgotPasswordComponent } from '../../_shared/components/forgot-password/forgot-password.component';
+import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../reducers';
+import { login } from '../auth.actions';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
-})
+             selector:    'app-login',
+             templateUrl: './login.component.html',
+             styleUrls:   ['./login.component.css']
+           })
 export class LoginComponent implements OnInit {
-  public loginForm: FormGroup;
-  public isLoading = true;
+
+  loginForm: FormGroup;
+  submitted = false;
+  csrfToken = false;
 
   constructor(public authService: AuthService,
               private router: Router,
-              private fb: FormBuilder,
-              private store: Store<AppState>) {
+              private formBuilder: FormBuilder,
+              private store: Store<AppState>,
+              private toastrService: ToastrService,
+              private modalService: NgbModal) {
   }
 
+  /**
+   * Start component.
+   *
+   * @return void
+   */
   ngOnInit(): void {
-    this.getCSRFToken();
-    this.defineForm();
-    this.isLoading = false;
 
-    this.authService.user().subscribe(res => console.log(res));
+    this.getCSRFToken();
+    this.buildLoginForm();
+    this.authService.user()
+      .subscribe(res => console.log(res));
   }
 
-  private getCSRFToken() {
+  /**
+   * Call auth service get csrf cookie method,
+   *
+   * @private
+   *
+   * @return void
+   */
+  private getCSRFToken(): void {
+
     this.authService.getCSRFCookie()
       .subscribe(
-        response => {
+        () => {
+          this.csrfToken = true;
         },
-        error => console.log(error)
-      );
-  }
-
-  private defineForm(): void {
-    this.loginForm = this.fb.group({
-      email: [null, [Validators.required, Validators.email]],
-      password: [null, [Validators.required]]
-    });
-  }
-
-  public login(form): void {
-    this.isLoading = true;
-    this.authService.login(form.value)
-      .pipe(
-        finalize(() => this.isLoading = false),
-        tap( user => {
-          this.store.dispatch(login({ user }));
-          this.router.navigate(['/dashboard']);
-        })
-        )
-      .subscribe(
-        noop,
         error => {
           console.log(error);
+          this.toastrService.error('Greška prilikom pribavljanja podataka. Osvežite stranicu.');
         }
       );
+  }
+
+  /**
+   * Build login form.
+   *
+   * @return void
+   */
+  buildLoginForm(): void {
+
+    this.loginForm = this.formBuilder.group({
+                                              email:    [
+                                                '',
+                                                [
+                                                  Validators.required,
+                                                  Validators.email
+                                                ]
+                                              ],
+                                              password: [
+                                                '',
+                                                [
+                                                  Validators.required,
+                                                  Validators.minLength(8)
+                                                ]
+                                              ]
+                                            });
+  }
+
+  /**
+   * If login form is valid, dispatch login action.
+   *
+   * @return void
+   */
+  login(): void {
+
+    if (this.loginForm.invalid) {
+      this.submitted = true;
+      return;
+    }
+    this.store.dispatch(login({
+                                user: {
+                                  email:    this.loginForm.controls.email.value,
+                                  password: this.loginForm.controls.password.value
+                                }
+                              }));
+  }
+
+  /**
+   * Open forgot password modal.
+   *
+   * @return void
+   */
+  openForgotPasswordDialog(): void {
+
+    const modalRef                           = this.modalService.open(ForgotPasswordComponent);
+    modalRef.componentInstance.insertedEmail = this.loginForm.controls.email.value;
   }
 }

@@ -1,28 +1,88 @@
-<div class="card myGrayTransparent" style="width: 50vw; margin: 15vh 0 0 50px;">
-  <div class="card-header myGrayTransparent text-center">
-    <h2>Prijavi se</h2>
-  </div>
-  <div class="card-body">
-    <form [formGroup]="loginForm" (ngSubmit)="login(loginForm)">
-      <div class="form-group">
-        <mat-form-field class="toast-bottom-full-width">
-          <mat-label>Email adresa</mat-label>
-          <input type="email" formControlName="email" placeholder="npr. user@gmail.com" matInput/>
-        </mat-form-field>
-      </div>
-      <div class="form-group">
-        <mat-form-field class="toast-bottom-full-width">
-          <mat-label>Lozinka</mat-label>
-          <input type="password" formControlName="password" placeholder="lozinka" matInput/>
-        </mat-form-field>
-      </div>
-      <button *ngIf="!isLoading" type="submit" class="btn myOrange">Prijavi se</button>
-    </form>
-    <p class="mt-2 font-italic text-left">Nemaš profil? <a routerLink="/register">Registruj se.</a></p>
-
-    <div *ngIf="isLoading" class="row my-4">
-      <div class="col-12">
-        <mat-spinner style="margin: auto"></mat-spinner>
+<div class="container-fluid">
+  <div class="row my-5 flex-column">
+    <div class="offset-1 col-sm-10 col-md-8 col-lg-6 col-xl-4">
+      <div class="row">
+        <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+          <h2>Prijavi se</h2>
+        </div>
+        <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+          <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <div class="row mt-3">
+              <div class="col-12">
+                <div class="form-group">
+                  <label class="form-label" for="email">E-adresa</label>
+                  <input [ngClass]=
+                           "{
+                        'form-control': true,
+                        'is-invalid': (loginForm.controls.email.touched || submitted) && loginForm.controls.email.invalid,
+                        'is-valid': (loginForm.controls.email.touched || submitted) && loginForm.controls.email.valid
+                      }"
+                         type="email"
+                         placeholder="E-adresa"
+                         formControlName="email"
+                         id="email"
+                  >
+                  <div
+                    *ngIf="loginForm.controls.email.touched && loginForm.controls.email.errors?.required"
+                    class="mt-1">
+                    <p class="text-danger">Potrebno je uneti e-adresu</p>
+                  </div>
+                  <div
+                    *ngIf="loginForm.controls.email.touched && loginForm.controls.email.errors?.email"
+                    class="mt-1">
+                    <p class="text-danger">E-adresa nije validna</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <div class="form-group">
+                  <label class="form-label" for="password">Lozinka</label>
+                  <input [ngClass]=
+                           "{
+                        'form-control': true,
+                        'is-invalid': (loginForm.controls.password.touched || submitted) && loginForm.controls.password.invalid,
+                        'is-valid': (loginForm.controls.password.touched || submitted) && loginForm.controls.password.valid
+                      }"
+                         type="password"
+                         placeholder="Lozinka"
+                         formControlName="password"
+                         id="password"
+                  >
+                  <div
+                    *ngIf="loginForm.controls.password.touched && loginForm.controls.password.errors?.required"
+                    class="mt-1">
+                    <p class="text-danger">Potrebno je uneti lozinku</p>
+                  </div>
+                  <div
+                    *ngIf="loginForm.controls.password.touched && loginForm.controls.password.errors?.minlength"
+                    class="mt-1">
+                    <p class="text-danger">Lozinka mora imati minimum 8 karaktera</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 text-right">
+                <a type="button"
+                   (click)="openForgotPasswordDialog()"
+                >Zaboravili ste lozinku?</a>
+              </div>
+            </div>
+            <div class="row mt-3 align-items-center justify-content-between">
+              <div class="col-auto">
+                <p class="m-0">Nemaš profil? <a routerLink="/registracija">Registruj se.</a></p>
+              </div>
+              <div class="col-auto">
+                <button class="btn"
+                        type="submit"
+                >Prijavi se
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>

@@ -1,0 +1,37 @@
+#phone {
+  background-color: var(--mainColor);
+  padding: 0 4px 0 4px;
+}
+
+.welcome {
+
+  height: 70vh;
+
+  .heading {
+    text-align: center;
+  }
+
+  .order-btn {
+    background-color: var(--dirty-white);
+    color: white;
+    transition: color, background-color 0.5s linear;
+  }
+
+  .order-btn:hover {
+    background-color: white;
+    color: var(--dirty-white);
+    transition: color, background-color 0.5s linear;
+  }
+}
+
+.infos {
+
+  background-color: white;
+  color: var(--dark-gray);
+
+  .heading {
+    -webkit-text-stroke: 2px var(--dark-gray);
+  }
+
+
+}

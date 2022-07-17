@@ -1,7 +1,60 @@
-<div class="border border-dark rounded rounded-lg">
-  <h1 class="card-header myGrayTransparent font-weight-bolder">Doobrodošli na zvanični sajt ElFak Taxija.</h1>
-  <p class="card-header myGrayTransparent">
-    Poručite vozilo na Vašoj lokaciji uz samo par <a href="/dashboard">klika</a>.</p>
-  <p class="card-header myGrayTransparent">Ili nas <span style="color: #ff9800">besplatno</span>
-    kontaltirajte preko Vibera na broj <span id="phone" class="rounded-lg">064/94-911-94</span></p>
+<div class="row m-0 home align-items-center">
+  <div class="welcome col-12 d-flex align-items-center justify-content-center">
+    <div class="row flex-column justify-content-center align-items-center">
+      <div class="col-auto">
+        <h1 class="heading">DOBRODOŠLI NA ZVANIČNI SAJT ELFAK TAKSIJA</h1>
+      </div>
+      <div class="col-3 mt-5">
+        <button type="button" class="order-btn" (click)="goToDashboard()">
+          <h3>PORUČI VOZILO</h3>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="infos py-5 col-12 d-flex align-items-center justify-content-center">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-12 text-center py-2">
+        <h1 class="heading">Zašto <span class="my-orange-color">ElFak</span> Taksi?</h1>
+      </div>
+      <div class="col-3 mt-5">
+        <div class="row">
+          <div class="col-12 text-center">
+            <mat-icon class="material-icons md-48 my-orange-color">place</mat-icon>
+          </div>
+          <div class="col-12 text-center">
+            <h3>Prikaz lokacije vozila</h3>
+          </div>
+          <div class="col-12 text-center mt-4">
+            <h4>Nakon što je dispečer prosledio Vaš zahtev vozaču, moći ćete da vidite njegovu lokaciju na mapi dok se kreće ka Vama!</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-3 mt-5">
+        <div class="row">
+          <div class="col-12 text-center">
+            <mat-icon class="material-icons md-48 my-orange-color">route</mat-icon>
+          </div>
+          <div class="col-12 text-center">
+            <h3>Vizuelizacija putanje</h3>
+          </div>
+          <div class="col-12 text-center mt-4">
+            <h4>Ukoliko unesete adresu konačne destinacije, na mapi će se iscrtati putanja kojom ćete proći. Na ovaj način, uverićete se u poštenost naših vozača.</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-3 mt-5">
+        <div class="row">
+          <div class="col-12 text-center">
+            <mat-icon class="material-icons md-48 my-orange-color">redeem</mat-icon>
+          </div>
+          <div class="col-12 text-center">
+            <h3>Bonus vožnje</h3>
+          </div>
+          <div class="col-12 text-center mt-4">
+            <h4>Ukoliko se registrujete ostvarujete mogućnost da Vam svaka 10. vožnja bude GRATIS!</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

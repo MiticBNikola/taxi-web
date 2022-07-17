@@ -1,4 +1,4 @@
-<div id="" class="navbar navbar-expand-lg navbar-dark myOrange">
+<div id="nav" class="navbar navbar-expand-lg navbar-dark myOrange">
   <!--  <div class="container">-->
   <a routerLink="/home">
     <img src="assets/images/header.png" alt="ElFak Taxi"/>
@@ -28,12 +28,12 @@
         </a>
       </li>
       <li class="nav-item" *ngIf="isLoggedOut$ | async">
-        <a routerLink="/login" class="aNavbar">
+        <a routerLink="/prijava" class="aNavbar">
           <span>PRIJAVI SE</span>
         </a>
       </li>
       <li class="nav-item" *ngIf="isLoggedOut$ | async">
-        <a routerLink="/register" class="aNavbar">
+        <a routerLink="/registracija" class="aNavbar">
           <span>REGISTRUJ SE</span>
         </a>
       </li>

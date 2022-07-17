@@ -2,7 +2,7 @@
   "name": "taxi-web",
   "version": "0.0.0",
   "scripts": {
-    "serve": "ng serve --disable-host-check",
+    "serve": "ng serve --disable-host-check --port=4200",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",

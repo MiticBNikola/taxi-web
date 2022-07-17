@@ -9,8 +9,8 @@ import {UserEditorComponent} from './user/user-editor/user-editor.component';
 
 const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  { path: 'prijava', component: LoginComponent },
+  { path: 'registracija', component: RegisterComponent },
   { path: 'home', component: HomeComponent },
   { path: 'user', component: UserDetailComponent },
   { path: 'settings', component: UserEditorComponent, data: {

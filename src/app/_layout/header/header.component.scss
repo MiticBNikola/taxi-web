@@ -1,6 +1,6 @@
 .pattern {
   display: block;
-  height: 2vh;
+  min-height: 2vh;
   overflow: hidden;
   position: relative;
   /*margin-top: 67px;*/
@@ -19,6 +19,6 @@
 
 .pattern #header-image {
   stroke: none;
-  fill: #ffce00;
+  fill: var(--orange);
   mask: url(#header-mask);
 }

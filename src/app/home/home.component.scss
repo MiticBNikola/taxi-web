@@ -5,10 +5,11 @@
 
 .welcome {
 
-  height: 70vh;
+  min-height: 70vh;
 
   .heading {
     text-align: center;
+    word-break: break-word;
   }
 
   .order-btn {

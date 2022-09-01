@@ -1,3 +1,7 @@
+.navigation {
+  min-height: 8vh;
+}
+
 #myNavbar {
   width: 100vw;
   position: relative;
@@ -15,30 +19,21 @@
 }
 
 .aNavbar {
-  background:
-    linear-gradient(
-      to right,
-      var(--mainColor) 0%,
-      var(--mainColor) 5px,
-      transparent 5px
-    );
-  background-repeat: repeat-x;
   background-size: 100%;
-  color: #000;
-  padding-left: 10px;
-  text-decoration: none;
+  color: white;
+  padding: 10px;
 }
 
 .aNavbar:hover {
-  background:
-    linear-gradient(
-      to right,
-      var(--mainColor) 0%,
-      var(--mainColor) 5px,
+  background: linear-gradient(
+      to bottom,
+      var(--orange) 0%,
+      var(--orange) 5px,
       transparent
-    );
+  );
+  border-radius: var(--border-radius);
   text-decoration: none;
-  color: dimgray;
+  color: black;
 }
 
 i {

@@ -1,87 +1,89 @@
-<div class="container-fluid">
-  <div class="row my-5 flex-column">
-    <div class="offset-1 col-10 col-md-8 col-lg-6 col-xl-4">
-      <div class="row">
-        <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
-          <h2>Prijavi se</h2>
-        </div>
-        <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
-          <form [formGroup]="loginForm" (ngSubmit)="login()">
-            <div class="row mt-3">
-              <div class="col-12">
-                <div class="form-group">
-                  <label class="form-label" for="email">E-adresa</label>
-                  <input [ngClass]=
-                           "{
+<div class="row align-items-center justify-content-center login">
+  <div class="col-10 col-md-9 py-5">
+    <div class="row">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-4">
+        <div class="row">
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+            <h2>Prijavi se</h2>
+          </div>
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+            <form [formGroup]="loginForm" (ngSubmit)="login()">
+              <div class="row mt-3">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label" for="email">E-adresa</label>
+                    <input [ngClass]=
+                             "{
                         'form-control': true,
                         'is-invalid': (loginForm.controls.email.touched || submitted) && loginForm.controls.email.invalid,
                         'is-valid': (loginForm.controls.email.touched || submitted) && loginForm.controls.email.valid
                       }"
-                         type="email"
-                         placeholder="E-adresa"
-                         formControlName="email"
-                         id="email"
-                  >
-                  <div
-                    *ngIf="loginForm.controls.email.touched && loginForm.controls.email.errors?.required"
-                    class="mt-1">
-                    <p class="text-danger">Potrebno je uneti e-adresu</p>
-                  </div>
-                  <div
-                    *ngIf="loginForm.controls.email.touched && loginForm.controls.email.errors?.email"
-                    class="mt-1">
-                    <p class="text-danger">E-adresa nije validna</p>
+                           type="email"
+                           placeholder="E-adresa"
+                           formControlName="email"
+                           id="email"
+                    >
+                    <div
+                      *ngIf="loginForm.controls.email.touched && loginForm.controls.email.errors?.required"
+                      class="mt-1">
+                      <p class="text-danger">Potrebno je uneti e-adresu</p>
+                    </div>
+                    <div
+                      *ngIf="loginForm.controls.email.touched && loginForm.controls.email.errors?.email"
+                      class="mt-1">
+                      <p class="text-danger">E-adresa nije validna</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="row mt-3">
-              <div class="col-12">
-                <div class="form-group">
-                  <label class="form-label" for="password">Lozinka</label>
-                  <input [ngClass]=
-                           "{
+              <div class="row mt-3">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label" for="password">Lozinka</label>
+                    <input [ngClass]=
+                             "{
                         'form-control': true,
                         'is-invalid': (loginForm.controls.password.touched || submitted) && loginForm.controls.password.invalid,
                         'is-valid': (loginForm.controls.password.touched || submitted) && loginForm.controls.password.valid
                       }"
-                         type="password"
-                         placeholder="Lozinka"
-                         formControlName="password"
-                         id="password"
-                  >
-                  <div
-                    *ngIf="loginForm.controls.password.touched && loginForm.controls.password.errors?.required"
-                    class="mt-1">
-                    <p class="text-danger">Potrebno je uneti lozinku</p>
-                  </div>
-                  <div
-                    *ngIf="loginForm.controls.password.touched && loginForm.controls.password.errors?.minlength"
-                    class="mt-1">
-                    <p class="text-danger">Lozinka mora imati minimum 8 karaktera</p>
+                           type="password"
+                           placeholder="Lozinka"
+                           formControlName="password"
+                           id="password"
+                    >
+                    <div
+                      *ngIf="loginForm.controls.password.touched && loginForm.controls.password.errors?.required"
+                      class="mt-1">
+                      <p class="text-danger">Potrebno je uneti lozinku</p>
+                    </div>
+                    <div
+                      *ngIf="loginForm.controls.password.touched && loginForm.controls.password.errors?.minlength"
+                      class="mt-1">
+                      <p class="text-danger">Lozinka mora imati minimum 8 karaktera</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-12 text-right">
-                <a type="button"
-                   (click)="openForgotPasswordDialog()"
-                >Zaboravili ste lozinku?</a>
+              <div class="row">
+                <div class="col-12 text-right">
+                  <a type="button"
+                     (click)="openForgotPasswordDialog()"
+                  >Zaboravili ste lozinku?</a>
+                </div>
               </div>
-            </div>
-            <div class="row mt-3 align-items-center justify-content-between">
-              <div class="col-auto">
-                <p class="m-0">Nemaš profil? <a routerLink="/registracija">Registruj se.</a></p>
+              <div class="row mt-3 align-items-center justify-content-between">
+                <div class="col-auto">
+                  <p class="m-0">Nemaš profil? <a routerLink="/registracija">Registruj se.</a></p>
+                </div>
+                <div class="col-auto">
+                  <button class="btn"
+                          type="submit"
+                  >Prijavi se
+                  </button>
+                </div>
               </div>
-              <div class="col-auto">
-                <button class="btn"
-                        type="submit"
-                >Prijavi se
-                </button>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,54 @@
+<div class="row">
+  <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+    <div class="row">
+      <div class="col-8 text-left">
+        <h2>Unesite adresu</h2>
+      </div>
+      <div class="col-auto ml-auto">
+        <i class="fa fa-times fa-2x pointer" (click)="hideAddCustomAddressModal()"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 p-3 my-gray-transparent-background">
+    <div class="row">
+      <div class="col-12 form-group">
+        <label for="address" class="col-form-label pt-0">Adresa</label>
+        <input id="address"
+               type="text"
+               [ngClass]="{
+                'form-control': true,
+                'is-invalid': address.touched && address.errors,
+                'is-valid': address.touched && !address.errors
+              }"
+               [formControl]="address"
+               (keyup.enter)="findLocation()"
+        >
+        <div *ngIf="address.touched && address.errors?.required" class="mt-1">
+          <p class="text-danger">Potreno je uneti adresu</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+    <div class="row">
+      <div class="col-6">
+        <button type="button"
+                class="btn cancel-btn"
+                data-dismiss="modal"
+                (click)="hideAddCustomAddressModal()"
+                >
+          Odustani
+        </button>
+      </div>
+      <div class="col-6">
+        <button type="button"
+                class="btn main-btn"
+                data-dismiss="modal"
+                (click)="findLocation()"
+                >
+          Lociraj
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

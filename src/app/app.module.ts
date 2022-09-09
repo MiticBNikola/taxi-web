@@ -19,14 +19,12 @@ import { RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
 import { HomeModule } from './home/home.module';
 import { CommonModule } from '@angular/common';
 import { UserModule } from './user/user.module';
-import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
             declarations: [
               AppComponent,
-              ConfirmDialogComponent,
             ],
             imports:      [
               CommonModule,

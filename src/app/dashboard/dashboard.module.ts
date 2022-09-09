@@ -9,6 +9,7 @@ import { DashboardDispatcherViewComponent } from './dashboard-dispatcher-view/da
 import { DashboardDriverViewComponent } from './dashboard-driver-view/dashboard-driver-view.component';
 import {DashboardUserViewComponent} from './dashboard-user-view/dashboard-user-view.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { AddressComponent } from './address/address.component';
 
 
 
@@ -17,7 +18,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     DashboardComponent,
     DashboardDispatcherViewComponent,
     DashboardDriverViewComponent,
-    DashboardUserViewComponent
+    DashboardUserViewComponent,
+    AddressComponent
   ],
   imports: [
     CommonModule,

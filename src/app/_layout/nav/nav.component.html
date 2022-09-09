@@ -1,59 +1,67 @@
-<div id="nav" class="navbar navbar-expand-lg navbar-dark myOrange">
-  <!--  <div class="container">-->
-  <a routerLink="/home">
-    <img src="assets/images/header.png" alt="ElFak Taxi"/>
-  </a>
+<div id="nav" class="row m-0 justify-content-center navbar navbar-expand-lg navbar-dark navigation">
+  <div class="col-9">
+    <div class="row">
 
-  <button class="navbar-toggler"
-          type="button"
-          (click)="toggleNavbar = !toggleNavbar"
-          data-toggle="collapse"
-          data-target="#navbarColor01"
-          aria-controls="navbarColor01"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-          style="">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarColor01">
-    <ul class="navbar-nav d-flex justify-content-around align-items-center" style="width: 100%">
-      <li class="nav-item">
-        <a routerLink="/home" class="aNavbar">
-          <span>POČETNA</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/dashboard" class="aNavbar">
-          <span>PORUČI VOZILO</span>
-        </a>
-      </li>
-      <li class="nav-item" *ngIf="isLoggedOut$ | async">
-        <a routerLink="/prijava" class="aNavbar">
-          <span>PRIJAVI SE</span>
-        </a>
-      </li>
-      <li class="nav-item" *ngIf="isLoggedOut$ | async">
-        <a routerLink="/registracija" class="aNavbar">
-          <span>REGISTRUJ SE</span>
-        </a>
-      </li>
-      <li class="nav-item dropdown" *ngIf="isLoggedIn$ | async">
-        <a class="aNavbar nav-link dropdown-toggle"
-           data-toggle="dropdown"
-           href="#"
-           id="download">
-          <i class="fa fa-fw fa-user-circle-o"></i></a>
-        <div class="dropdown-menu myOrange dropdown-menu-right">
-          <a routerLink="/user" style="cursor: pointer" class="aNavbar dropdown-item">Profil</a>
-          <div class="dropdown-divider"></div>
-          <a routerLink="/settings" style="cursor: pointer" class="aNavbar dropdown-item">Podešavanja</a>
-          <div class="dropdown-divider"></div>
-          <a style="cursor: pointer" class="aNavbar dropdown-item" (click)="logout()">Odjavi se</a>
+<!--      <a routerLink="/home">-->
+<!--        <img src="assets/images/header.png" alt="ElFak Taxi"/>-->
+<!--      </a>-->
 
-        </div>
-      </li>
-    </ul>
+      <!--  <button class="navbar-toggler"-->
+      <!--          type="button"-->
+      <!--          (click)="toggleNavbar = !toggleNavbar"-->
+      <!--          data-toggle="collapse"-->
+      <!--          data-target="#navbarColor01"-->
+      <!--          aria-controls="navbarColor01"-->
+      <!--          aria-expanded="false"-->
+      <!--          aria-label="Toggle navigation"-->
+      <!--          style="">-->
+      <!--    <span class="navbar-toggler-icon"></span>-->
+      <!--  </button>-->
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav d-flex justify-content-between align-items-center" style="width: 100%">
+          <li class="nav-item">
+            <a routerLink="/home">
+              <img src="assets/images/header.png" alt="ElFak Taxi"/>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/home" class="aNavbar">
+              <span>POČETNA</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/dashboard" class="aNavbar">
+              <span>PORUČI VOZILO</span>
+            </a>
+          </li>
+          <li class="nav-item" *ngIf="isLoggedOut$ | async">
+            <a routerLink="/prijava" class="aNavbar">
+              <span>PRIJAVI SE</span>
+            </a>
+          </li>
+          <li class="nav-item" *ngIf="isLoggedOut$ | async">
+            <a routerLink="/registracija" class="aNavbar">
+              <span>REGISTRUJ SE</span>
+            </a>
+          </li>
+          <li class="nav-item dropdown" *ngIf="isLoggedIn$ | async">
+            <a class="aNavbar nav-link dropdown-toggle"
+               data-toggle="dropdown"
+               href="#"
+               id="download">
+              <i class="fa fa-fw fa-user-circle-o"></i></a>
+            <div class="dropdown-menu myOrange dropdown-menu-right">
+              <a routerLink="/user" style="cursor: pointer" class="aNavbar dropdown-item">Profil</a>
+              <div class="dropdown-divider"></div>
+              <a routerLink="/settings" style="cursor: pointer" class="aNavbar dropdown-item">Podešavanja</a>
+              <div class="dropdown-divider"></div>
+              <a style="cursor: pointer" class="aNavbar dropdown-item" (click)="logout()">Odjavi se</a>
+
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
   </div>
-
-  <!--  </div>-->
 </div>

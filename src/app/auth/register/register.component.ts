@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/f
 import { AuthService } from '../auth.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../reducers';
-import { register } from '../auth.actions';
+// import { register } from '../auth.actions';
 
 @Component({
              selector:    'app-register',
@@ -89,14 +89,14 @@ export class RegisterComponent implements OnInit {
       this.submitted = true;
       return;
     }
-    this.store.dispatch(register({
-                                   user: {
-                                     name:                 this.registerForm.controls.name.value,
-                                     email:                this.registerForm.controls.email.value,
-                                     password:             this.registerForm.controls.password.value,
-                                     passwordConfirmation: this.registerForm.controls.passwordConfirmation.value,
-                                   }
-                                 }));
+    // this.store.dispatch(register({
+    //                                user: {
+    //                                  name:                 this.registerForm.controls.name.value,
+    //                                  email:                this.registerForm.controls.email.value,
+    //                                  password:             this.registerForm.controls.password.value,
+    //                                  passwordConfirmation: this.registerForm.controls.passwordConfirmation.value,
+    //                                }
+    //                              }));
   }
 
 }

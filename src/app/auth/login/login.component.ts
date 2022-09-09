@@ -98,12 +98,12 @@ export class LoginComponent implements OnInit {
       this.submitted = true;
       return;
     }
-    this.store.dispatch(login({
-                                user: {
-                                  email:    this.loginForm.controls.email.value,
-                                  password: this.loginForm.controls.password.value
-                                }
-                              }));
+    // this.store.dispatch(login({
+    //                             user: {
+    //                               email:    this.loginForm.controls.email.value,
+    //                               password: this.loginForm.controls.password.value
+    //                             }
+    //                           }));
   }
 
   /**

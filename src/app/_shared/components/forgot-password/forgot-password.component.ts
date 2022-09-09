@@ -64,30 +64,30 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   send(): void {
 
     this.isLoading++;
-    this.subscriptions.push(
-      this.authService.forgotPassword(this.email.value)
-        .pipe(finalize(() => this.isLoading--))
-        .subscribe(
-          () => {
-            this.toastrService.success('Poruka za zaboravljenu lozinku je poslata na Vašu e-adresu.');
-            this.modalRef.close();
-          },
-          error => {
-            if (error.status === 422) {
-              if (error.error.errors.email[0] === 'Please wait before retrying.') {
-                this.toastrService.error('Već ste poslali zahtev, proverite e-adresu!');
-                this.modalRef.close();
-              }
-              if (error.error.errors.email[0] === 'We can\'t find a user with that email address.') {
-                this.toastrService.error('Ne postoji korisnik sa unetom e-adresom!');
-              }
-            } else {
-              console.log(error);
-              this.toastrService.error('Došlo je do greške, osvežite stranicu i pokušajte ponovo!');
-              this.modalRef.close();
-            }
-          })
-    );
+    // this.subscriptions.push(
+    //   this.authService.forgotPassword(this.email.value)
+    //     .pipe(finalize(() => this.isLoading--))
+    //     .subscribe(
+    //       () => {
+    //         this.toastrService.success('Poruka za zaboravljenu lozinku je poslata na Vašu e-adresu.');
+    //         this.modalRef.close();
+    //       },
+    //       error => {
+    //         if (error.status === 422) {
+    //           if (error.error.errors.email[0] === 'Please wait before retrying.') {
+    //             this.toastrService.error('Već ste poslali zahtev, proverite e-adresu!');
+    //             this.modalRef.close();
+    //           }
+    //           if (error.error.errors.email[0] === 'We can\'t find a user with that email address.') {
+    //             this.toastrService.error('Ne postoji korisnik sa unetom e-adresom!');
+    //           }
+    //         } else {
+    //           console.log(error);
+    //           this.toastrService.error('Došlo je do greške, osvežite stranicu i pokušajte ponovo!');
+    //           this.modalRef.close();
+    //         }
+    //       })
+    // );
   }
 
   /**

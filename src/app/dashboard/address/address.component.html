@@ -1,0 +1,31 @@
+<div class="col-12">
+  <div class="row justify-content-center align-items-center">
+    <div class="col-11">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <i class="bi bi-signpost my-orange-color" *ngIf="isFirst"></i>
+          <i class="bi bi-signpost" *ngIf="!isFirst && !isLast"></i>
+          <i class="bi bi-signpost-fill my-orange-color" *ngIf="isLast && !isFirst"></i>
+        </div>
+        <div class="col-6">{{address}}</div>
+        <div class="col-auto ml-auto">
+          <button class="justify-content-center align-items-center secondary-btn p-2"
+                  (click)="changeAddress()"
+                  style="height: auto"
+          >
+            <i class="bi bi-pen-fill my-orange-color"></i>
+          </button>
+        </div>
+        <div class="col-auto">
+          <button class="justify-content-center align-items-center secondary-btn p-2"
+                  (click)="isFirst ? locateMe() : removeAddress()"
+                  style="height: auto"
+          >
+            <i class="bi bi-geo-alt-fill my-orange-color" *ngIf="isFirst"></i>
+            <i class="bi bi-trash3-fill text-danger" *ngIf="!isFirst"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

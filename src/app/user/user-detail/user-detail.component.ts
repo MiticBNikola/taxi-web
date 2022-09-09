@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {ConfirmDialogComponent} from '../../confirm-dialog/confirm-dialog.component';
+import {ConfirmDialogComponent} from '../../_shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-user-detail',

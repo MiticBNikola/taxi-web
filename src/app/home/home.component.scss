@@ -11,18 +11,6 @@
     text-align: center;
     word-break: break-word;
   }
-
-  .order-btn {
-    background-color: var(--dirty-white);
-    color: white;
-    transition: color, background-color 0.5s linear;
-  }
-
-  .order-btn:hover {
-    background-color: white;
-    color: var(--dirty-white);
-    transition: color, background-color 0.5s linear;
-  }
 }
 
 .infos {

@@ -5,15 +5,48 @@
   border-radius: var(--border-radius);
 }
 
-.btn-primary {
+.main-btn {
 
   background: var(--orange);
   color: var(--dark);
 }
 
-.btn-primary:hover {
+.main-btn:hover {
 
   background: var(--mainColor);
+}
+
+.secondary-btn {
+  background-color: transparent;
+  border: 2px dashed var(--dirty-white);
+  transition: color, background-color 0.5s linear;
+}
+
+.secondary-btn-disabled {
+  background-color: var(--dirty-white);
+  color: black;
+}
+
+.secondary-btn:hover {
+  background-color: black;
+  transition: background-color 0.5s linear;
+}
+
+.themed-btn {
+  background-color: var(--dirty-white);
+  color: black;
+  transition: color, background-color 0.5s linear;
+}
+
+.themed-btn-disabled {
+  background-color: var(--dirty-white);
+  color: black;
+}
+
+.themed-btn:hover {
+  background-color: white;
+  color: var(--dirty-white);
+  transition: color, background-color 0.5s linear;
 }
 
 .pointer {
@@ -39,6 +72,11 @@
 .my-gray-background {
 
   background-color: rgb(96, 96, 96);
+}
+
+.border-radius {
+
+  border-radius: var(--border-radius);
 }
 
 .border-radius-top {

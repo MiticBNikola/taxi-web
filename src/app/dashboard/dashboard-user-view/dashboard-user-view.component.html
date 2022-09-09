@@ -1,11 +1,78 @@
-<div class="card myGrayTransparent" style="display: inline-block">
-  <div class="card-header text-left myGrayTransparent">
-    <h3>Poručite vozilo na vašoj adresi!</h3>
+<div class="row justify-content-center user-map">
+  <div class="col-9">
+    <div class="row py-5">
+      <div class="col-12 col-lg-4">
+        <div class="row">
+          <div class="col-12">
+            <div class="row py-3 my-gray-transparent-background border-radius">
+              <ng-container *ngFor="let address of addresses; first as isFirst; last as isLast; index as i">
+                <div class="col-12" [@slideDownUp] *ngIf="addresses.length - 1 === i && i > 0">
+                  <div class="row justify-content-center pt-3">
+                    <div class="col-11 text-center">
+                      <button class="justify-content-center align-items-center secondary-btn"
+                              (click)="openAddCustomAddressDialog('middle')">
+                        <p class="my-orange-color m-0">Unesi međustanicu</p>
+                        <i class="bi bi-plus-square-dotted ml-2 my-orange-color"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <app-address [address]="address"
+                             [isFirst]="isFirst"
+                             [isLast]="isLast"
+                             (signalLocation)="updateLocation($event, i)"
+                             (signalRemoveAddress)="removeDestination(i)"
+                             class="w-100 my-3"
+                             [@slideDownUp]
+                ></app-address>
+              </ng-container>
+              <div class="col-12">
+
+                <div class="row justify-content-center py-3" *ngIf="markers.length < 2">
+                  <div class="col-11">
+                    <button class="btn myStrongOrange justify-content-center align-items-center themed-btn"
+                            (click)="openAddCustomAddressDialog('last')">
+                      <h4>Unesi završnu adresu</h4>
+                      <i class="bi bi-signpost-fill ml-2"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="row justify-content-center pt-3 mt-3">
+                  <div class="col-11 col-md-5">
+                    <button [ngClass]="{
+                        'btn myStrongOrange justify-content-center align-items-center': true,
+                        'themed-btn': true,
+                        'themed-btn-disabled': false
+                        }"
+                            (click)="clearRoute()"
+                            *ngIf="addresses.length > 1"
+                    >
+                      <h4>Odustani</h4>
+                      <i class="bi bi-x-octagon ml-2"></i>
+                    </button>
+                  </div>
+                  <div class="col-11 col-md-5 offset-md-1 mt-3 mt-md-0">
+                    <button [ngClass]="{
+                        'btn myStrongOrange justify-content-center align-items-center': true,
+                        'main-btn': true,
+                        'themed-btn-disabled': false
+                        }"
+                            (click)="orderVehicle()"
+                    >
+                      <h4>Poruči vozilo</h4>
+                      <i class="bi bi-car-front-fill ml-2"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-8 p-0 px-lg-3 mt-3 mt-lg-0">
+        <div class="border border-dark rounded-lg" id="map" style="height: 65vh; width: 100%;">
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="card-body d-flex flex-wrap justify-content-around align-content-center">
-    <button class="btn myOrange mt-2" (click)="locateMe()">Lociraj me</button>
-    <button class="btn myStrongOrange mt-2" (click)="locateMe()">Poruči vozilo</button>
-  </div>
-</div>
-<div class="mt-5 border border-dark rounded-lg" id="map" style="height: 75vh; width: 100%;">
 </div>

@@ -21,7 +21,6 @@
                 'is-valid': address.touched && !address.errors
               }"
                [formControl]="address"
-               (keyup.enter)="findLocation()"
         >
         <div *ngIf="address.touched && address.errors?.required" class="mt-1">
           <p class="text-danger">Potreno je uneti adresu</p>

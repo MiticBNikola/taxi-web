@@ -140,13 +140,22 @@ export class DashboardUserViewComponent implements OnInit {
     this.addresses.splice(index, 1);
     if (this.markers.length > 1) {
       this.createRoute();
+    } else {
+      this.clearRoute();
     }
   }
 
   locateAddress(position, address): void {
 
-    this.geocoder.geocode({address}, (results, status) => {
+    const defaultBounds = {
+      north: this.center.lat + 0.1,
+      south: this.center.lat - 0.1,
+      east: this.center.lng + 0.1,
+      west: this.center.lng - 0.1,
+    };
+    this.geocoder.geocode({address, bounds: defaultBounds}, (results, status) => {
         if (status === 'OK') {
+          console.log(results);
           this.updateMarkers(results[0].geometry.location.lat(), results[0].geometry.location.lng(), position);
           this.updateAddress(results[0].geometry.location.lat(), results[0].geometry.location.lng(), position);
           if (this.markers.length > 1) {
@@ -162,7 +171,12 @@ export class DashboardUserViewComponent implements OnInit {
 
   openAddCustomAddressDialog(position): void {
 
-    const modalRef = this.modalService.open(AddCustomAddressComponent);
+    const modalRef = this.modalService.open(AddCustomAddressComponent, {
+      backdropClass: 'z-index-2',
+      windowClass: 'z-index-2'
+    });
+    modalRef.componentInstance.center = this.center;
+    modalRef.componentInstance.map = this.map;
     modalRef.result
       .then(response => {
         if (response) {

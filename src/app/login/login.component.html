@@ -7,7 +7,7 @@
             <h2>Prijavi se</h2>
           </div>
           <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
-            <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <form [formGroup]="loginForm" (ngSubmit)="submit()">
               <div class="row mt-3">
                 <div class="col-12">
                   <div class="form-group">
@@ -40,8 +40,10 @@
                     <input
                       [ngClass]="{
                         'form-control': true,
-                        'is-invalid': (loginForm.get('password')?.touched || submitted) && loginForm.get('password')?.invalid,
-                        'is-valid': (loginForm.get('password')?.touched || submitted) && loginForm.get('password')?.valid,
+                        'is-invalid':
+                          (loginForm.get('password')?.touched || submitted) && loginForm.get('password')?.invalid,
+                        'is-valid':
+                          (loginForm.get('password')?.touched || submitted) && loginForm.get('password')?.valid,
                       }"
                       type="password"
                       placeholder="Lozinka"

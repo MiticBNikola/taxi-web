@@ -66,13 +66,17 @@ export class LoginComponent implements OnInit {
    *
    * @return void
    */
-  login(): void {
+  submit(): void {
     if (this.loginForm?.invalid) {
       this.submitted = true;
+      this.toastService.error('Pravilno popunite sva obavezna polja');
       return;
     }
 
-    const formData: { email: string; password: string } = this.loginForm.value;
+    this.login(this.loginForm.value);
+  }
+
+  private login(formData: { email: string; password: string }) {
     this.authStore.setLoading(true);
     this.authHttpService
       .login(formData.email, formData.password)

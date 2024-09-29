@@ -1,0 +1,58 @@
+<div id="nav" class="row justify-content-center navbar navbar-expand-lg navbar-dark navigation">
+  <div class="col-9">
+    <div class="row align-items-center justify-content-between">
+      <div class="col-auto">
+        <a routerLink="/home">
+          <img ngSrc="/images/header.png" alt="ElFak Taxi" width="196" height="51" priority />
+        </a>
+      </div>
+
+      <!--      (click)="toggleNavbar = !toggleNavbar"-->
+      <button
+        class="col-auto navbar-toggler d-sm-block d-md-none"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarColor01"
+        aria-controls="navbarColor01"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+        style=""
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="col-auto nav-item">
+        <a routerLink="/home" class="aNavbar">
+          <span>POČETNA</span>
+        </a>
+      </div>
+      <div class="col-auto nav-item">
+        <a routerLink="/dashboard" class="aNavbar">
+          <span>PORUČI VOZILO</span>
+        </a>
+      </div>
+      @if (isLoggedIn()) {
+        <div class="col-auto">
+          <div ngbDropdown class="d-inline-block">
+            <button type="button" class="btn active border-0" id="dropdownBasic1" ngbDropdownToggle><fa-icon [icon]="user"></fa-icon></button>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="nav-dropdown">
+              <button ngbDropdownItem routerLink="/user">Profil</button>
+              <button ngbDropdownItem routerLink="/settings">Podesavanja</button>
+              <button ngbDropdownItem (click)="logout()">Odjavi se</button>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="col-auto nav-item">
+          <a routerLink="/login" class="aNavbar">
+            <span>PRIJAVI SE</span>
+          </a>
+        </div>
+        <div class="col-auto nav-item">
+          <a routerLink="/register" class="aNavbar">
+            <span>REGISTRUJ SE</span>
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+</div>

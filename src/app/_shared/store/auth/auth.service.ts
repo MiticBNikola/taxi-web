@@ -2,6 +2,8 @@ import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { Customer } from '../../models/Customer';
+import { Driver } from '../../models/Driver';
 import { BaseApiService } from '../base-api.service';
 
 @Injectable({ providedIn: 'root' })
@@ -33,7 +35,7 @@ export class AuthService extends BaseApiService {
     });
   }
 
-  login(email: string, password: string): Observable<any> {
+  login(email: string, password: string): Observable<{ user: Customer | Driver; token: string; type: string }> {
     return this.post(`${this.apiURL}/login`, { email, password });
   }
 
@@ -41,7 +43,14 @@ export class AuthService extends BaseApiService {
     return this.post(`${this.apiURL}/logout`, { type: this.authStore.type() });
   }
 
-  register(data: any): Observable<any> {
+  register(data: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+    type: string;
+  }): Observable<{ user: Customer | Driver; token: string; type: string }> {
     return this.post(`${this.apiURL}/register`, data);
   }
 }

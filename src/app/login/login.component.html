@@ -1,0 +1,82 @@
+<div class="row m-0 align-items-center justify-content-center login">
+  <div class="col-10 col-md-9 py-5">
+    <div class="row">
+      <div class="col-12 col-md-9 col-lg-7 col-xl-5">
+        <div class="row">
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+            <h2>Prijavi se</h2>
+          </div>
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+            <form [formGroup]="loginForm" (ngSubmit)="login()">
+              <div class="row mt-3">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label" for="email">E-adresa</label>
+                    <input
+                      [ngClass]="{
+                        'form-control': true,
+                        'is-invalid': (loginForm.get('email')?.touched || submitted) && loginForm.get('email')?.invalid,
+                        'is-valid': (loginForm.get('email')?.touched || submitted) && loginForm.get('email')?.valid,
+                      }"
+                      type="email"
+                      placeholder="E-adresa"
+                      formControlName="email"
+                      id="email"
+                    />
+                    @if (loginForm.get('email')?.touched && loginForm.get('email')?.errors) {
+                      <div class="mt-1">
+                        @if (loginForm.get('email')?.errors?.['required']) {
+                          <p class="text-danger">Potrebno je uneti e-adresu</p>
+                        } @else if (loginForm.get('email')?.errors?.['email']) {
+                          <p class="text-danger">Uneta e-adresa nije validna</p>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div class="col-12 mt-3">
+                  <div class="form-group">
+                    <label class="form-label" for="password">Lozinka</label>
+                    <input
+                      [ngClass]="{
+                        'form-control': true,
+                        'is-invalid': (loginForm.get('password')?.touched || submitted) && loginForm.get('password')?.invalid,
+                        'is-valid': (loginForm.get('password')?.touched || submitted) && loginForm.get('password')?.valid,
+                      }"
+                      type="password"
+                      placeholder="Lozinka"
+                      formControlName="password"
+                      id="password"
+                    />
+                    @if (loginForm.get('password')?.touched && loginForm.get('password')?.errors) {
+                      <div class="mt-1">
+                        @if (loginForm.get('password')?.errors?.['required']) {
+                          <p class="text-danger">Potrebno je uneti lozinku</p>
+                        } @else if (loginForm.get('password')?.errors?.['minlength']) {
+                          <p class="text-danger">Lozinka mora imati minimum 8 karaktera</p>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+              <!--                <div class="col-12 text-right">-->
+              <!--                  <a type="button" (click)="openForgotPasswordDialog()">Zaboravili ste lozinku?</a>-->
+              <!--                </div>-->
+              <div class="col-12 mt-3">
+                <div class="row align-items-center justify-content-end">
+                  <!--                  <div class="col-auto mt-3 mt-md-0">-->
+                  <!--                    <p class="m-0">Nemaš profil? <a routerLink="/register">Registruj se.</a></p>-->
+                  <!--                  </div>-->
+                  <div class="col-auto ml-auto mt-3 mt-md-0">
+                    <button class="btn" type="submit" [disabled]="isLoading()">Prijavi se</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

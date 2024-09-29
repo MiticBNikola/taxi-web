@@ -9,7 +9,15 @@ export function xsrfInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
   const token = authStore.token && authStore.token();
   const session = authStore.session && authStore.session();
 
-  return next(req.clone({ withCredentials: true, setHeaders: { 'X-XSRF-TOKEN': `${token}`, Authorization: `Bearer ${session}` } }));
+  return next(
+    req.clone({
+      withCredentials: true,
+      setHeaders: {
+        'X-XSRF-TOKEN': `${token}`,
+        Authorization: `Bearer ${session}`,
+      },
+    })
+  );
 }
 
 export function getCookie(name: string) {

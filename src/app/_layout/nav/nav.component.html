@@ -33,7 +33,9 @@
       @if (isLoggedIn()) {
         <div class="col-auto">
           <div ngbDropdown class="d-inline-block">
-            <button type="button" class="btn active border-0" id="dropdownBasic1" ngbDropdownToggle><fa-icon [icon]="user"></fa-icon></button>
+            <button type="button" class="btn active border-0" id="dropdownBasic1" ngbDropdownToggle>
+              <fa-icon [icon]="user"></fa-icon>
+            </button>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="nav-dropdown">
               <button ngbDropdownItem routerLink="/user">Profil</button>
               <button ngbDropdownItem routerLink="/settings">Podesavanja</button>

@@ -8,7 +8,7 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh; /* Full viewport height */
-  background: url("../public/images/taxi-on-street.png") no-repeat center center fixed; /* Background image */
+  background: url('../public/images/taxi-on-street.png') no-repeat center center fixed; /* Background image */
   background-size: cover; /* Make sure image covers entire background */
   position: relative;
   font-family: 'Poppins', sans-serif;
@@ -17,7 +17,7 @@ body {
 
 /* Dark overlay */
 body::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -68,7 +68,9 @@ h4 {
   margin: 0;
 }
 
-h5, p, label {
+h5,
+p,
+label {
   font-family: 'Poppins', sans-serif;
   font-style: normal;
   font-weight: 500;
@@ -110,14 +112,12 @@ button:focus {
 }
 
 .my-gray-transparent-background {
-
   background-color: var(--dark-gray);
 }
 
 .bg {
-
   background-repeat: no-repeat;
-  background-image: url("../public/images/interior.png");
+  background-image: url('../public/images/interior.png');
   background-size: cover;
   /*background-attachment: fixed;*/
   /*height: 100%;*/
@@ -127,32 +127,26 @@ button:focus {
 }
 
 .form-control {
-
   background: var(--dirty-white);
   border-radius: var(--border-radius);
 }
 
 a {
-
   color: var(--orange);
 }
 
 a:hover {
-
   color: var(--mainColor);
 }
 
 button {
-
   width: 100%;
 }
 
 .modal-content {
-
   background: transparent;
 }
 
 .color-black {
-
   color: black;
 }

@@ -1,5 +1,4 @@
 .btn {
-
   background-color: var(--dirty-white);
   color: var(--dark);
   border-radius: var(--border-radius);
@@ -7,20 +6,20 @@
 }
 
 .main-btn {
-
   background: var(--orange);
   color: var(--dark);
 }
 
 .main-btn:hover {
-
   background: var(--mainColor);
 }
 
 .secondary-btn {
   background-color: transparent;
   border: 2px dashed var(--dirty-white);
-  transition: color, background-color 0.5s linear;
+  transition:
+    color,
+    background-color 0.5s linear;
 }
 
 .secondary-btn-disabled {
@@ -36,7 +35,9 @@
 .themed-btn {
   background-color: var(--dirty-white);
   color: black;
-  transition: color, background-color 0.5s linear;
+  transition:
+    color,
+    background-color 0.5s linear;
 }
 
 .themed-btn-disabled {
@@ -47,50 +48,43 @@
 .themed-btn:hover {
   background-color: white;
   color: var(--dirty-white);
-  transition: color, background-color 0.5s linear;
+  transition:
+    color,
+    background-color 0.5s linear;
 }
 
 .pointer {
-
   cursor: pointer;
 }
 
 .my-orange-background {
-
   background-color: var(--orange);
 }
 
 .my-orange-color {
-
   color: var(--orange);
 }
 
 .my-strong-orange-background {
-
   background-color: var(--mainColor);
 }
 
 .my-gray-background {
-
   background-color: rgb(96, 96, 96);
 }
 
 .border-radius {
-
   border-radius: var(--border-radius);
 }
 
 .border-radius-top {
-
   border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
 .border-radius-bottom {
-
   border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 
 .z-index-2 {
-
   z-index: 2 !important;
 }

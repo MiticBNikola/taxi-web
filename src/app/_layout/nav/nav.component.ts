@@ -12,7 +12,15 @@ import { AuthStore } from '../../_shared/store/auth/auth.store';
 @Component({
   selector: 'app-nav',
   standalone: true,
-  imports: [RouterLink, NgOptimizedImage, FontAwesomeModule, NgbDropdown, NgbDropdownMenu, NgbDropdownItem, NgbDropdownToggle],
+  imports: [
+    RouterLink,
+    NgOptimizedImage,
+    FontAwesomeModule,
+    NgbDropdown,
+    NgbDropdownMenu,
+    NgbDropdownItem,
+    NgbDropdownToggle,
+  ],
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.scss',
 })

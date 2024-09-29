@@ -1,13 +1,9 @@
 {
   "root": true,
-  "ignorePatterns": [
-    "projects/**/*"
-  ],
+  "ignorePatterns": ["projects/**/*"],
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
@@ -21,10 +17,7 @@
       "settings": {
         "import/resolver": {
           "node": {
-            "extensions": [
-              ".ts",
-              ".d.ts"
-            ]
+            "extensions": [".ts", ".d.ts"]
           }
         }
       },
@@ -55,14 +48,7 @@
         "import/order": [
           "error",
           {
-            "groups": [
-              "external",
-              "builtin",
-              "internal",
-              "sibling",
-              "parent",
-              "index"
-            ],
+            "groups": ["external", "builtin", "internal", "sibling", "parent", "index"],
             "newlines-between": "always",
             "pathGroups": [
               {
@@ -83,9 +69,7 @@
                 "position": "after"
               }
             ],
-            "pathGroupsExcludedImportTypes": [
-              "internal"
-            ],
+            "pathGroupsExcludedImportTypes": ["internal"],
             "alphabetize": {
               "order": "asc",
               "caseInsensitive": true
@@ -95,28 +79,17 @@
       }
     },
     {
-      "files": [
-        "*.html"
-      ],
-      "extends": [
-        "plugin:@angular-eslint/template/recommended",
-        "plugin:@angular-eslint/template/accessibility"
-      ],
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended", "plugin:@angular-eslint/template/accessibility"],
       "rules": {
         "@angular-eslint/template/click-events-have-key-events": 0,
         "@angular-eslint/template/interactive-supports-focus": 0
       }
     },
     {
-      "files": [
-        "*.html"
-      ],
-      "excludedFiles": [
-        "*inline-template-*.component.html"
-      ],
-      "extends": [
-        "plugin:prettier/recommended"
-      ],
+      "files": ["*.html"],
+      "excludedFiles": ["*inline-template-*.component.html"],
+      "extends": ["plugin:prettier/recommended"],
       "rules": {
         "prettier/prettier": [
           "error",
@@ -127,12 +100,8 @@
       }
     },
     {
-      "files": [
-        "*.ts"
-      ],
-      "extends": [
-        "plugin:@ngrx/all"
-      ]
+      "files": ["*.ts"],
+      "extends": ["plugin:@ngrx/all"]
     }
   ]
 }

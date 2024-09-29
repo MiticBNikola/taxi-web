@@ -21,7 +21,10 @@
       "settings": {
         "import/resolver": {
           "node": {
-            "extensions": [".ts", ".d.ts"]
+            "extensions": [
+              ".ts",
+              ".d.ts"
+            ]
           }
         }
       },
@@ -83,8 +86,7 @@
             "pathGroupsExcludedImportTypes": [
               "internal"
             ],
-            "alphabetize":
-            {
+            "alphabetize": {
               "order": "asc",
               "caseInsensitive": true
             }
@@ -106,12 +108,31 @@
       }
     },
     {
-      "files": ["*.html"],
-      "excludedFiles": ["*inline-template-*.component.html"],
-      "extends": ["plugin:prettier/recommended"],
+      "files": [
+        "*.html"
+      ],
+      "excludedFiles": [
+        "*inline-template-*.component.html"
+      ],
+      "extends": [
+        "plugin:prettier/recommended"
+      ],
       "rules": {
-        "prettier/prettier": ["error", { "parser": "angular" }]
+        "prettier/prettier": [
+          "error",
+          {
+            "parser": "angular"
+          }
+        ]
       }
+    },
+    {
+      "files": [
+        "*.ts"
+      ],
+      "extends": [
+        "plugin:@ngrx/all"
+      ]
     }
   ]
 }

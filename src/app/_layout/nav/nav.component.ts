@@ -33,6 +33,9 @@ export class NavComponent {
   protected isLoggedIn = computed(() => {
     return !!this.authStore.user();
   });
+  protected isCustomer = computed(() => {
+    return this.authStore.type() === 'customer';
+  });
 
   logout() {
     this.authStore.setLoading(true);

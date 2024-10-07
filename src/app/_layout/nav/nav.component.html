@@ -38,7 +38,9 @@
             </button>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="nav-dropdown">
               <button ngbDropdownItem routerLink="/user">Profil</button>
-              <button ngbDropdownItem routerLink="/settings">Podesavanja</button>
+              @if (isCustomer()) {
+                <button ngbDropdownItem routerLink="/settings">Podesavanja</button>
+              }
               <button ngbDropdownItem (click)="logout()">Odjavi se</button>
             </div>
           </div>

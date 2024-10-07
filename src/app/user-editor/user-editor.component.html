@@ -1,0 +1,164 @@
+<div class="row align-items-center justify-content-center">
+  <div class="col-10 col-md-9 py-5">
+    <div class="row">
+      <div class="col-12 col-md-9 col-lg-7 col-xl-5">
+        <div class="row">
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+            <h2>Izmena profila</h2>
+          </div>
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+            <div class="row justify-content-center">
+              @if (isLoading) {
+                <div class="col-auto">
+                  <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                </div>
+              } @else {
+                <div class="col-12">
+                  @if (form) {
+                    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                      <div class="row">
+                        <div class="col-12 col-md-6 col-xl-4 mb-2">
+                          <label for="first_name" class="form-label">Ime:</label>
+                          <input
+                            id="first_name"
+                            [ngClass]="{
+                              'form-control': true,
+                              'border-danger':
+                                (submitted || form.get('first_name')?.touched) && form.get('first_name')?.invalid,
+                              'border-success':
+                                (submitted || form.get('first_name')?.touched) && form.get('first_name')?.valid,
+                            }"
+                            type="text"
+                            placeholder="Ime"
+                            formControlName="first_name"
+                          />
+                          @if (submitted || form.get('first_name')?.touched) {
+                            <div class="text-danger">
+                              @if (form.get('first_name')?.errors?.['required']) {
+                                <p>Ime je obavezno</p>
+                              }
+                            </div>
+                          }
+                        </div>
+                        <div class="col-12 col-md-6 col-xl-4 mb-2">
+                          <label for="last_name" class="form-label">Prezime:</label>
+                          <input
+                            id="last_name"
+                            [ngClass]="{
+                              'form-control': true,
+                              'border-danger':
+                                (submitted || form.get('last_name')?.touched) && form.get('last_name')?.invalid,
+                              'border-success':
+                                (submitted || form.get('last_name')?.touched) && form.get('last_name')?.valid,
+                            }"
+                            type="text"
+                            placeholder="Prezime"
+                            formControlName="last_name"
+                          />
+                          @if (submitted || form.get('last_name')?.touched) {
+                            <div class="text-danger">
+                              @if (form.get('last_name')?.errors?.['required']) {
+                                <p>Prezime je obavezno</p>
+                              }
+                            </div>
+                          }
+                        </div>
+                        <div class="col-12 mb-2">
+                          <label for="email" class="form-label">E-adresa:</label>
+                          <input
+                            id="email"
+                            [ngClass]="{
+                              'form-control': true,
+                              'border-danger': (submitted || form.get('email')?.touched) && form.get('email')?.invalid,
+                              'border-success': (submitted || form.get('email')?.touched) && form.get('email')?.valid,
+                            }"
+                            type="email"
+                            placeholder="E-adresa"
+                            formControlName="email"
+                          />
+                          @if (submitted || form.get('email')?.touched) {
+                            <div class="text-danger">
+                              @if (form.get('email')?.errors?.['required']) {
+                                <p>E-adresa je obavezna</p>
+                              }
+                              @if (form.get('email')?.errors?.['email']) {
+                                <p>E-adresa je nevalidna</p>
+                              }
+                            </div>
+                          }
+                        </div>
+                        <div class="col-12 mb-2">
+                          <label for="number" class="form-label">Telefonski broj:</label>
+                          <div id="number" class="row">
+                            @for (number of numbers.controls; track number; let i = $index) {
+                              <ng-container formArrayName="numbers">
+                                <div [formGroup]="number" class="col-10 mb-2">
+                                  <input
+                                    type="text"
+                                    [ngClass]="{
+                                      'form-control': true,
+                                      'border-danger':
+                                        (submitted || number.get('number')?.touched) && number.get('number')?.invalid,
+                                      'border-success':
+                                        (submitted || number.get('number')?.touched) && number.get('number')?.valid,
+                                    }"
+                                    placeholder="Telefonski broj"
+                                    formControlName="number"
+                                    appPhoneNumberControlInput
+                                    (focus)="!number.get('number')?.value && number.get('number')?.setValue('+')"
+                                    (focusout)="
+                                      number.get('number')?.value === '+' && number.get('number')?.setValue('')
+                                    "
+                                  />
+                                </div>
+                                <div class="col-2 d-flex justify-content-end mb-2">
+                                  <button
+                                    type="button"
+                                    class="secondary-btn h-auto text-white"
+                                    (click)="removeNumber(i)"
+                                  >
+                                    <fa-icon [icon]="faClose"></fa-icon>
+                                  </button>
+                                </div>
+                                <div class="col-12">
+                                  @if (submitted || number.get('number')?.touched) {
+                                    <div class="text-danger">
+                                      @if (number.get('number')?.errors?.['required']) {
+                                        <p>Telefonski broj je obavezan</p>
+                                      }
+                                    </div>
+                                  }
+                                </div>
+                              </ng-container>
+                            }
+                            <div class="col-auto">
+                              <a class="pointer text-decoration-underline" (click)="addNumber()"
+                                >Dodaj telefonski broj</a
+                              >
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-12 d-flex justify-content-end gap-2">
+                          <button type="button" class="btn w-auto" routerLink="/user" [disabled]="isLoadingUpdate">
+                            Otkaži
+                          </button>
+                          <button type="submit" class="btn w-auto main-btn" [disabled]="isLoadingUpdate">
+                            @if (isLoadingUpdate) {
+                              <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                            } @else {
+                              Sačuvaj
+                            }
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

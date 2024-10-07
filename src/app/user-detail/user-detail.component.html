@@ -23,7 +23,7 @@
                     <p>{{ user?.last_name }}</p>
                   </div>
                   <div class="col-12 mb-1">
-                    <strong>Email:</strong>
+                    <strong>E-adresa:</strong>
                     <p>{{ user?.email }}</p>
                   </div>
                   <div class="col-12 mb-1">
@@ -39,12 +39,17 @@
                     }
                   </div>
                 </div>
-                @if (type === 'customer') {
+                @if (isCustomer()) {
                   <div class="col-md-12 d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-warning w-auto" [routerLink]="'/settings'">
+                    <button
+                      type="button"
+                      class="btn btn-warning w-auto"
+                      style="border: none"
+                      [routerLink]="'/settings'"
+                    >
                       <fa-icon [icon]="faEdit"></fa-icon>
                     </button>
-                    <button type="button" class="btn btn-danger w-auto" (click)="onDeleteClick()">
+                    <button type="button" class="btn btn-danger w-auto" style="border: none" (click)="onDeleteClick()">
                       <fa-icon [icon]="faTrash"></fa-icon>
                     </button>
                   </div>
@@ -70,7 +75,7 @@
                   <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
                 </div>
               } @else {
-                @if (type === 'customer') {
+                @if (isCustomer()) {
                   <div class="col-12">
                     <p>
                       Ukupan broj vožnji <strong>{{ user?.number_of_rides ?? 0 }}</strong
@@ -83,10 +88,10 @@
                     <thead>
                       <tr>
                         <th scope="col">
-                          @if (type === 'driver') {
-                            Korisnik
-                          } @else {
+                          @if (isCustomer()) {
                             Vozac
+                          } @else {
+                            Korisnik
                           }
                         </th>
                         <th scope="col">Početna adresa</th>
@@ -103,10 +108,10 @@
                       @for (ride of rides; track ride) {
                         <tr>
                           <td>
-                            @if (type === 'driver') {
-                              {{ ride.customer.first_name + ' ' + ride.customer.last_name }}
-                            } @else {
+                            @if (isCustomer()) {
                               {{ ride.driver.first_name + ' ' + ride.driver.last_name }}
+                            } @else {
+                              {{ ride.customer.first_name + ' ' + ride.customer.last_name }}
                             }
                           </td>
                           <td>

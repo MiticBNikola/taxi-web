@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -28,6 +28,10 @@ export class UserDetailComponent implements OnInit {
   authStore = inject(AuthStore);
   router = inject(Router);
   modalService = inject(NgbModal);
+
+  protected isCustomer = computed(() => {
+    return this.authStore.type() === 'customer';
+  });
 
   protected readonly faTrash = faTrash;
   protected readonly faEdit = faEdit;

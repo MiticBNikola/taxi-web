@@ -10,6 +10,10 @@ export class CustomerService extends BaseApiService {
     return this.get(`${this.baseUrl}/${id}`);
   }
 
+  update(id: number, formData: FormData) {
+    return this.put(`${this.baseUrl}/${id}`, formData);
+  }
+
   destroy(id: number) {
     return this.delete(`${this.baseUrl}/${id}`);
   }

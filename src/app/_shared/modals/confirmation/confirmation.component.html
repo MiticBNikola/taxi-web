@@ -1,0 +1,15 @@
+<div class="my-gray-transparent-background border-radius">
+  <div class="modal-header gap-2">
+    <fa-icon [icon]="faWarningIcon" size="lg"></fa-icon>
+    <h4 class="modal-title" id="modal-basic-title">{{ title }}</h4>
+    <button type="button" class="btn-close bg-white" aria-label="Close" (click)="hideModal()"></button>
+  </div>
+  <div class="modal-body">
+    <p>{{ sentence }}</p>
+  </div>
+  <div class="modal-footer justify-content-end">
+    <button type="button" class="btn btn-outline-secondary w-auto" (click)="confirmModal()">
+      {{ confirmation }}
+    </button>
+  </div>
+</div>

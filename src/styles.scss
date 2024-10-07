@@ -150,3 +150,21 @@ button {
 .color-black {
   color: black;
 }
+
+.spinning-icon {
+  display: inline-block;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.modal-danger {
+  background: rgba(0,0,0,0.8);
+}

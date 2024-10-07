@@ -1,0 +1,152 @@
+<div class="row align-items-center justify-content-center">
+  <div class="col-10 col-md-9 py-5">
+    <div class="row">
+      <div class="col-12 col-md-9 col-lg-7 col-xl-5">
+        <div class="row">
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+            <h2>Korisnički profil</h2>
+          </div>
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+            <div class="row justify-content-center">
+              @if (isLoading) {
+                <div class="col-auto">
+                  <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                </div>
+              } @else {
+                <div class="col-12 row">
+                  <div class="col-12 col-md-6 col-xl-4 mb-1">
+                    <strong>Ime:</strong>
+                    <p>{{ user?.first_name }}</p>
+                  </div>
+                  <div class="col-12 col-md-6 col-xl-4 mb-1">
+                    <strong>Prezime:</strong>
+                    <p>{{ user?.last_name }}</p>
+                  </div>
+                  <div class="col-12 mb-1">
+                    <strong>Email:</strong>
+                    <p>{{ user?.email }}</p>
+                  </div>
+                  <div class="col-12 mb-1">
+                    <strong>Telefonski broj:</strong>
+                    @if (!user?.numbers?.length) {
+                      <p>/</p>
+                    } @else {
+                      <ul>
+                        @for (number of user?.numbers; track number) {
+                          <li>{{ number?.number }}</li>
+                        }
+                      </ul>
+                    }
+                  </div>
+                </div>
+                @if (type === 'customer') {
+                  <div class="col-md-12 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-warning w-auto" [routerLink]="'/settings'">
+                      <fa-icon [icon]="faEdit"></fa-icon>
+                    </button>
+                    <button type="button" class="btn btn-danger w-auto" (click)="onDeleteClick()">
+                      <fa-icon [icon]="faTrash"></fa-icon>
+                    </button>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-10 col-md-9 py-5">
+    <div class="row">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+            <h2>Vožnje</h2>
+          </div>
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+            <div class="row justify-content-center">
+              @if (isLoadingRides) {
+                <div class="col-auto">
+                  <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                </div>
+              } @else {
+                @if (type === 'customer') {
+                  <div class="col-12">
+                    <p>
+                      Ukupan broj vožnji <strong>{{ user?.number_of_rides ?? 0 }}</strong
+                      >, još <strong>{{ 10 - (user?.number_of_rides ?? 0 % 10) }}</strong> do besplatne vožnje!
+                    </p>
+                  </div>
+                }
+                <div class="col-12">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col">
+                          @if (type === 'driver') {
+                            Korisnik
+                          } @else {
+                            Vozac
+                          }
+                        </th>
+                        <th scope="col">Početna adresa</th>
+                        <th scope="col">Završna adresa</th>
+                        <th scope="col">Kraj vožnje</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @if (!rides.length) {
+                        <tr>
+                          <td colspan="4" class="text-center">Nema vožnji</td>
+                        </tr>
+                      }
+                      @for (ride of rides; track ride) {
+                        <tr>
+                          <td>
+                            @if (type === 'driver') {
+                              {{ ride.customer.first_name + ' ' + ride.customer.last_name }}
+                            } @else {
+                              {{ ride.driver.first_name + ' ' + ride.driver.last_name }}
+                            }
+                          </td>
+                          <td>
+                            {{ ride.start_location }}
+                          </td>
+                          <td>{{ ride.end_location }}</td>
+                          <td>
+                            {{ ride.end_time ?? 'U toku' }}
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+                <div class="col-12">
+                  <div class="d-flex justify-content-between">
+                    <ngb-pagination
+                      [collectionSize]="collectionSize"
+                      [(page)]="page"
+                      [pageSize]="pageSize"
+                      (pageChange)="refreshRides()"
+                    >
+                    </ngb-pagination>
+                    <select
+                      class="form-select"
+                      style="width: auto; height: 33px"
+                      [(ngModel)]="pageSize"
+                      (ngModelChange)="refreshRides()"
+                    >
+                      <option [ngValue]="5">5 vožnji po stranici</option>
+                      <option [ngValue]="10">10 vožnji po stranici</option>
+                      <option [ngValue]="20">20 vožnji po stranici</option>
+                    </select>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

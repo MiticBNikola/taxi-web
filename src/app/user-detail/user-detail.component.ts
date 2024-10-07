@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -9,6 +10,8 @@ import { finalize, noop } from 'rxjs';
 import { ConfirmationComponent } from '../_shared/modals/confirmation/confirmation.component';
 import { Customer } from '../_shared/models/Customer';
 import { Driver } from '../_shared/models/Driver';
+import { Ride } from '../_shared/models/Ride';
+import { ToastService } from '../_shared/services/toast.service';
 import { AuthStore } from '../_shared/store/auth/auth.store';
 import { RideService } from '../_shared/store/ride.service';
 import { CustomerService } from '../_shared/store/user/customer.service';
@@ -17,17 +20,18 @@ import { DriverService } from '../_shared/store/user/driver.service';
 @Component({
   selector: 'app-user-detail',
   standalone: true,
-  imports: [RouterLink, FaIconComponent, NgbPagination, FormsModule],
+  imports: [RouterLink, FaIconComponent, NgbPagination, FormsModule, DatePipe],
   templateUrl: './user-detail.component.html',
   styleUrl: './user-detail.component.scss',
 })
 export class UserDetailComponent implements OnInit {
-  customerService = inject(CustomerService);
-  driverService = inject(DriverService);
-  rideService = inject(RideService);
-  authStore = inject(AuthStore);
-  router = inject(Router);
-  modalService = inject(NgbModal);
+  private customerService = inject(CustomerService);
+  private driverService = inject(DriverService);
+  private rideService = inject(RideService);
+  private authStore = inject(AuthStore);
+  private router = inject(Router);
+  private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
 
   protected isCustomer = computed(() => {
     return this.authStore.type() === 'customer';
@@ -37,30 +41,30 @@ export class UserDetailComponent implements OnInit {
   protected readonly faEdit = faEdit;
   protected readonly faSpinner = faSpinner;
 
-  isLoading: boolean = false;
-  isLoadingRides: boolean = false;
-  isLoadingDelete: boolean = false;
-  user: Customer | Driver | null = null;
-  customer: Customer | null = null;
-  driver: Driver | null = null;
-  type?: string;
+  protected isLoading: boolean = false;
+  protected isLoadingRides: boolean = false;
+  protected isLoadingDelete: boolean = false;
+  protected user: Customer | Driver | null = null;
+  protected customer: Customer | null = null;
+  protected driver: Driver | null = null;
+  protected type?: string;
 
-  page = 1;
-  pageSize = 10;
-  collectionSize = 0;
-  rides: any[] = [];
+  protected page = 1;
+  protected pageSize = 10;
+  protected collectionSize = 0;
+  protected rides: Ride[] = [];
 
   ngOnInit() {
     const user = this.authStore.user();
     this.type = this.authStore.type();
     if (!user || !this.type) {
+      this.authStore.clearAuthUser();
       this.router.navigate(['/login']);
       return;
     }
     if (this.type === 'customer') {
       this.getCustomerData(user.id);
-    }
-    if (this.type === 'driver') {
+    } else {
       this.getDriverData(user.id);
     }
     this.getRides(this.type, user.id);
@@ -77,6 +81,8 @@ export class UserDetailComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
+          this.toastService.error('Neštko je iskrslo. Pokušajte ponovo kasnije!');
+          this.router.navigate(['/']);
         },
       });
   }
@@ -92,6 +98,8 @@ export class UserDetailComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
+          this.toastService.error('Neštko je iskrslo. Pokušajte ponovo kasnije!');
+          this.router.navigate(['/']);
         },
       });
   }
@@ -108,6 +116,8 @@ export class UserDetailComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
+          this.toastService.error('Neštko je iskrslo. Pokušajte ponovo kasnije!');
+          this.router.navigate(['/']);
         },
       });
   }
@@ -140,10 +150,12 @@ export class UserDetailComponent implements OnInit {
       .subscribe({
         next: () => {
           this.authStore.clearAuthUser();
+          this.toastService.success('Uspešno ste obrisali svoj nalog!');
           this.router.navigate(['/']);
         },
         error: (err) => {
           console.error(err);
+          this.toastService.error('Neštko je iskrslo. Pokušajte ponovo kasnije!');
         },
       });
   }

@@ -109,17 +109,17 @@
                         <tr>
                           <td>
                             @if (isCustomer()) {
-                              {{ ride.driver.first_name + ' ' + ride.driver.last_name }}
+                              {{ (ride.driver?.first_name ?? 'N') + ' ' + (ride.driver?.last_name ?? 'N') }}
                             } @else {
-                              {{ ride.customer.first_name + ' ' + ride.customer.last_name }}
+                              {{ (ride.customer?.first_name ?? 'N') + ' ' + (ride.customer?.last_name ?? 'N') }}
                             }
                           </td>
                           <td>
-                            {{ ride.start_location }}
+                            {{ ride.start_location ?? '-' }}
                           </td>
-                          <td>{{ ride.end_location }}</td>
+                          <td>{{ ride.end_location ?? '-' }}</td>
                           <td>
-                            {{ ride.end_time ?? 'U toku' }}
+                            {{ (ride.end_time | date: 'short') ?? 'U toku' }}
                           </td>
                         </tr>
                       }

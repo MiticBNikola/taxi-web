@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
 
   protected submitted = false;
   protected loginForm: FormGroup = this.formBuilder.group({
-    email: ['uriel33@example.net', [Validators.required, Validators.email]],
+    email: ['dzonijus@example.com', [Validators.required, Validators.email]],
     password: ['password', [Validators.required, Validators.minLength(8)]],
   });
 

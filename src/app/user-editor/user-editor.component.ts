@@ -39,11 +39,16 @@ export class UserEditorComponent implements OnInit {
 
   ngOnInit() {
     const user = this.authStore.user() as Customer;
-    if (!user) {
+    const type = this.authStore.type();
+    if (!user || !type) {
       this.authStore.clearAuthUser();
       this.router.navigate(['/login']);
     }
-    this.getCustomerData(user.id);
+    if (type === 'driver') {
+      this.router.navigate(['/user']);
+    } else {
+      this.getCustomerData(user.id);
+    }
   }
 
   getCustomerData(userId: number) {

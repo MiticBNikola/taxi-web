@@ -8,8 +8,8 @@
           </div>
           <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
             <form [formGroup]="registerForm" (ngSubmit)="submit()">
-              <div class="row mt-3">
-                <div class="col-12">
+              <div class="row mt-3 justify-content-end">
+                <div class="col-12 col-md-6">
                   <div class="form-group">
                     <label class="form-label" for="first_name">Ime</label>
                     <input
@@ -28,17 +28,16 @@
                       id="first_name"
                     />
                     @if (
-                      registerForm.get('first_name')?.touched && registerForm.get('first_name')?.errors?.['required']
+                      (submitted || registerForm.get('first_name')?.touched) &&
+                      registerForm.get('first_name')?.errors?.['required']
                     ) {
                       <div class="mt-1">
-                        <p class="text-danger">Potrebno je uneti ime</p>
+                        <p class="text-danger m-0">Potrebno je uneti ime</p>
                       </div>
                     }
                   </div>
                 </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-12">
+                <div class="col-12 col-md-6 mt-1 mt-md-0">
                   <div class="form-group">
                     <label class="form-label" for="last_name">Prezime</label>
                     <input
@@ -56,17 +55,16 @@
                       id="last_name"
                     />
                     @if (
-                      registerForm.get('last_name')?.touched && registerForm.get('last_name')?.errors?.['required']
+                      (submitted || registerForm.get('last_name')?.touched) &&
+                      registerForm.get('last_name')?.errors?.['required']
                     ) {
                       <div class="mt-1">
-                        <p class="text-danger">Potrebno je uneti prezime</p>
+                        <p class="text-danger m-0">Potrebno je uneti prezime</p>
                       </div>
                     }
                   </div>
                 </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-12">
+                <div class="col-12 mt-1">
                   <div class="form-group">
                     <label class="form-label" for="email">E-adresa</label>
                     <input
@@ -82,20 +80,18 @@
                       formControlName="email"
                       id="email"
                     />
-                    @if (registerForm.get('email')?.touched && registerForm.get('email')?.errors) {
+                    @if ((submitted || registerForm.get('email')?.touched) && registerForm.get('email')?.errors) {
                       <div class="mt-1">
                         @if (registerForm.get('email')?.errors?.['required']) {
-                          <p class="text-danger">Potrebno je uneti e-adresu</p>
+                          <p class="text-danger m-0">Potrebno je uneti e-adresu</p>
                         } @else if (registerForm.get('email')?.errors?.['email']) {
-                          <p class="text-danger">E-adresa nije validna</p>
+                          <p class="text-danger m-0">E-adresa nije validna</p>
                         }
                       </div>
                     }
                   </div>
                 </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-12">
+                <div class="col-12 mt-1">
                   <div class="form-group">
                     <label class="form-label" for="password">Lozinka</label>
                     <input
@@ -111,20 +107,18 @@
                       formControlName="password"
                       id="password"
                     />
-                    @if (registerForm.get('password')?.touched && registerForm.get('password')?.errors) {
+                    @if ((submitted || registerForm.get('password')?.touched) && registerForm.get('password')?.errors) {
                       <div class="mt-1">
                         @if (registerForm.get('password')?.errors?.['required']) {
-                          <p class="text-danger">Potrebno je uneti lozinku</p>
+                          <p class="text-danger m-0">Potrebno je uneti lozinku</p>
                         } @else if (registerForm.get('password')?.errors?.['minlength']) {
-                          <p class="text-danger">Lozinka mora imati minimum 8 karaktera</p>
+                          <p class="text-danger m-0">Lozinka mora imati minimum 8 karaktera</p>
                         }
                       </div>
                     }
                   </div>
                 </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-12">
+                <div class="col-12 mt-1">
                   <div class="form-group">
                     <label class="form-label" for="password_confirmation"> Potvrda lozinke </label>
                     <input
@@ -142,24 +136,32 @@
                       formControlName="password_confirmation"
                       id="password_confirmation"
                     />
-                    @if (registerForm.get('password_confirmation')?.touched) {
+                    @if (submitted || registerForm.get('password_confirmation')?.touched) {
                       <div class="mt-1">
                         @if (registerForm.get('password_confirmation')?.errors?.['required']) {
-                          <p class="text-danger">Potrebno je uneti lozinku</p>
+                          <p class="text-danger m-0">Potrebno je uneti lozinku</p>
                         } @else if (registerForm.errors?.['passwordsNotMatched']) {
-                          <p class="text-danger">Lozinke se ne poklapaju</p>
+                          <p class="text-danger m-0">Lozinke se ne poklapaju</p>
                         }
                       </div>
                     }
                   </div>
                 </div>
-              </div>
-              <div class="row mt-3 align-items-center justify-content-end">
-                <!--                <div class="col-auto mt-3 mt-md-0">-->
-                <!--                  <p class="m-0">Imaš profil? <a [routerLink]="['/prijava']">Prijavi se.</a></p>-->
-                <!--                </div>-->
-                <div class="col-auto ml-auto mt-3 mt-md-0">
-                  <button class="btn" type="submit" [disabled]="isLoading()">Registruj se</button>
+                <div class="col-12 mt-3">
+                  <div class="row align-items-end justify-content-between">
+                    <div class="col-auto">
+                      <p class="m-0">Imaš profil? <a routerLink="/login">Prijavi se.</a></p>
+                    </div>
+                    <div class="col-auto">
+                      <button class="btn main-btn" type="submit" [disabled]="isLoading()">
+                        @if (isLoading()) {
+                          <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                        } @else {
+                          Registruj se
+                        }
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </form>

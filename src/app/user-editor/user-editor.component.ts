@@ -62,7 +62,7 @@ export class UserEditorComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
-          this.toastService.error('Neštko je iskrslo. Pokušajte ponovo kasnije!');
+          this.toastService.error('Nešto je iskrslo. Pokušajte ponovo kasnije!');
           this.router.navigate(['/']);
         },
       });
@@ -103,7 +103,7 @@ export class UserEditorComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     if (this.form?.invalid) {
-      this.toastService.error('Molimo Vas popunite sva obavezna polja na ispravan način!');
+      this.toastService.error('Pravilno popunite sva obavezna polja!');
       return;
     }
 
@@ -135,7 +135,7 @@ export class UserEditorComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
-          this.toastService.error('Neštko je iskrslo. Pokušajte ponovo kasnije!');
+          this.toastService.error('Nešto je iskrslo. Pokušajte ponovo kasnije!');
         },
       });
   }

@@ -17,15 +17,15 @@
                   @if (form) {
                     <form [formGroup]="form" (ngSubmit)="onSubmit()">
                       <div class="row">
-                        <div class="col-12 col-md-6 col-xl-4 mb-2">
+                        <div class="col-12 col-md-6 mb-2">
                           <label for="first_name" class="form-label">Ime:</label>
                           <input
                             id="first_name"
                             [ngClass]="{
                               'form-control': true,
-                              'border-danger':
+                              'is-invalid':
                                 (submitted || form.get('first_name')?.touched) && form.get('first_name')?.invalid,
-                              'border-success':
+                              'is-valid':
                                 (submitted || form.get('first_name')?.touched) && form.get('first_name')?.valid,
                             }"
                             type="text"
@@ -35,21 +35,20 @@
                           @if (submitted || form.get('first_name')?.touched) {
                             <div class="text-danger">
                               @if (form.get('first_name')?.errors?.['required']) {
-                                <p>Ime je obavezno</p>
+                                <p class="m-0">Ime je obavezno</p>
                               }
                             </div>
                           }
                         </div>
-                        <div class="col-12 col-md-6 col-xl-4 mb-2">
+                        <div class="col-12 col-md-6 mb-2">
                           <label for="last_name" class="form-label">Prezime:</label>
                           <input
                             id="last_name"
                             [ngClass]="{
                               'form-control': true,
-                              'border-danger':
+                              'is-invalid':
                                 (submitted || form.get('last_name')?.touched) && form.get('last_name')?.invalid,
-                              'border-success':
-                                (submitted || form.get('last_name')?.touched) && form.get('last_name')?.valid,
+                              'is-valid': (submitted || form.get('last_name')?.touched) && form.get('last_name')?.valid,
                             }"
                             type="text"
                             placeholder="Prezime"
@@ -58,7 +57,7 @@
                           @if (submitted || form.get('last_name')?.touched) {
                             <div class="text-danger">
                               @if (form.get('last_name')?.errors?.['required']) {
-                                <p>Prezime je obavezno</p>
+                                <p class="m-0">Prezime je obavezno</p>
                               }
                             </div>
                           }
@@ -69,8 +68,8 @@
                             id="email"
                             [ngClass]="{
                               'form-control': true,
-                              'border-danger': (submitted || form.get('email')?.touched) && form.get('email')?.invalid,
-                              'border-success': (submitted || form.get('email')?.touched) && form.get('email')?.valid,
+                              'is-invalid': (submitted || form.get('email')?.touched) && form.get('email')?.invalid,
+                              'is-valid': (submitted || form.get('email')?.touched) && form.get('email')?.valid,
                             }"
                             type="email"
                             placeholder="E-adresa"
@@ -79,10 +78,10 @@
                           @if (submitted || form.get('email')?.touched) {
                             <div class="text-danger">
                               @if (form.get('email')?.errors?.['required']) {
-                                <p>E-adresa je obavezna</p>
+                                <p class="m-0">E-adresa je obavezna</p>
                               }
                               @if (form.get('email')?.errors?.['email']) {
-                                <p>E-adresa je nevalidna</p>
+                                <p class="m-0">E-adresa je nevalidna</p>
                               }
                             </div>
                           }
@@ -97,9 +96,9 @@
                                     type="text"
                                     [ngClass]="{
                                       'form-control': true,
-                                      'border-danger':
+                                      'is-invalid':
                                         (submitted || number.get('number')?.touched) && number.get('number')?.invalid,
-                                      'border-success':
+                                      'is-valid':
                                         (submitted || number.get('number')?.touched) && number.get('number')?.valid,
                                     }"
                                     placeholder="Telefonski broj"
@@ -124,7 +123,7 @@
                                   @if (submitted || number.get('number')?.touched) {
                                     <div class="text-danger">
                                       @if (number.get('number')?.errors?.['required']) {
-                                        <p>Telefonski broj je obavezan</p>
+                                        <p class="m-0">Telefonski broj je obavezan</p>
                                       }
                                     </div>
                                   }

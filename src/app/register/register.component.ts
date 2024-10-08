@@ -2,6 +2,8 @@ import { NgClass } from '@angular/common';
 import { Component, computed, inject, Signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { finalize } from 'rxjs';
 
 import { ToastService } from '../_shared/services/toast.service';
@@ -11,11 +13,12 @@ import { AuthStore } from '../_shared/store/auth/auth.store';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, RouterLink],
+  imports: [ReactiveFormsModule, NgClass, RouterLink, FaIconComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
+  protected readonly faSpinner = faSpinner;
   private authService = inject(AuthService);
   private router = inject(Router);
   private authStore = inject(AuthStore);
@@ -56,7 +59,7 @@ export class RegisterComponent {
   protected submit(): void {
     if (this.registerForm.invalid) {
       this.submitted = true;
-      this.toastService.error('Pravilno popunite sva obavezna polja');
+      this.toastService.error('Pravilno popunite sva obavezna polja!');
       return;
     }
 

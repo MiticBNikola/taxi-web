@@ -8,50 +8,58 @@
       </div>
 
       <!--      (click)="toggleNavbar = !toggleNavbar"-->
-      <button
-        class="col-auto navbar-toggler d-sm-block d-md-none"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarColor01"
-        aria-controls="navbarColor01"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-        style=""
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="col-auto nav-item">
+
+      <div ngbDropdown class="col-auto d-sm-block d-md-none">
+        <button type="button" class="btn active border-0" id="dropdownBasic2" ngbDropdownToggle>
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic2" class="nav-dropdown">
+          <button ngbDropdownItem routerLink="/">POČETNA</button>
+          <button ngbDropdownItem routerLink="/dashboard">PORUČI VOZILO</button>
+          @if (isLoggedIn()) {
+            <button ngbDropdownItem routerLink="/user">PROFIL</button>
+            @if (isCustomer()) {
+              <button ngbDropdownItem routerLink="/settings">PODEŠAVANJA</button>
+            }
+            <button ngbDropdownItem (click)="logout()">ODJAVI SE</button>
+          } @else {
+            <button ngbDropdownItem routerLink="/login">PRIJAVI SE</button>
+            <button ngbDropdownItem routerLink="/register">REGISTRUJ SE</button>
+          }
+        </div>
+      </div>
+      <div class="col-auto nav-item d-sm-none d-md-block">
         <a routerLink="/home" class="aNavbar">
           <span>POČETNA</span>
         </a>
       </div>
-      <div class="col-auto nav-item">
+      <div class="col-auto nav-item d-sm-none d-md-block">
         <a routerLink="/dashboard" class="aNavbar">
           <span>PORUČI VOZILO</span>
         </a>
       </div>
       @if (isLoggedIn()) {
-        <div class="col-auto">
+        <div class="col-auto d-sm-none d-md-block">
           <div ngbDropdown class="d-inline-block">
             <button type="button" class="btn active border-0" id="dropdownBasic1" ngbDropdownToggle>
               <fa-icon [icon]="user"></fa-icon>
             </button>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="nav-dropdown">
-              <button ngbDropdownItem routerLink="/user">Profil</button>
+              <button ngbDropdownItem routerLink="/user">PROFIL</button>
               @if (isCustomer()) {
-                <button ngbDropdownItem routerLink="/settings">Podesavanja</button>
+                <button ngbDropdownItem routerLink="/settings">PODEŠAVANJ</button>
               }
-              <button ngbDropdownItem (click)="logout()">Odjavi se</button>
+              <button ngbDropdownItem (click)="logout()">ODJAVI SE</button>
             </div>
           </div>
         </div>
       } @else {
-        <div class="col-auto nav-item">
+        <div class="col-auto nav-item d-sm-none d-md-block">
           <a routerLink="/login" class="aNavbar">
             <span>PRIJAVI SE</span>
           </a>
         </div>
-        <div class="col-auto nav-item">
+        <div class="col-auto nav-item d-sm-none d-md-block">
           <a routerLink="/register" class="aNavbar">
             <span>REGISTRUJ SE</span>
           </a>

@@ -2,6 +2,8 @@ import { NgClass, NgIf } from '@angular/common';
 import { Component, computed, inject, OnInit, Signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { finalize } from 'rxjs';
 
 import { getCookie } from '../_shared/inetrceptors/xsrfInterceptor';
@@ -12,11 +14,12 @@ import { AuthStore } from '../_shared/store/auth/auth.store';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, RouterLink, NgIf],
+  imports: [ReactiveFormsModule, NgClass, RouterLink, NgIf, FaIconComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent implements OnInit {
+  protected readonly faSpinner = faSpinner;
   private authHttpService = inject(AuthService);
   private router = inject(Router);
   private formBuilder = inject(FormBuilder);
@@ -69,7 +72,7 @@ export class LoginComponent implements OnInit {
   submit(): void {
     if (this.loginForm?.invalid) {
       this.submitted = true;
-      this.toastService.error('Pravilno popunite sva obavezna polja');
+      this.toastService.error('Pravilno popunite sva obavezna polja!');
       return;
     }
 

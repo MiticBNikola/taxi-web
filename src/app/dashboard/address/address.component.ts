@@ -6,6 +6,7 @@ import { noop } from 'rxjs';
 
 import { AddCustomAddressComponent } from '../../_shared/modals/add-custom-address/add-custom-address.component';
 import { ConfirmationComponent } from '../../_shared/modals/confirmation/confirmation.component';
+import { Ride } from '../../_shared/models/Ride';
 import { ToastService } from '../../_shared/services/toast.service';
 
 @Component({
@@ -30,6 +31,7 @@ export class AddressComponent {
   isLast = input.required<boolean>();
   address = input.required<string>();
   center = input.required<{ lat: number; lng: number }>();
+  ride = input<Ride | null>(null);
 
   @Output() signalLocation: EventEmitter<{ lat: number; lng: number }> = new EventEmitter();
   @Output() signalRemoveAddress: EventEmitter<void> = new EventEmitter();

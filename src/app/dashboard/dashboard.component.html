@@ -6,7 +6,7 @@
           <div class="col-12">
             <div class="row py-3 my-gray-transparent-background border-radius">
               @for (address of addresses; track i; let isFirst = $first; let isLast = $last; let i = $index) {
-                @if (i && i === addresses.length - 1) {
+                @if (enableStops && i && i === addresses.length - 1) {
                   <div class="col-12">
                     <div class="row justify-content-center">
                       <div class="col-12 text-center">
@@ -25,6 +25,7 @@
                   [isFirst]="isFirst"
                   [isLast]="isLast"
                   [center]="cityCenter"
+                  [ride]="ride"
                   (signalLocation)="updatePoint($event, i, isFirst, isLast)"
                   (signalRemoveAddress)="removePoint(i, isLast)"
                 ></app-address>
@@ -43,7 +44,7 @@
                   </div>
                 }
                 <div class="row justify-content-end gap-2 mt-3">
-                  @if (directionsResult) {
+                  @if (directionsResult && !ride) {
                     <div class="col-auto">
                       <button
                         [ngClass]="{
@@ -56,16 +57,35 @@
                     </div>
                   }
                   <div class="col-auto">
-                    <button
-                      [ngClass]="{
-                        'btn myStrongOrange w-auto': true,
-                        'main-btn': true,
-                        'themed-btn-disabled': false,
-                      }"
-                      (click)="orderVehicle()"
-                    >
-                      <h4>Poruči <fa-icon [icon]="faTaxi"></fa-icon></h4>
-                    </button>
+                    @if (!ride) {
+                      <button
+                        [ngClass]="{
+                          'btn myStrongOrange w-auto': true,
+                          'main-btn': true,
+                          'themed-btn-disabled': false,
+                        }"
+                        (click)="orderVehicle()"
+                        [disabled]="isLoading"
+                      >
+                        @if (isLoading) {
+                          <div class="col-auto">
+                            <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                          </div>
+                        } @else {
+                          <h4>Poruči <fa-icon [icon]="faTaxi"></fa-icon></h4>
+                        }
+                      </button>
+                    } @else {
+                      <button class="btn w-auto" (click)="cancelRide()" [disabled]="isLoading">
+                        @if (isLoadingCancel) {
+                          <div class="col-auto">
+                            <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                          </div>
+                        } @else {
+                          <h4>Otkaži <fa-icon [icon]="faTaxi"></fa-icon></h4>
+                        }
+                      </button>
+                    }
                   </div>
                 </div>
               </div>

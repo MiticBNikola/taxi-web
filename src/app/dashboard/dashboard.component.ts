@@ -2,15 +2,18 @@ import { NgClass } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { GoogleMapsModule, MapDirectionsRenderer } from '@angular/google-maps';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faFlag, faSignsPost, faTaxi, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faFlag, faSignsPost, faSpinner, faTaxi, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { noop } from 'rxjs';
+import { finalize, noop } from 'rxjs';
 
 import { AddressComponent } from './address/address.component';
 
 import { AddCustomAddressComponent } from '../_shared/modals/add-custom-address/add-custom-address.component';
 import { ConfirmationComponent } from '../_shared/modals/confirmation/confirmation.component';
+import { Ride } from '../_shared/models/Ride';
 import { ToastService } from '../_shared/services/toast.service';
+import { AuthStore } from '../_shared/store/auth/auth.store';
+import { RideService } from '../_shared/store/ride.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,9 +27,12 @@ export class DashboardComponent implements OnInit {
   protected readonly faFlag = faFlag;
   protected readonly faSignsPost = faSignsPost;
   protected readonly faTimes = faTimes;
+  protected readonly faSpinner = faSpinner;
 
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
+  private rideService = inject(RideService);
+  private authStore = inject(AuthStore);
 
   protected cityCenter: { lat: number; lng: number } = {
     lat: 43.320994,
@@ -54,6 +60,11 @@ export class DashboardComponent implements OnInit {
   private geocoder = new google.maps.Geocoder();
   private directionsService: google.maps.DirectionsService = new google.maps.DirectionsService();
   protected directionsResult: google.maps.DirectionsResult | null = null;
+
+  protected isLoading = false;
+  protected isLoadingCancel = false;
+  protected enableStops: boolean = false;
+  protected ride: Ride | null = null;
 
   ngOnInit() {
     this.prepareIcons();
@@ -314,5 +325,65 @@ export class DashboardComponent implements OnInit {
       .catch(() => noop());
   }
 
-  requestVehicle() {}
+  requestVehicle() {
+    this.isLoading = true;
+    this.rideService
+      .makeRequest(this.addresses[0], this.addresses[this.addresses.length - 1], this.authStore.user()?.id)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (res) => {
+          this.ride = res;
+          this.toastService.success('Vožnja je kreirana. Sačekajte potvrdu vozača!');
+        },
+        error: (err) => {
+          console.error(err);
+          this.toastService.error('Nešto je iskrslo. Pokušajte ponovo kasnije!');
+        },
+      });
+  }
+
+  cancelRide() {
+    if (!this.ride) {
+      this.toastService.error('Nemate akticnu vožnju!');
+      return;
+    }
+    const rideId = this.ride.id;
+
+    const modalRef = this.modalService.open(ConfirmationComponent, {
+      backdrop: 'static',
+      backdropClass: 'modal-backdrop',
+      size: 'md',
+    });
+
+    modalRef.componentInstance.title = 'Potvrda';
+    modalRef.componentInstance.sentence = `Da li ste sigurni da želite da otkažete vožnju?`;
+    modalRef.componentInstance.confirmation = 'Da';
+    modalRef.result
+      .then(() => {
+        this.dispatchCancelRide(rideId);
+      })
+      .catch(() => noop());
+  }
+
+  dispatchCancelRide(rideId: number) {
+    this.isLoadingCancel = true;
+    this.rideService
+      .cancel(rideId)
+      .pipe(finalize(() => (this.isLoadingCancel = false)))
+      .subscribe({
+        next: () => {
+          this.ride = null;
+          this.clearRoute();
+          this.toastService.success('Vožnja je otkazana.');
+        },
+        error: (err) => {
+          console.error(err);
+          if (err.status === 422) {
+            this.toastService.error(err.error.message);
+          } else {
+            this.toastService.error('Nešto je iskrslo. Pokušajte ponovo!');
+          }
+        },
+      });
+  }
 }

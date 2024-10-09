@@ -16,37 +16,39 @@
         <div class="col-10">{{ address() }}</div>
       </div>
     </div>
-    <div class="col-4">
-      <div class="row gap-2 justify-content-end">
-        <div class="col-auto pe-0">
-          <button
-            class="justify-content-center align-items-center secondary-btn p-2"
-            (click)="changeAddress()"
-            style="height: auto"
-          >
-            <fa-icon [icon]="faEdit" class="my-orange-color"></fa-icon>
-          </button>
-        </div>
-        <div class="col-auto ps-0">
-          @if (isFirst()) {
+    @if (!ride()) {
+      <div class="col-4">
+        <div class="row gap-2 justify-content-end">
+          <div class="col-auto pe-0">
             <button
               class="justify-content-center align-items-center secondary-btn p-2"
-              (click)="locateMe()"
+              (click)="changeAddress()"
               style="height: auto"
             >
-              <fa-icon [icon]="faLocationDot" class="my-orange-color"></fa-icon>
+              <fa-icon [icon]="faEdit" class="my-orange-color"></fa-icon>
             </button>
-          } @else {
-            <button
-              class="justify-content-center align-items-center secondary-btn p-2"
-              (click)="removeAddress()"
-              style="height: auto"
-            >
-              <fa-icon [icon]="faTrash" class="text-danger"></fa-icon>
-            </button>
-          }
+          </div>
+          <div class="col-auto ps-0">
+            @if (isFirst()) {
+              <button
+                class="justify-content-center align-items-center secondary-btn p-2"
+                (click)="locateMe()"
+                style="height: auto"
+              >
+                <fa-icon [icon]="faLocationDot" class="my-orange-color"></fa-icon>
+              </button>
+            } @else {
+              <button
+                class="justify-content-center align-items-center secondary-btn p-2"
+                (click)="removeAddress()"
+                style="height: auto"
+              >
+                <fa-icon [icon]="faTrash" class="text-danger"></fa-icon>
+              </button>
+            }
+          </div>
         </div>
       </div>
-    </div>
+    }
   </div>
 </div>

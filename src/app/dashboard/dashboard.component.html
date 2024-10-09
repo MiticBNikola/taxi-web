@@ -1,0 +1,107 @@
+<div class="row justify-content-center user-map">
+  <div class="col-11 col-xl-9">
+    <div class="row py-5">
+      <div class="col-12 col-xl-4">
+        <div class="row">
+          <div class="col-12">
+            <div class="row py-3 my-gray-transparent-background border-radius">
+              @for (address of addresses; track address; let isFirst = $first; let isLast = $last; let i = $index) {
+                @if (i && i === addresses.length - 1) {
+                  <div class="col-12">
+                    <div class="row justify-content-center">
+                      <div class="col-12 text-center">
+                        <button
+                          class="justify-content-center align-items-center secondary-btn"
+                          (click)="openAddCustomAddressDialog('middle')"
+                        >
+                          <p class="my-orange-color m-0">Dodaj <fa-icon [icon]="faSignsPost"></fa-icon></p>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
+                <app-address
+                  [address]="address"
+                  [isFirst]="isFirst"
+                  [isLast]="isLast"
+                  [center]="cityCenter"
+                  (signalLocation)="updatePoint($event, i, isFirst, isLast)"
+                  (signalRemoveAddress)="removePoint(i, isLast)"
+                ></app-address>
+              }
+              <div class="col-12">
+                @if (!endLocation) {
+                  <div class="row justify-content-center">
+                    <div class="col-12 text-center">
+                      <button
+                        class="ustify-content-center align-items-center secondary-btn"
+                        (click)="openAddCustomAddressDialog('last')"
+                      >
+                        <p class="my-orange-color m-0">Dodaj <fa-icon [icon]="faFlag"></fa-icon></p>
+                      </button>
+                    </div>
+                  </div>
+                }
+                <div class="row justify-content-end gap-2 mt-3">
+                  @if (directionsResult) {
+                    <div class="col-auto">
+                      <button
+                        [ngClass]="{
+                          'btn w-auto': true,
+                        }"
+                        (click)="clearRoute()"
+                      >
+                        <h4>Odustani <fa-icon [icon]="faTimes"></fa-icon></h4>
+                      </button>
+                    </div>
+                  }
+                  <div class="col-auto">
+                    <button
+                      [ngClass]="{
+                        'btn myStrongOrange w-auto': true,
+                        'main-btn': true,
+                        'themed-btn-disabled': false,
+                      }"
+                      (click)="orderVehicle()"
+                    >
+                      <h4>Poruči <fa-icon [icon]="faTaxi"></fa-icon></h4>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-8 p-0 px-xl-3 mt-3 mt-xl-0">
+        <google-map height="65vh" width="100%" [options]="options">
+          @if (myLocation && !directionsResult) {
+            <map-advanced-marker
+              [position]="{ lat: myLocation.lat, lng: myLocation.lng }"
+              [content]="icons[0] || null"
+            />
+          }
+          @if (
+            startLocation &&
+            !(startLocation.lng === myLocation?.lng && startLocation.lat === myLocation?.lat) &&
+            !directionsResult
+          ) {
+            <map-advanced-marker
+              [position]="{ lat: startLocation.lat, lng: startLocation.lng }"
+              [content]="icons[1] || null"
+            />
+          }
+          @if (endLocation && !directionsResult) {
+            <map-advanced-marker
+              [position]="{ lat: endLocation.lat, lng: endLocation.lng }"
+              [content]="icons[2] || null"
+            />
+          }
+          @if (directionsResult) {
+            <map-directions-renderer [directions]="directionsResult" />
+          }
+        </google-map>
+      </div>
+    </div>
+  </div>
+</div>

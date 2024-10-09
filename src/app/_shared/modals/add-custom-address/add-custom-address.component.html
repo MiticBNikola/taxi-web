@@ -1,0 +1,46 @@
+<div class="row my-gray-transparent-background border-radius mx-auto mt-5" style="max-width: 80vw">
+  <div class="col-12 py-3">
+    <div class="row justify-content-between">
+      <div class="col-8 text-left">
+        <h2>Unesite adresu</h2>
+      </div>
+      <div class="col-auto">
+        <fa-icon [icon]="faClose" size="2x" class="pointer" (click)="hideAddCustomAddressModal()"></fa-icon>
+      </div>
+    </div>
+  </div>
+  @if (address) {
+    <div class="col-12 py-3">
+      <div class="form-group">
+        <label for="address" class="form-label">Adresa</label>
+        <input
+          id="address"
+          #addresstext
+          type="text"
+          [ngClass]="{
+            'form-control': true,
+            'is-invalid': submitted && address.errors,
+            'is-valid': submitted && !address.errors,
+          }"
+          [formControl]="address"
+        />
+        @if (submitted && address.errors?.['required']) {
+          <div class="text-danger">
+            <p class="m-0">Potreno je uneti adresu</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+  <div class="col-12 py-3 d-flex justify-content-end gap-2">
+    <button class="btn main-btn w-auto" (click)="findLocation()">
+      <h4>
+        @if (isEdit) {
+          <fa-icon [icon]="faSave"></fa-icon>
+        } @else {
+          <fa-icon [icon]="faPlus"></fa-icon>
+        }
+      </h4>
+    </button>
+  </div>
+</div>

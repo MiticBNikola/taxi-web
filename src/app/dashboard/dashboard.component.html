@@ -5,7 +5,7 @@
         <div class="row">
           <div class="col-12">
             <div class="row py-3 my-gray-transparent-background border-radius">
-              @for (address of addresses; track address; let isFirst = $first; let isLast = $last; let i = $index) {
+              @for (address of addresses; track i; let isFirst = $first; let isLast = $last; let i = $index) {
                 @if (i && i === addresses.length - 1) {
                   <div class="col-12">
                     <div class="row justify-content-center">

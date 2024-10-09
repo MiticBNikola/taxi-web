@@ -1,5 +1,5 @@
 <div id="nav" class="row justify-content-center navbar navbar-expand-lg navbar-dark navigation">
-  <div class="col-9">
+  <div class="col-11 col-xl-9">
     <div class="row align-items-center justify-content-between">
       <div class="col-auto">
         <a routerLink="/home">
@@ -9,7 +9,7 @@
 
       <!--      (click)="toggleNavbar = !toggleNavbar"-->
 
-      <div ngbDropdown class="col-auto d-sm-block d-md-none">
+      <div ngbDropdown class="col-auto d-block d-md-none">
         <button type="button" class="btn active border-0" id="dropdownBasic2" ngbDropdownToggle>
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -28,18 +28,18 @@
           }
         </div>
       </div>
-      <div class="col-auto nav-item d-sm-none d-md-block">
+      <div class="col-auto nav-item d-none d-md-block">
         <a routerLink="/home" class="aNavbar">
           <span>POČETNA</span>
         </a>
       </div>
-      <div class="col-auto nav-item d-sm-none d-md-block">
+      <div class="col-auto nav-item d-none d-md-block">
         <a routerLink="/dashboard" class="aNavbar">
           <span>PORUČI VOZILO</span>
         </a>
       </div>
       @if (isLoggedIn()) {
-        <div class="col-auto d-sm-none d-md-block">
+        <div class="col-auto d-none d-md-block">
           <div ngbDropdown class="d-inline-block">
             <button type="button" class="btn active border-0" id="dropdownBasic1" ngbDropdownToggle>
               <fa-icon [icon]="user"></fa-icon>
@@ -54,12 +54,12 @@
           </div>
         </div>
       } @else {
-        <div class="col-auto nav-item d-sm-none d-md-block">
+        <div class="col-auto nav-item d-none d-md-block">
           <a routerLink="/login" class="aNavbar">
             <span>PRIJAVI SE</span>
           </a>
         </div>
-        <div class="col-auto nav-item d-sm-none d-md-block">
+        <div class="col-auto nav-item d-none d-md-block">
           <a routerLink="/register" class="aNavbar">
             <span>REGISTRUJ SE</span>
           </a>

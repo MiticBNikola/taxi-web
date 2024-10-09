@@ -99,7 +99,7 @@ button {
 //endregion
 
 button {
-  border-radius: 8px;
+  border-radius: 8px !important;
   width: 100%;
   display: flex !important;
   align-items: center;
@@ -165,6 +165,10 @@ button {
   }
 }
 
-.modal-danger {
+.modal-backdrop {
   background: rgba(0,0,0,0.8);
+}
+
+.map-container {
+  border-radius: var(--border-radius);
 }

@@ -129,7 +129,7 @@ export class UserDetailComponent implements OnInit {
   onDeleteClick() {
     const modalRef = this.modalService.open(ConfirmationComponent, {
       backdrop: 'static',
-      backdropClass: 'modal-danger',
+      backdropClass: 'modal-backdrop',
       size: 'md',
     });
     modalRef.componentInstance.title = 'Upozorenje';

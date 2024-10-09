@@ -9,6 +9,7 @@ import { noop } from 'rxjs';
 import { AddressComponent } from './address/address.component';
 
 import { AddCustomAddressComponent } from '../_shared/modals/add-custom-address/add-custom-address.component';
+import { ConfirmationComponent } from '../_shared/modals/confirmation/confirmation.component';
 import { ToastService } from '../_shared/services/toast.service';
 
 @Component({
@@ -287,5 +288,31 @@ export class DashboardComponent implements OnInit {
       this.toastService.error('Dodajte završnu lokaciju!');
       return;
     }
+
+    const modalRef = this.modalService.open(ConfirmationComponent, {
+      backdrop: 'static',
+      backdropClass: 'modal-backdrop',
+      size: 'md',
+    });
+
+    let totalDistance = 0;
+    let totalDuration = 0;
+    this.directionsResult?.routes?.[0]?.legs?.forEach((leg) => {
+      totalDistance += leg.distance?.value || 0; // distance in meters
+      totalDuration += leg.duration?.value || 0; // duration in seconds
+    });
+    const totalDistanceInKm = totalDistance / 1000;
+    const totalDurationInMinutes = Math.floor(totalDuration / 60);
+
+    modalRef.componentInstance.title = 'Potvrda';
+    modalRef.componentInstance.sentence = `Vaša vožnja od ${totalDistanceInKm} km bi trajala ${totalDurationInMinutes} min, da li ste sigurni da želite da je poručite?`;
+    modalRef.componentInstance.confirmation = 'Da';
+    modalRef.result
+      .then(() => {
+        this.requestVehicle();
+      })
+      .catch(() => noop());
   }
+
+  requestVehicle() {}
 }

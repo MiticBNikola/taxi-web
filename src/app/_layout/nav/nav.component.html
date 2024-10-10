@@ -13,7 +13,7 @@
         <button type="button" class="btn active border-0" id="dropdownBasic2" ngbDropdownToggle>
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div ngbDropdownMenu aria-labelledby="dropdownBasic2" class="nav-dropdown">
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic2" class="nav-dropdown dropdown-menu-end">
           <button ngbDropdownItem routerLink="/">POČETNA</button>
           <button ngbDropdownItem routerLink="/dashboard">PORUČI VOZILO</button>
           @if (isLoggedIn()) {
@@ -44,7 +44,7 @@
             <button type="button" class="btn active border-0" id="dropdownBasic1" ngbDropdownToggle>
               <fa-icon [icon]="user"></fa-icon>
             </button>
-            <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="nav-dropdown">
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="nav-dropdown dropdown-menu-end">
               <button ngbDropdownItem routerLink="/user">PROFIL</button>
               @if (isCustomer()) {
                 <button ngbDropdownItem routerLink="/settings">PODEŠAVANJ</button>

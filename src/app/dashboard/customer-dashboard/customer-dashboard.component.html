@@ -109,6 +109,12 @@
               [content]="icons()[0] || null"
             />
           }
+          @if (driverLocation()) {
+            <map-advanced-marker
+              [position]="{ lat: driverLocation()!.lat, lng: driverLocation()!.lng }"
+              [content]="icons()[3] || null"
+            />
+          }
           @if (
             startLocation &&
             !(startLocation.lng === myLocation?.lng && startLocation.lat === myLocation?.lat) &&

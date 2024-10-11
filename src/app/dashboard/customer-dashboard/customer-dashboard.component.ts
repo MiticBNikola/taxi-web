@@ -51,6 +51,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   protected addresses: string[] = [];
   icons = input<HTMLElement[]>([]);
   protected myLocation: { lat: number; lng: number } | null = null;
+  protected driverLocation = signal<{ lat: number; lng: number } | null>(null);
   protected startLocation: { lat: number; lng: number } | null = null;
   protected middleLocations: { lat: number; lng: number }[] = [];
   protected endLocation: { lat: number; lng: number } | null = null;
@@ -75,6 +76,16 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  listenToDriverPosition(rideId: number) {
+    this.echoService.listen(
+      `rides.${rideId}`,
+      '\\driver-position',
+      (res: { driver_location: { lat: number; lng: number }; driver_id: number }) => {
+        this.driverLocation.set(res.driver_location);
+      }
+    );
+  }
+
   listenToRideEndChanged(rideId: number) {
     this.echoService.listen(`rides.${rideId}`, '\\end-changed', (res: { ride: Ride }) => {
       this.toastService.show('Vozač je promenio krajnju adresu!');
@@ -94,6 +105,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     this.echoService.listen(`rides.${rideId}`, '\\ride-ended', () => {
       this.toastService.show('Vožnja je gotova!');
       this.ride.set(null);
+      this.driverLocation.set(null);
       this.clearRoute();
     });
   }
@@ -353,6 +365,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
         next: (res: Ride) => {
           this.ride.set(res);
           this.listenToRideAccepted(res.id);
+          this.listenToDriverPosition(res.id);
           this.listenToRideEndChanged(res.id);
           this.listenToRideStarted(res.id);
           this.listenToRideEnded(res.id);
@@ -396,6 +409,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.ride.set(null);
+          this.driverLocation.set(null);
           this.clearRoute();
           this.toastService.success('Vožnja je otkazana.');
         },

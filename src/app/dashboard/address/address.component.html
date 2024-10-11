@@ -16,7 +16,7 @@
         <div class="col-10">{{ address() }}</div>
       </div>
     </div>
-    @if (!ride()) {
+    @if (!isDriver() && !rideInProgress()) {
       <div class="col-4">
         <div class="row gap-2 justify-content-end">
           <div class="col-auto pe-0">
@@ -47,6 +47,55 @@
               </button>
             }
           </div>
+        </div>
+      </div>
+    }
+    @if (isDriver()) {
+      <div class="col-4">
+        <div class="row gap-2 justify-content-end">
+          @if (rideInProgress()) {
+            @if (isLast()) {
+              <div class="col-auto">
+                <button
+                  class="justify-content-center align-items-center secondary-btn p-2"
+                  (click)="changeDestinationByDriver()"
+                  style="height: auto"
+                >
+                  <fa-icon [icon]="faEdit" class="my-orange-color"></fa-icon>
+                </button>
+              </div>
+            }
+          } @else {
+            <div class="col-auto pe-0">
+              <button
+                class="justify-content-center align-items-center secondary-btn p-2"
+                (click)="togglePreviewRoute()"
+                style="height: auto"
+              >
+                @if (directions()) {
+                  <fa-icon [icon]="faEyeSlash" class="info-color"></fa-icon>
+                } @else {
+                  <fa-icon [icon]="faEye" class="info-color"></fa-icon>
+                }
+              </button>
+            </div>
+            <div class="col-auto ps-0">
+              <button
+                class="justify-content-center align-items-center secondary-btn p-2"
+                (click)="acceptRide()"
+                style="height: auto"
+                [disabled]="loading()"
+              >
+                @if (loading()) {
+                  <div class="col-auto">
+                    <fa-icon [icon]="faSpinner" class="spinning-icon text-white"></fa-icon>
+                  </div>
+                } @else {
+                  <fa-icon [icon]="faCheck" class="my-orange-color"></fa-icon>
+                }
+              </button>
+            </div>
+          }
         </div>
       </div>
     }

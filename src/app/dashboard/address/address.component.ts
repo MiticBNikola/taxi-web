@@ -1,18 +1,30 @@
-import { Component, EventEmitter, inject, input, Output } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Component, computed, EventEmitter, inject, input, Output } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faEdit, faFlag, faLocationDot, faPlay, faSignsPost, faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheck,
+  faEdit,
+  faEye,
+  faEyeSlash,
+  faFlag,
+  faLocationDot,
+  faPlay,
+  faSignsPost,
+  faSpinner,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { noop } from 'rxjs';
 
 import { AddCustomAddressComponent } from '../../_shared/modals/add-custom-address/add-custom-address.component';
 import { ConfirmationComponent } from '../../_shared/modals/confirmation/confirmation.component';
-import { Ride } from '../../_shared/models/Ride';
 import { ToastService } from '../../_shared/services/toast.service';
+import { AuthStore } from '../../_shared/store/auth/auth.store';
 
 @Component({
   selector: 'app-address',
   standalone: true,
-  imports: [FaIconComponent],
+  imports: [FaIconComponent, NgClass],
   templateUrl: './address.component.html',
   styleUrl: './address.component.scss',
 })
@@ -23,18 +35,33 @@ export class AddressComponent {
   protected readonly faSignsPost = faSignsPost;
   protected readonly faPlay = faPlay;
   protected readonly faFlag = faFlag;
+  protected readonly faEye = faEye;
+  protected readonly faEyeSlash = faEyeSlash;
+  protected readonly faCheck = faCheck;
+  protected readonly faSpinner = faSpinner;
 
+  private authStore = inject(AuthStore);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
 
-  isFirst = input.required<boolean>();
-  isLast = input.required<boolean>();
+  isFirst = input<boolean>(false);
+  isLast = input<boolean>(false);
   address = input.required<string>();
   center = input.required<{ lat: number; lng: number }>();
-  ride = input<Ride | null>(null);
+  rideInProgress = input<boolean>(false);
+  disableActions = input<boolean>(false);
+  loading = input<boolean>(false);
+  directions = input<google.maps.DirectionsResult | null>(null);
 
   @Output() signalLocation: EventEmitter<{ lat: number; lng: number }> = new EventEmitter();
   @Output() signalRemoveAddress: EventEmitter<void> = new EventEmitter();
+  @Output() signalPreviewRoute: EventEmitter<void> = new EventEmitter();
+  @Output() signalHidePreviewRoute: EventEmitter<void> = new EventEmitter();
+  @Output() signalAcceptRide: EventEmitter<void> = new EventEmitter();
+
+  isDriver = computed(() => {
+    return this.authStore.type() === 'driver';
+  });
 
   private geocoder: google.maps.Geocoder = new google.maps.Geocoder();
 
@@ -42,6 +69,14 @@ export class AddressComponent {
     navigator.geolocation.getCurrentPosition((position) => {
       this.signalLocation.emit({ lat: position.coords.latitude, lng: position.coords.longitude });
     });
+  }
+
+  changeDestinationByDriver() {
+    // if (!this.ride()?.start_time) {
+    // this.toastService.error('Morate prvo da započnete vožnju!');
+    // return;
+    // }
+    this.changeAddress();
   }
 
   changeAddress(): void {
@@ -95,6 +130,32 @@ export class AddressComponent {
     modalRef.result
       .then(() => {
         this.signalRemoveAddress.emit();
+      })
+      .catch(() => noop());
+  }
+
+  togglePreviewRoute() {
+    if (this.directions()) {
+      this.signalHidePreviewRoute.emit();
+      return;
+    }
+    this.signalPreviewRoute.emit();
+  }
+
+  acceptRide() {
+    const modalRef = this.modalService.open(ConfirmationComponent, {
+      backdrop: 'static',
+      backdropClass: 'modal-backdrop',
+      size: 'md',
+    });
+
+    modalRef.componentInstance.title = 'Potvrda';
+    modalRef.componentInstance.sentence = `Da li ste sigurni da želite da prihvatite vožnju?`;
+    modalRef.componentInstance.confirmation = 'Da';
+    modalRef.result
+      .then(() => {
+        this.signalPreviewRoute.emit();
+        this.signalAcceptRide.emit();
       })
       .catch(() => noop());
   }

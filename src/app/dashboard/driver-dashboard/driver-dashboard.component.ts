@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { GoogleMapsModule, MapDirectionsRenderer } from '@angular/google-maps';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faSpinner, faTaxi } from '@fortawesome/free-solid-svg-icons';
@@ -44,6 +44,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   };
   icons = input<HTMLElement[]>([]);
   protected myLocation = signal<{ lat: number; lng: number } | null>(null);
+  private timeoutsForDispatchingMyLocation = signal<any[]>([]);
 
   private geocoder = new google.maps.Geocoder();
   private directionsService: google.maps.DirectionsService = new google.maps.DirectionsService();
@@ -66,6 +67,17 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
       endLoc?: { lat: number; lng: number };
     }[]
   >([]);
+
+  constructor() {
+    effect(() => {
+      const myLoc = this.myLocation();
+      const driverId = this.authStore.user()?.id;
+      const currentRideId = this.rideData()?.ride.id;
+      if (myLoc && driverId && currentRideId) {
+        this.signalCustomerMyLocation(myLoc, driverId, currentRideId);
+      }
+    });
+  }
 
   ngOnInit() {
     this.locateMe();
@@ -143,6 +155,8 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
         ride: res.ride,
       });
       this.locateAddress(-1, res.ride.end_location!);
+      this.timeoutsForDispatchingMyLocation().forEach((timeoutId) => clearTimeout(timeoutId));
+      this.previewRoute(this.rideData()!);
     });
   }
 
@@ -162,6 +176,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
         this.toastService.show('Vožnja je otkazana!');
         this.rideData.set(null);
         this.clearRoute();
+        this.timeoutsForDispatchingMyLocation().forEach((timeoutId) => clearTimeout(timeoutId));
       }
     });
   }
@@ -227,15 +242,18 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
     },
     index: number
   ): void {
-    this.previewRoute(ride);
+    this.previewRoute(ride, false);
     this.directionsDisplayed.set(index);
   }
 
-  previewRoute(ride: {
-    ride: Ride;
-    startLoc?: { lat: number; lng: number };
-    endLoc?: { lat: number; lng: number };
-  }): void {
+  previewRoute(
+    ride: {
+      ride: Ride;
+      startLoc?: { lat: number; lng: number };
+      endLoc?: { lat: number; lng: number };
+    },
+    imitateDrive = true
+  ): void {
     const start = this.myLocation()!;
     let stops: google.maps.DirectionsWaypoint[] = [
       {
@@ -259,6 +277,9 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
       })
       .then((result) => {
         this.directionsResult = result;
+        if (imitateDrive) {
+          this.imitateMoving();
+        }
         const durationToCustomer = Math.floor((result?.routes?.[0]?.legs?.[0]?.duration?.value || 0) / 60);
         const durationToFinish = Math.floor((result?.routes?.[0]?.legs?.[1]?.duration?.value || 0) / 60);
         this.toastService.show(
@@ -292,7 +313,6 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
             ride: res,
           });
           this.previewRoute(this.rideData()!);
-          this.imitateMoving(true);
         },
         error: (err) => {
           console.error(err);
@@ -331,6 +351,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
             ride: res,
             endLoc: location,
           });
+          this.timeoutsForDispatchingMyLocation().forEach((timeoutId) => clearTimeout(timeoutId));
           this.previewRoute(this.rideData()!);
         },
         error: (err) => {
@@ -379,6 +400,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
         next: () => {
           this.rideData.set(null);
           this.clearRoute();
+          this.timeoutsForDispatchingMyLocation().forEach((timeoutId) => clearTimeout(timeoutId));
           this.toastService.show('Vožnja je završena!');
         },
         error: (err) => {
@@ -388,39 +410,71 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  imitateMoving(toCustomer = false) {
-    const leg = this.directionsResult?.routes?.[0]?.legs?.[toCustomer ? 0 : 1];
-    if (!leg?.steps) {
+  imitateMoving() {
+    if (!this.rideData()) {
       return;
     }
-    for (let i = 0; i <= leg.steps.length; i++) {
-      if (!leg.steps?.[i]?.path) {
-        if (i === leg.steps.length) {
-          setTimeout(
-            () => {
-              const point = toCustomer ? this.rideData()!.startLoc : this.rideData()!.endLoc;
-              this.myLocation.set({
-                lat: point!.lat,
-                lng: point!.lng,
-              });
-            },
-            (i + 1) * 500
-          );
-        }
+    const toCustomer = !this.rideData()!.ride?.start_time;
+
+    const mergedPoints: google.maps.LatLng[] = this.mergePoints(toCustomer);
+
+    const displayablePoints = this.pickPoints(mergedPoints);
+    for (let i = 0; i <= displayablePoints.length; i++) {
+      if (i === displayablePoints.length) {
+        const point = toCustomer ? this.rideData()!.startLoc : this.rideData()!.endLoc;
+        this.dispatchTimeoutChange(point!.lat, point!.lng, i);
         return;
       }
-      for (let j = 0; j < leg.steps[i].path.length; j++) {
-        setTimeout(
-          () => {
-            this.myLocation.set({
-              lat: leg.steps[i].path[j].lat(),
-              lng: leg.steps[i].path[j].lng(),
-            });
-          },
-          (i + 1) * 500
-        );
-      }
+
+      this.dispatchTimeoutChange(displayablePoints[i].lat(), displayablePoints[i].lng(), i);
     }
+  }
+
+  dispatchTimeoutChange(lat: number, lng: number, index: number) {
+    const timeoutID = setTimeout(() => {
+      this.myLocation.set({
+        lat: lat,
+        lng: lng,
+      });
+    }, index * 3000);
+    this.timeoutsForDispatchingMyLocation.set([...this.timeoutsForDispatchingMyLocation(), timeoutID]);
+  }
+
+  mergePoints(toCustomer: boolean) {
+    const leg = this.directionsResult?.routes?.[0]?.legs?.[toCustomer ? 0 : 1];
+    const legSteps = leg?.steps ?? [];
+
+    let mergedPoints: google.maps.LatLng[] = [];
+    for (let i = 0; i < legSteps.length; i++) {
+      mergedPoints = [...mergedPoints, ...(legSteps[i]?.path ?? [])];
+    }
+    return mergedPoints;
+  }
+
+  pickPoints(points: google.maps.LatLng[], maxPoints: number = 15): google.maps.LatLng[] {
+    const pointsLength = points.length;
+    if (pointsLength <= maxPoints) {
+      return points;
+    }
+
+    const interval = Math.floor(pointsLength / maxPoints);
+    const startPointIndex = Math.floor(Math.random() * interval);
+    const selectedPoints = [];
+    for (let i = startPointIndex; i < pointsLength; i += interval) {
+      selectedPoints.push(points[i]);
+    }
+    return selectedPoints.slice(0, maxPoints);
+  }
+
+  signalCustomerMyLocation(myLoc: { lat: number; lng: number }, driverId: number, rideId: number) {
+    this.rideService.sendMyLocation(myLoc, driverId, rideId).subscribe({
+      next: () => {
+        console.info('User is notified about my location');
+      },
+      error: (error) => {
+        console.error('User is not notified about my location: ', error);
+      },
+    });
   }
 
   ngOnDestroy() {

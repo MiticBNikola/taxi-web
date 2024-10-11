@@ -48,6 +48,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   private geocoder = new google.maps.Geocoder();
   private directionsService: google.maps.DirectionsService = new google.maps.DirectionsService();
   protected directionsResult: google.maps.DirectionsResult | null = null;
+  protected directionsDisplayed: number = -1;
 
   protected isLoadingAccept = false;
   protected isLoadingEndUpdate = false;
@@ -71,6 +72,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
     this.listenToRideRequests();
     this.listenToRideAccepted();
     this.listenToRideCanceled();
+    this.listenToRideEndChanged();
   }
 
   locateMe() {
@@ -103,19 +105,50 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   }
 
   private listenToRideAccepted() {
-    this.echoService.listen('ride', '\\ride-accepted', (res: { ride: Ride }) => {
+    this.echoService.listen('drivers', '\\ride-accepted', (res: { ride: Ride }) => {
       this.ridesData.set(this.ridesData().filter((rideData) => rideData.ride.id !== res.ride.id));
     });
   }
 
+  private listenToRideEndChanged() {
+    this.echoService.listen('drivers', '\\end-changed', (res: { ride: Ride }) => {
+      let wantedIndex = -1;
+      this.ridesData.set(
+        this.ridesData().map((singleRideData, index) => {
+          if (singleRideData.ride.id === res.ride.id) {
+            wantedIndex = index;
+            return {
+              ...singleRideData,
+              ride: res.ride,
+              endLoc: undefined,
+            };
+          }
+          return singleRideData;
+        })
+      );
+      if (res.ride.end_location && wantedIndex !== -1) {
+        this.locateAddress(wantedIndex, res.ride.end_location);
+      }
+    });
+    this.echoService.listen(`drivers.${this.authStore.user()!.id}`, '\\end-changed', (res: { ride: Ride }) => {
+      this.rideData.set({
+        ...this.rideData(),
+        ride: res.ride,
+      });
+      this.locateAddress(-1, res.ride.end_location!);
+    });
+  }
+
   private listenToRideCanceled() {
-    this.echoService.listen('drivers', '\\ride-canceled', (res: { rideId: number }) => {
-      if (this.rideData()?.ride.id === res.rideId) {
+    this.echoService.listen('drivers', '\\ride-canceled', (res: { ride: Ride }) => {
+      this.ridesData.set(this.ridesData().filter((rideData) => rideData.ride.id !== res.ride.id));
+    });
+    this.echoService.listen(`drivers.${this.authStore.user()!.id}`, '\\ride-canceled', (res: { ride: Ride }) => {
+      if (this.rideData()?.ride.id === res.ride.id) {
         this.toastService.show('Vožnja je otkazana!');
         this.rideData.set(null);
         this.clearRoute();
       }
-      this.ridesData.set(this.ridesData().filter((rideData) => rideData.ride.id !== res.rideId));
     });
   }
 
@@ -133,16 +166,55 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
           lat: result.results[0].geometry.location.lat(),
           lng: result.results[0].geometry.location.lng(),
         });
-        if (isStart) {
-          this.ridesData()[position].startLoc = { lat: latLng.lat(), lng: latLng.lng() };
+        if (position === -1) {
+          this.rideData.set({
+            ...this.rideData()!,
+            endLoc: { lat: latLng.lat(), lng: latLng.lng() },
+          });
           return;
         }
-        this.ridesData()[position].endLoc = { lat: latLng.lat(), lng: latLng.lng() };
+        if (isStart) {
+          this.ridesData.set(
+            this.ridesData().map((singleRideData, index) => {
+              if (index === position) {
+                return {
+                  ...singleRideData,
+                  startLoc: { lat: latLng.lat(), lng: latLng.lng() },
+                };
+              }
+              return singleRideData;
+            })
+          );
+          return;
+        }
+        this.ridesData.set(
+          this.ridesData().map((singleRideData, index) => {
+            if (index === position) {
+              return {
+                ...singleRideData,
+                endLoc: { lat: latLng.lat(), lng: latLng.lng() },
+              };
+            }
+            return singleRideData;
+          })
+        );
       })
       .catch((error) => {
         console.error(error);
         this.toastService.error('Nismo pronašli željeno mesto na Google Mapi');
       });
+  }
+
+  previewSelectedRoute(
+    ride: {
+      ride: Ride;
+      startLoc?: { lat: number; lng: number };
+      endLoc?: { lat: number; lng: number };
+    },
+    index: number
+  ): void {
+    this.previewRoute(ride);
+    this.directionsDisplayed = index;
   }
 
   previewRoute(ride: {
@@ -181,6 +253,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
       })
       .catch((error) => {
         this.directionsResult = null;
+        this.directionsDisplayed = -1;
         this.toastService.error('Kreiranje putanje nije bilo moguće. Pokušajte ponovo kasnije!');
         console.error(error);
       });
@@ -188,6 +261,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
 
   clearRoute() {
     this.directionsResult = null;
+    this.directionsDisplayed = -1;
     this.locateMe();
   }
 

@@ -72,7 +72,7 @@
                 (click)="togglePreviewRoute()"
                 style="height: auto"
               >
-                @if (directions()) {
+                @if (displayedDirections()) {
                   <fa-icon [icon]="faEyeSlash" class="info-color"></fa-icon>
                 } @else {
                   <fa-icon [icon]="faEye" class="info-color"></fa-icon>

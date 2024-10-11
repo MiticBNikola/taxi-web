@@ -15,8 +15,9 @@
                     [address]="singleRideData.ride.start_location"
                     [center]="cityCenter()"
                     [directions]="directionsResult"
+                    [displayedDirections]="directionsDisplayed === i"
                     [loading]="isLoadingAccept"
-                    (signalPreviewRoute)="previewRoute(ridesData()[i])"
+                    (signalPreviewRoute)="previewSelectedRoute(ridesData()[i], i)"
                     (signalHidePreviewRoute)="clearRoute()"
                     (signalAcceptRide)="acceptRide(i)"
                   ></app-address>

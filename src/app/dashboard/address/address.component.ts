@@ -52,6 +52,7 @@ export class AddressComponent {
   disableActions = input<boolean>(false);
   loading = input<boolean>(false);
   directions = input<google.maps.DirectionsResult | null>(null);
+  displayedDirections = input<boolean>(false);
 
   @Output() signalLocation: EventEmitter<{ lat: number; lng: number }> = new EventEmitter();
   @Output() signalRemoveAddress: EventEmitter<void> = new EventEmitter();
@@ -135,7 +136,7 @@ export class AddressComponent {
   }
 
   togglePreviewRoute() {
-    if (this.directions()) {
+    if (this.displayedDirections()) {
       this.signalHidePreviewRoute.emit();
       return;
     }

@@ -93,9 +93,9 @@
       </div>
       <div class="col-12 col-xl-8 p-0 px-xl-3 mt-3 mt-xl-0">
         <google-map height="65vh" width="100%" [options]="options">
-          @if (myLocation) {
+          @if (myLocation()) {
             <map-advanced-marker
-              [position]="{ lat: myLocation.lat, lng: myLocation.lng }"
+              [position]="{ lat: myLocation()!.lat, lng: myLocation()!.lng }"
               [content]="icons()[0] || null"
             />
           }

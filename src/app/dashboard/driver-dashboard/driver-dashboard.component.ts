@@ -43,7 +43,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
     streetViewControl: false,
   };
   icons = input<HTMLElement[]>([]);
-  protected myLocation: { lat: number; lng: number } | null = null;
+  protected myLocation = signal<{ lat: number; lng: number } | null>(null);
 
   private geocoder = new google.maps.Geocoder();
   private directionsService: google.maps.DirectionsService = new google.maps.DirectionsService();
@@ -75,10 +75,10 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
 
   locateMe() {
     navigator.geolocation.getCurrentPosition((position) => {
-      this.myLocation = {
+      this.myLocation.set({
         lat: position.coords.latitude,
         lng: position.coords.longitude,
-      };
+      });
 
       this.options = {
         ...this.options,
@@ -150,7 +150,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
     startLoc?: { lat: number; lng: number };
     endLoc?: { lat: number; lng: number };
   }): void {
-    const start = this.myLocation!;
+    const start = this.myLocation()!;
     let stops: google.maps.DirectionsWaypoint[] = [
       {
         location: ride.startLoc!,
@@ -204,7 +204,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
             ride: res,
           });
           this.previewRoute(this.rideData()!);
-          this.imitateMoving();
+          this.imitateMoving(true);
         },
         error: (err) => {
           console.error(err);
@@ -273,7 +273,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
             ride: res,
           });
           this.toastService.success('Vožnja je započeta!');
-          this.imitateMoving(true);
+          this.imitateMoving();
         },
         error: (err) => {
           console.error(err);
@@ -300,8 +300,39 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  imitateMoving(customer: boolean = false) {
-    console.log(this.directionsResult, customer);
+  imitateMoving(toCustomer = false) {
+    const leg = this.directionsResult?.routes?.[0]?.legs?.[toCustomer ? 0 : 1];
+    if (!leg?.steps) {
+      return;
+    }
+    for (let i = 0; i <= leg.steps.length; i++) {
+      if (!leg.steps?.[i]?.path) {
+        if (i === leg.steps.length) {
+          setTimeout(
+            () => {
+              const point = toCustomer ? this.rideData()!.startLoc : this.rideData()!.endLoc;
+              this.myLocation.set({
+                lat: point!.lat,
+                lng: point!.lng,
+              });
+            },
+            (i + 1) * 500
+          );
+        }
+        return;
+      }
+      for (let j = 0; j < leg.steps[i].path.length; j++) {
+        setTimeout(
+          () => {
+            this.myLocation.set({
+              lat: leg.steps[i].path[j].lat(),
+              lng: leg.steps[i].path[j].lng(),
+            });
+          },
+          (i + 1) * 500
+        );
+      }
+    }
   }
 
   ngOnDestroy() {

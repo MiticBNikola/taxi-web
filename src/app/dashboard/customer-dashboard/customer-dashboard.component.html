@@ -51,8 +51,15 @@
                           'btn w-auto': true,
                         }"
                         (click)="clearRoute()"
+                        [disabled]="isLoading"
                       >
-                        <h4>Odustani <fa-icon [icon]="faTimes"></fa-icon></h4>
+                        @if (isLoading) {
+                          <div class="col-auto">
+                            <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                          </div>
+                        } @else {
+                          <h4>Odustani <fa-icon [icon]="faTimes"></fa-icon></h4>
+                        }
                       </button>
                     </div>
                   }

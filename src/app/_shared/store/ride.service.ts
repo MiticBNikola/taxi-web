@@ -43,4 +43,8 @@ export class RideService extends BaseApiService {
   endRide(id: number) {
     return this.put(`${this.baseUrl}/${id}/end`, { end_time: new Date().toISOString() });
   }
+
+  sendMyLocation(myLocation: { lat: number; lng: number }, driverId: number, rideId: number) {
+    return this.post(`${this.baseUrl}/${rideId}/driver/${driverId}/position`, { ...myLocation });
+  }
 }

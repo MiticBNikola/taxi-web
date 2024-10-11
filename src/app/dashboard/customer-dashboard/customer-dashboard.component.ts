@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { GoogleMapsModule, MapDirectionsRenderer } from '@angular/google-maps';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faFlag, faSignsPost, faSpinner, faTaxi, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -9,6 +9,7 @@ import { finalize, noop } from 'rxjs';
 import { AddCustomAddressComponent } from '../../_shared/modals/add-custom-address/add-custom-address.component';
 import { ConfirmationComponent } from '../../_shared/modals/confirmation/confirmation.component';
 import { Ride } from '../../_shared/models/Ride';
+import { EchoService } from '../../_shared/services/echo.service';
 import { ToastService } from '../../_shared/services/toast.service';
 import { AuthStore } from '../../_shared/store/auth/auth.store';
 import { RideService } from '../../_shared/store/ride.service';
@@ -21,7 +22,7 @@ import { AddressComponent } from '../address/address.component';
   templateUrl: './customer-dashboard.component.html',
   styleUrl: './customer-dashboard.component.scss',
 })
-export class CustomerDashboardComponent implements OnInit {
+export class CustomerDashboardComponent implements OnInit, OnDestroy {
   protected readonly faTaxi = faTaxi;
   protected readonly faFlag = faFlag;
   protected readonly faSignsPost = faSignsPost;
@@ -32,6 +33,7 @@ export class CustomerDashboardComponent implements OnInit {
   private toastService = inject(ToastService);
   private rideService = inject(RideService);
   private authStore = inject(AuthStore);
+  private echoService = inject(EchoService);
 
   cityCenter = input.required<{ lat: number; lng: number }>();
   protected options: any = {
@@ -60,10 +62,40 @@ export class CustomerDashboardComponent implements OnInit {
   protected isLoading = false;
   protected isLoadingCancel = false;
   protected enableStops: boolean = false;
-  protected ride: Ride | null = null;
+  protected ride = signal<Ride | null>(null);
 
   ngOnInit() {
     this.locateMe();
+  }
+
+  listenToRideAccepted(rideId: number) {
+    this.echoService.listen(`rides.${rideId}`, '\\ride-accepted', (res: { ride: Ride }) => {
+      this.toastService.success('Vozač je krenuo ka Vama!');
+      this.ride.set(res.ride);
+    });
+  }
+
+  listenToRideEndChanged(rideId: number) {
+    this.echoService.listen(`rides.${rideId}`, '\\end-changed', (res: { ride: Ride }) => {
+      this.toastService.show('Vozač je promenio krajnju adresu!');
+      this.ride.set(res.ride);
+      this.locateAddress('last', res.ride.end_location!);
+    });
+  }
+
+  listenToRideStarted(rideId: number) {
+    this.echoService.listen(`rides.${rideId}`, '\\ride-started', (res: { ride: Ride }) => {
+      this.toastService.show('Vožnja je započeta!');
+      this.ride.set(res.ride);
+    });
+  }
+
+  listenToRideEnded(rideId: number) {
+    this.echoService.listen(`rides.${rideId}`, '\\ride-ended', () => {
+      this.toastService.show('Vožnja je gotova!');
+      this.ride.set(null);
+      this.clearRoute();
+    });
   }
 
   locateMe() {
@@ -314,8 +346,12 @@ export class CustomerDashboardComponent implements OnInit {
       .makeRequest(this.addresses[0], this.addresses[this.addresses.length - 1], this.authStore.user()?.id)
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
-        next: (res) => {
-          this.ride = res;
+        next: (res: Ride) => {
+          this.ride.set(res);
+          this.listenToRideAccepted(res.id);
+          this.listenToRideEndChanged(res.id);
+          this.listenToRideStarted(res.id);
+          this.listenToRideEnded(res.id);
           this.toastService.success('Vožnja je kreirana. Sačekajte potvrdu vozača!');
         },
         error: (err) => {
@@ -326,11 +362,11 @@ export class CustomerDashboardComponent implements OnInit {
   }
 
   cancelRide() {
-    if (!this.ride) {
+    if (!this.ride()) {
       this.toastService.error('Nemate akticnu vožnju!');
       return;
     }
-    const rideId = this.ride.id;
+    const rideId = this.ride()!.id;
 
     const modalRef = this.modalService.open(ConfirmationComponent, {
       backdrop: 'static',
@@ -355,7 +391,7 @@ export class CustomerDashboardComponent implements OnInit {
       .pipe(finalize(() => (this.isLoadingCancel = false)))
       .subscribe({
         next: () => {
-          this.ride = null;
+          this.ride.set(null);
           this.clearRoute();
           this.toastService.success('Vožnja je otkazana.');
         },
@@ -368,5 +404,9 @@ export class CustomerDashboardComponent implements OnInit {
           }
         },
       });
+  }
+
+  ngOnDestroy() {
+    this.echoService.disconnect();
   }
 }

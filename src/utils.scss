@@ -17,13 +17,12 @@
 .secondary-btn {
   background-color: transparent;
   border: 2px dashed var(--dirty-white);
-  transition:
-    color,
-    background-color 0.5s linear;
+  transition: color,
+  background-color 0.5s linear;
 }
 
-.secondary-btn-disabled {
-  background-color: var(--dirty-white);
+.secondary-btn-disabled, .secondary-btn-disabled:hover {
+  background-color: var(--bs-gray) !important;
   color: black;
 }
 
@@ -35,9 +34,8 @@
 .themed-btn {
   background-color: var(--dirty-white);
   color: black;
-  transition:
-    color,
-    background-color 0.5s linear;
+  transition: color,
+  background-color 0.5s linear;
 }
 
 .themed-btn-disabled {
@@ -48,9 +46,8 @@
 .themed-btn:hover {
   background-color: white;
   color: var(--dirty-white);
-  transition:
-    color,
-    background-color 0.5s linear;
+  transition: color,
+  background-color 0.5s linear;
 }
 
 .pointer {
@@ -63,6 +60,10 @@
 
 .my-orange-color {
   color: var(--orange);
+}
+
+.info-color {
+  color: var(--dirty-white);
 }
 
 .my-strong-orange-background {

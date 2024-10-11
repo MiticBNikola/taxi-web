@@ -48,7 +48,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   private geocoder = new google.maps.Geocoder();
   private directionsService: google.maps.DirectionsService = new google.maps.DirectionsService();
   protected directionsResult: google.maps.DirectionsResult | null = null;
-  protected directionsDisplayed: number = -1;
+  protected directionsDisplayed = signal<number>(-1);
 
   protected isLoadingAccept = false;
   protected isLoadingEndUpdate = false;
@@ -106,7 +106,14 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
 
   private listenToRideAccepted() {
     this.echoService.listen('drivers', '\\ride-accepted', (res: { ride: Ride }) => {
-      this.ridesData.set(this.ridesData().filter((rideData) => rideData.ride.id !== res.ride.id));
+      this.ridesData.set(
+        this.ridesData().filter((rideData, index) => {
+          if (rideData.ride.id === res.ride.id && this.directionsDisplayed() === index) {
+            this.clearRoute();
+          }
+          return rideData.ride.id !== res.ride.id;
+        })
+      );
     });
   }
 
@@ -141,7 +148,14 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
 
   private listenToRideCanceled() {
     this.echoService.listen('drivers', '\\ride-canceled', (res: { ride: Ride }) => {
-      this.ridesData.set(this.ridesData().filter((rideData) => rideData.ride.id !== res.ride.id));
+      this.ridesData.set(
+        this.ridesData().filter((rideData, index) => {
+          if (rideData.ride.id === res.ride.id && this.directionsDisplayed() === index) {
+            this.clearRoute();
+          }
+          return rideData.ride.id !== res.ride.id;
+        })
+      );
     });
     this.echoService.listen(`drivers.${this.authStore.user()!.id}`, '\\ride-canceled', (res: { ride: Ride }) => {
       if (this.rideData()?.ride.id === res.ride.id) {
@@ -214,7 +228,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
     index: number
   ): void {
     this.previewRoute(ride);
-    this.directionsDisplayed = index;
+    this.directionsDisplayed.set(index);
   }
 
   previewRoute(ride: {
@@ -253,7 +267,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
       })
       .catch((error) => {
         this.directionsResult = null;
-        this.directionsDisplayed = -1;
+        this.directionsDisplayed.set(-1);
         this.toastService.error('Kreiranje putanje nije bilo moguće. Pokušajte ponovo kasnije!');
         console.error(error);
       });
@@ -261,7 +275,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
 
   clearRoute() {
     this.directionsResult = null;
-    this.directionsDisplayed = -1;
+    this.directionsDisplayed.set(-1);
     this.locateMe();
   }
 

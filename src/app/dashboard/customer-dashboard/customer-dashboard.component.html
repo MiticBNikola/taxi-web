@@ -25,7 +25,7 @@
                   [isFirst]="isFirst"
                   [isLast]="isLast"
                   [center]="cityCenter()"
-                  [ride]="ride"
+                  [rideInProgress]="!!ride"
                   (signalLocation)="updatePoint($event, i, isFirst, isLast)"
                   (signalRemoveAddress)="removePoint(i, isLast)"
                 ></app-address>

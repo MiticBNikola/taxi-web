@@ -1,14 +1,12 @@
 import { NgClass } from '@angular/common';
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { GoogleMapsModule, MapDirectionsRenderer } from '@angular/google-maps';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faFlag, faSignsPost, faSpinner, faTaxi, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { finalize, noop } from 'rxjs';
+import { faSpinner, faTaxi } from '@fortawesome/free-solid-svg-icons';
+import { finalize } from 'rxjs';
 
-import { AddCustomAddressComponent } from '../../_shared/modals/add-custom-address/add-custom-address.component';
-import { ConfirmationComponent } from '../../_shared/modals/confirmation/confirmation.component';
 import { Ride } from '../../_shared/models/Ride';
+import { EchoService } from '../../_shared/services/echo.service';
 import { ToastService } from '../../_shared/services/toast.service';
 import { AuthStore } from '../../_shared/store/auth/auth.store';
 import { RideService } from '../../_shared/store/ride.service';
@@ -18,20 +16,18 @@ import { AddressComponent } from '../address/address.component';
   selector: 'app-driver-dashboard',
   standalone: true,
   imports: [NgClass, GoogleMapsModule, AddressComponent, MapDirectionsRenderer, FaIconComponent],
+  providers: [EchoService],
   templateUrl: './driver-dashboard.component.html',
   styleUrl: './driver-dashboard.component.scss',
 })
-export class DriverDashboardComponent implements OnInit {
+export class DriverDashboardComponent implements OnInit, OnDestroy {
   protected readonly faTaxi = faTaxi;
-  protected readonly faFlag = faFlag;
-  protected readonly faSignsPost = faSignsPost;
-  protected readonly faTimes = faTimes;
   protected readonly faSpinner = faSpinner;
 
-  private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
   private rideService = inject(RideService);
   private authStore = inject(AuthStore);
+  private echoService = inject(EchoService);
 
   cityCenter = input.required<{ lat: number; lng: number }>();
   protected options: any = {
@@ -46,24 +42,35 @@ export class DriverDashboardComponent implements OnInit {
     clickableIcons: false,
     streetViewControl: false,
   };
-  protected addresses: string[] = [];
   icons = input<HTMLElement[]>([]);
   protected myLocation: { lat: number; lng: number } | null = null;
-  protected startLocation: { lat: number; lng: number } | null = null;
-  protected middleLocations: { lat: number; lng: number }[] = [];
-  protected endLocation: { lat: number; lng: number } | null = null;
 
   private geocoder = new google.maps.Geocoder();
   private directionsService: google.maps.DirectionsService = new google.maps.DirectionsService();
   protected directionsResult: google.maps.DirectionsResult | null = null;
 
-  protected isLoading = false;
-  protected isLoadingCancel = false;
-  protected enableStops: boolean = false;
-  protected ride: Ride | null = null;
+  protected isLoadingAccept = false;
+  protected isLoadingEndUpdate = false;
+  protected isLoadingStart = false;
+  protected isLoadingEnd = false;
+  protected rideData = signal<{
+    ride: Ride;
+    startLoc?: { lat: number; lng: number };
+    endLoc?: { lat: number; lng: number };
+  } | null>(null);
+  protected ridesData = signal<
+    {
+      ride: Ride;
+      startLoc?: { lat: number; lng: number };
+      endLoc?: { lat: number; lng: number };
+    }[]
+  >([]);
 
   ngOnInit() {
     this.locateMe();
+    this.listenToRideRequests();
+    this.listenToRideAccepted();
+    this.listenToRideCanceled();
   }
 
   locateMe() {
@@ -72,11 +79,6 @@ export class DriverDashboardComponent implements OnInit {
         lat: position.coords.latitude,
         lng: position.coords.longitude,
       };
-      this.startLocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      };
-      this.setAddress(position.coords.latitude, position.coords.longitude, 'first');
 
       this.options = {
         ...this.options,
@@ -85,31 +87,39 @@ export class DriverDashboardComponent implements OnInit {
           lng: position.coords.longitude,
         },
       };
+    });
+  }
 
-      if (this.endLocation) {
-        this.createRoute();
+  private listenToRideRequests() {
+    this.echoService.listen('drivers', '\\ride-requested', (res: { ride: Ride }) => {
+      const ridesLength = this.ridesData().length;
+      this.ridesData.set([...this.ridesData(), { ride: res.ride }]);
+      this.locateAddress(ridesLength, res.ride.start_location, true);
+      if (res.ride.end_location) {
+        this.locateAddress(ridesLength, res.ride.end_location);
       }
+      this.toastService.show('Dostupna je nova vožnja!');
     });
   }
 
-  openAddCustomAddressDialog(position: string) {
-    const modalRef = this.modalService.open(AddCustomAddressComponent, {
-      backdrop: 'static',
-      backdropClass: 'z-index-2 modal-backdrop',
-      windowClass: 'z-index-2',
-      size: 'md',
+  private listenToRideAccepted() {
+    this.echoService.listen('ride', '\\ride-accepted', (res: { ride: Ride }) => {
+      this.ridesData.set(this.ridesData().filter((rideData) => rideData.ride.id !== res.ride.id));
     });
-    modalRef.componentInstance.center = this.cityCenter();
-    modalRef.result
-      .then((response) => {
-        if (response) {
-          this.locateAddress(position, response);
-        }
-      })
-      .catch(() => noop());
   }
 
-  locateAddress(position: string, address: string): void {
+  private listenToRideCanceled() {
+    this.echoService.listen('drivers', '\\ride-canceled', (res: { rideId: number }) => {
+      if (this.rideData()?.ride.id === res.rideId) {
+        this.toastService.show('Vožnja je otkazana!');
+        this.rideData.set(null);
+        this.clearRoute();
+      }
+      this.ridesData.set(this.ridesData().filter((rideData) => rideData.ride.id !== res.rideId));
+    });
+  }
+
+  private locateAddress(position: number, address: string, isStart: boolean = false): void {
     const defaultBounds = {
       north: this.cityCenter().lat + 0.1,
       south: this.cityCenter().lat - 0.1,
@@ -119,11 +129,15 @@ export class DriverDashboardComponent implements OnInit {
     this.geocoder
       .geocode({ address, bounds: defaultBounds })
       .then((result) => {
-        this.setMarkers(result.results[0].geometry.location.lat(), result.results[0].geometry.location.lng(), position);
-        this.setAddress(result.results[0].geometry.location.lat(), result.results[0].geometry.location.lng(), position);
-        if (this.endLocation) {
-          this.createRoute();
+        const latLng = new google.maps.LatLng({
+          lat: result.results[0].geometry.location.lat(),
+          lng: result.results[0].geometry.location.lng(),
+        });
+        if (isStart) {
+          this.ridesData()[position].startLoc = { lat: latLng.lat(), lng: latLng.lng() };
+          return;
         }
+        this.ridesData()[position].endLoc = { lat: latLng.lat(), lng: latLng.lng() };
       })
       .catch((error) => {
         console.error(error);
@@ -131,69 +145,23 @@ export class DriverDashboardComponent implements OnInit {
       });
   }
 
-  setMarkers(latitude: number, longitude: number, position: string): void {
-    switch (position) {
-      case 'first':
-        this.startLocation = {
-          lat: latitude,
-          lng: longitude,
-        };
-        break;
-      case 'middle':
-        this.middleLocations.push({
-          lat: latitude,
-          lng: longitude,
-        });
-        break;
-      case 'last':
-        this.endLocation = {
-          lat: latitude,
-          lng: longitude,
-        };
-        break;
-    }
-  }
-
-  setAddress(lat: number, lng: number, position: string): void {
-    let address = '';
-    this.geocoder
-      .geocode({ location: { lat, lng } })
-      .then((result) => {
-        address = result.results[0].formatted_address;
-      })
-      .catch((error) => {
-        console.error(error);
-        address = 'Nepoznata adresa.';
-      })
-      .finally(() => {
-        switch (position) {
-          case 'first':
-            this.addresses[0] = address;
-            break;
-          case 'middle':
-            this.addresses.splice(this.addresses.length - 1, 0, address);
-            break;
-          case 'last':
-            this.addresses.push(address);
-            break;
-        }
-      });
-  }
-
-  createRoute(): void {
-    if (!this.startLocation || !this.endLocation) {
-      this.toastService.error('Morate uneti pošetnu i završnu lokaciju!');
-      return;
-    }
-
-    const start = new google.maps.LatLng(this.startLocation.lat, this.startLocation.lng);
-    const end = new google.maps.LatLng(this.endLocation.lat, this.endLocation.lng);
-    const stops: google.maps.DirectionsWaypoint[] = [];
-    for (let i = 0; i < this.middleLocations.length; i++) {
-      stops.push({
-        location: new google.maps.LatLng(this.middleLocations[i].lat, this.middleLocations[i].lng),
+  previewRoute(ride: {
+    ride: Ride;
+    startLoc?: { lat: number; lng: number };
+    endLoc?: { lat: number; lng: number };
+  }): void {
+    const start = this.myLocation!;
+    let stops: google.maps.DirectionsWaypoint[] = [
+      {
+        location: ride.startLoc!,
         stopover: true,
-      });
+      },
+    ];
+    let end = ride.endLoc!;
+    if (!end) {
+      this.toastService.show('Završna adresa nije uneta!');
+      end = ride.startLoc!;
+      stops = [];
     }
 
     this.directionsService
@@ -205,6 +173,11 @@ export class DriverDashboardComponent implements OnInit {
       })
       .then((result) => {
         this.directionsResult = result;
+        const durationToCustomer = Math.floor((result?.routes?.[0]?.legs?.[0]?.duration?.value || 0) / 60);
+        const durationToFinish = Math.floor((result?.routes?.[0]?.legs?.[1]?.duration?.value || 0) / 60);
+        this.toastService.show(
+          `Potrebno je ${durationToCustomer} min vožnje do korisnika${stops.length ? `, a onda još ${durationToFinish} min do kraja vožnje.` : '.'}`
+        );
       })
       .catch((error) => {
         this.directionsResult = null;
@@ -214,16 +187,36 @@ export class DriverDashboardComponent implements OnInit {
   }
 
   clearRoute() {
-    this.startLocation = null;
-    this.middleLocations = [];
-    this.endLocation = null;
-    this.addresses = [];
     this.directionsResult = null;
     this.locateMe();
   }
 
-  updatePoint(location: { lat: number; lng: number }, index: number, isFirst: boolean, isLast: boolean): void {
-    let address = '';
+  acceptRide(index: number) {
+    this.isLoadingAccept = true;
+    const acceptedRide = this.ridesData()[index];
+    this.rideService
+      .acceptRide(this.ridesData()[index].ride.id, this.authStore.user()!.id)
+      .pipe(finalize(() => (this.isLoadingAccept = false)))
+      .subscribe({
+        next: (res: Ride) => {
+          this.rideData.set({
+            ...acceptedRide,
+            ride: res,
+          });
+          this.previewRoute(this.rideData()!);
+          this.imitateMoving();
+        },
+        error: (err) => {
+          console.error(err);
+          this.toastService.error('Prihvatanje vožnje nije uselo. Pokušajte ponovo!');
+          this.rideData.set(null);
+          this.clearRoute();
+        },
+      });
+  }
+
+  updatePoint(location: { lat: number; lng: number }): void {
+    let address = 'Nepoznata adresa.';
     this.geocoder
       .geocode({ location })
       .then((result) => {
@@ -231,92 +224,74 @@ export class DriverDashboardComponent implements OnInit {
       })
       .catch((error) => {
         console.error(error);
-        address = 'Nepoznata adresa.';
+        this.toastService.error('Naziv adrese nije pronađen.');
       })
       .finally(() => {
-        if (isFirst) {
-          this.startLocation = location;
-          if (!this.endLocation) {
-            this.options = {
-              ...this.options,
-              center: location,
-            };
-          }
-        } else if (isLast) {
-          this.endLocation = location;
-        } else {
-          // addresses includes start location, so it needs to be minus one
-          this.middleLocations[index - 1] = location;
-        }
-        this.addresses[index] = address;
-        if (this.endLocation) {
-          this.createRoute();
-        }
+        this.updateEndLocation(this.rideData()!.ride, address, location);
       });
   }
 
-  removePoint(index: number, isLast: boolean): void {
-    if (isLast) {
-      if (this.middleLocations.length) {
-        this.endLocation = this.middleLocations[this.middleLocations.length - 1];
-        this.middleLocations.splice(this.middleLocations.length - 1, 1);
-      } else {
-        this.endLocation = null;
-      }
-    } else {
-      // addresses includes start location, so it needs to be minus one
-      this.middleLocations.splice(index - 1, 1);
-    }
-
-    this.addresses.splice(index, 1);
-
-    if (this.endLocation) {
-      this.createRoute();
-      return;
-    }
-    this.clearRoute();
+  updateEndLocation(ride: Ride, address: string, location: { lat: number; lng: number }) {
+    this.isLoadingEndUpdate = true;
+    this.rideService
+      .updateEnd(ride.id, address)
+      .pipe(finalize(() => (this.isLoadingEndUpdate = false)))
+      .subscribe({
+        next: (res: Ride) => {
+          this.rideData.set({
+            ...this.rideData()!,
+            ride: res,
+            endLoc: location,
+          });
+          this.previewRoute(this.rideData()!);
+        },
+        error: (err) => {
+          console.error(err);
+          this.toastService.error('Nova završna adresa nije sačuvana. Pokušajte ponovo!');
+        },
+      });
   }
 
-  orderVehicle() {
-    if (!this.endLocation) {
+  startRide() {
+    if (!this.rideData()?.endLoc) {
       this.toastService.error('Dodajte završnu lokaciju!');
       return;
     }
 
-    const modalRef = this.modalService.open(ConfirmationComponent, {
-      backdrop: 'static',
-      backdropClass: 'modal-backdrop',
-      size: 'md',
-    });
-
-    let totalDistance = 0;
-    let totalDuration = 0;
-    this.directionsResult?.routes?.[0]?.legs?.forEach((leg) => {
-      totalDistance += leg.distance?.value || 0; // distance in meters
-      totalDuration += leg.duration?.value || 0; // duration in seconds
-    });
-    const totalDistanceInKm = totalDistance / 1000;
-    const totalDurationInMinutes = Math.floor(totalDuration / 60);
-
-    modalRef.componentInstance.title = 'Potvrda';
-    modalRef.componentInstance.sentence = `Vaša vožnja od ${totalDistanceInKm} km bi trajala ${totalDurationInMinutes} min, da li ste sigurni da želite da je poručite?`;
-    modalRef.componentInstance.confirmation = 'Da';
-    modalRef.result
-      .then(() => {
-        this.requestVehicle();
-      })
-      .catch(() => noop());
+    this.dispatchStartRide();
   }
 
-  requestVehicle() {
-    this.isLoading = true;
+  dispatchStartRide() {
+    this.isLoadingStart = true;
     this.rideService
-      .makeRequest(this.addresses[0], this.addresses[this.addresses.length - 1], this.authStore.user()?.id)
-      .pipe(finalize(() => (this.isLoading = false)))
+      .startRide(this.rideData()!.ride.id)
+      .pipe(finalize(() => (this.isLoadingStart = false)))
       .subscribe({
-        next: (res) => {
-          this.ride = res;
-          this.toastService.success('Vožnja je kreirana. Sačekajte potvrdu vozača!');
+        next: (res: Ride) => {
+          this.rideData.set({
+            ...this.rideData(),
+            ride: res,
+          });
+          this.toastService.success('Vožnja je započeta!');
+          this.imitateMoving(true);
+        },
+        error: (err) => {
+          console.error(err);
+          this.toastService.error('Nešto je iskrslo. Pokušajte ponovo!');
+        },
+      });
+  }
+
+  endRide() {
+    this.isLoadingEnd = true;
+    this.rideService
+      .endRide(this.rideData()!.ride.id)
+      .pipe(finalize(() => (this.isLoadingEnd = false)))
+      .subscribe({
+        next: () => {
+          this.rideData.set(null);
+          this.clearRoute();
+          this.toastService.show('Vožnja je završena!');
         },
         error: (err) => {
           console.error(err);
@@ -325,48 +300,11 @@ export class DriverDashboardComponent implements OnInit {
       });
   }
 
-  cancelRide() {
-    if (!this.ride) {
-      this.toastService.error('Nemate akticnu vožnju!');
-      return;
-    }
-    const rideId = this.ride.id;
-
-    const modalRef = this.modalService.open(ConfirmationComponent, {
-      backdrop: 'static',
-      backdropClass: 'modal-backdrop',
-      size: 'md',
-    });
-
-    modalRef.componentInstance.title = 'Potvrda';
-    modalRef.componentInstance.sentence = `Da li ste sigurni da želite da otkažete vožnju?`;
-    modalRef.componentInstance.confirmation = 'Da';
-    modalRef.result
-      .then(() => {
-        this.dispatchCancelRide(rideId);
-      })
-      .catch(() => noop());
+  imitateMoving(customer: boolean = false) {
+    console.log(this.directionsResult, customer);
   }
 
-  dispatchCancelRide(rideId: number) {
-    this.isLoadingCancel = true;
-    this.rideService
-      .cancel(rideId)
-      .pipe(finalize(() => (this.isLoadingCancel = false)))
-      .subscribe({
-        next: () => {
-          this.ride = null;
-          this.clearRoute();
-          this.toastService.success('Vožnja je otkazana.');
-        },
-        error: (err) => {
-          console.error(err);
-          if (err.status === 422) {
-            this.toastService.error(err.error.message);
-          } else {
-            this.toastService.error('Nešto je iskrslo. Pokušajte ponovo!');
-          }
-        },
-      });
+  ngOnDestroy() {
+    this.echoService.disconnect();
   }
 }

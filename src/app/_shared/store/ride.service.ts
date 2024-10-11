@@ -27,4 +27,20 @@ export class RideService extends BaseApiService {
   cancel(id: number) {
     return this.delete(`${this.baseUrl}/${id}/cancel`);
   }
+
+  acceptRide(id: number, driver_id: number) {
+    return this.put(`${this.baseUrl}/${id}/accept`, { driver_id });
+  }
+
+  updateEnd(id: number, end_location: string) {
+    return this.put(`${this.baseUrl}/${id}/update-end`, { end_location });
+  }
+
+  startRide(id: number) {
+    return this.put(`${this.baseUrl}/${id}/start`, { start_time: new Date().toISOString() });
+  }
+
+  endRide(id: number) {
+    return this.put(`${this.baseUrl}/${id}/end`, { end_time: new Date().toISOString() });
+  }
 }

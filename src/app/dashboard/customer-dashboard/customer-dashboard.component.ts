@@ -206,7 +206,11 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
             this.addresses.splice(this.addresses.length - 1, 0, address);
             break;
           case 'last':
-            this.addresses.push(address);
+            if (this.addresses.length === 1) {
+              this.addresses.push(address);
+            } else {
+              this.addresses.splice(this.addresses.length - 1, 1, address);
+            }
             break;
         }
       });

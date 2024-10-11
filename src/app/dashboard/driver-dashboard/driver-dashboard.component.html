@@ -97,7 +97,7 @@
           @if (myLocation()) {
             <map-advanced-marker
               [position]="{ lat: myLocation()!.lat, lng: myLocation()!.lng }"
-              [content]="icons()[0] || null"
+              [content]="icons()[3] || null"
             />
           }
           @if (directionsResult) {

@@ -1,0 +1,74 @@
+<div id="nav" class="row justify-content-center navbar navbar-expand-lg navbar-dark navigation">
+  <div class="col-11 col-xl-9">
+    <div class="row align-items-center justify-content-between">
+      <div class="col-auto">
+        <a routerLink="/home">
+          <img ngSrc="/images/header.png" alt="ElFak Taxi" width="196" height="51" priority />
+        </a>
+      </div>
+
+      <!--      (click)="toggleNavbar = !toggleNavbar"-->
+
+      <div ngbDropdown class="col-auto d-block d-md-none">
+        <button type="button" class="btn active border-0" id="dropdownBasic2" ngbDropdownToggle>
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic2" class="nav-dropdown dropdown-menu-end">
+          <button ngbDropdownItem routerLink="/">POČETNA</button>
+          <button ngbDropdownItem routerLink="/dashboard">PORUČI VOZILO</button>
+          @if (isLoggedIn()) {
+            <button ngbDropdownItem routerLink="/user">PROFIL</button>
+            @if (isCustomer()) {
+              <button ngbDropdownItem routerLink="/settings">PODEŠAVANJA</button>
+            }
+            <button ngbDropdownItem (click)="logout()">ODJAVI SE</button>
+          } @else {
+            <button ngbDropdownItem routerLink="/login">PRIJAVI SE</button>
+            <button ngbDropdownItem routerLink="/register">REGISTRUJ SE</button>
+          }
+        </div>
+      </div>
+      <div class="col-auto nav-item d-none d-md-block">
+        <a routerLink="/home" class="aNavbar">
+          <span>POČETNA</span>
+        </a>
+      </div>
+      <div class="col-auto nav-item d-none d-md-block">
+        <a routerLink="/dashboard" class="aNavbar">
+          @if (isDriver()) {
+            <span>PRIHVATI VOŽNJU</span>
+          } @else {
+            <span>PORUČI VOZILO</span>
+          }
+        </a>
+      </div>
+      @if (isLoggedIn()) {
+        <div class="col-auto d-none d-md-block">
+          <div ngbDropdown class="d-inline-block">
+            <button type="button" class="btn active border-0" id="dropdownBasic1" ngbDropdownToggle>
+              <fa-icon [icon]="user"></fa-icon>
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="nav-dropdown dropdown-menu-end">
+              <button ngbDropdownItem routerLink="/user">PROFIL</button>
+              @if (isCustomer()) {
+                <button ngbDropdownItem routerLink="/settings">PODEŠAVANJ</button>
+              }
+              <button ngbDropdownItem (click)="logout()">ODJAVI SE</button>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="col-auto nav-item d-none d-md-block">
+          <a routerLink="/login" class="aNavbar">
+            <span>PRIJAVI SE</span>
+          </a>
+        </div>
+        <div class="col-auto nav-item d-none d-md-block">
+          <a routerLink="/register" class="aNavbar">
+            <span>REGISTRUJ SE</span>
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+.navigation {
+  min-height: 7vh;
+}
+
+#myNavbar {
+  width: 100vw;
+  position: relative;
+  /*margin-top: 0;*/
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  z-index: 1;
+}
+
+.aNavbar {
+  background-size: 100%;
+  color: white;
+  padding: 10px;
+  text-decoration: none;
+  transition: background-color 0.15s ease-in-out;
+  border-radius: var(--border-radius);
+}
+
+.aNavbar:hover {
+  background-color: var(--orange);
+  text-decoration: none;
+  color: black;
+}
+
+.btn:hover {
+  background-color: var(--orange);
+  //background: linear-gradient(
+  //    to bottom,
+  //    var(--orange) 0%,
+  //    var(--orange) 5px,
+  //    transparent
+  //);
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  color: black;
+}
+
+i {
+  color: var(--textColor);
+}
+
+.nav-dropdown {
+  background-color: var(--dark-gray);
+  button {
+    color: white;
+  }
+  button:hover {
+    color: var(--dark-gray);
+  }
+}

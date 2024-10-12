@@ -1,0 +1,19 @@
+<div class="container-fluid">
+  <div class="row min-vh-100 flex-column">
+    <div class="col-12">
+      <app-nav></app-nav>
+    </div>
+    <div class="col-12 p-0">
+      <app-header></app-header>
+    </div>
+    <div class="col-12 d-flex flex-grow-1 flex-column justify-content-center">
+      <router-outlet></router-outlet>
+    </div>
+    <div class="col-12 mt-auto">
+      <app-footer></app-footer>
+    </div>
+  </div>
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <app-toast aria-live="polite" aria-atomic="true"></app-toast>
+  </div>
+</div>

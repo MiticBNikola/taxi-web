@@ -1,0 +1,41 @@
+<div class="my-gray-transparent-background border-radius">
+  <div class="modal-header gap-2">
+    <fa-icon [icon]="faLocationDot" size="lg"></fa-icon>
+    <h4 class="modal-title">Unesite adresu</h4>
+    <button type="button" class="btn-close bg-white" aria-label="Close" (click)="hideAddCustomAddressModal()"></button>
+  </div>
+  @if (address) {
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="address" class="form-label">Adresa</label>
+        <input
+          id="address"
+          #addresstext
+          type="text"
+          [ngClass]="{
+            'form-control': true,
+            'is-invalid': submitted && address.errors,
+            'is-valid': submitted && !address.errors,
+          }"
+          [formControl]="address"
+        />
+        @if (submitted && address.errors?.['required']) {
+          <div class="text-danger">
+            <p class="m-0">Potreno je uneti adresu</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+  <div class="modal-footer justify-content-end">
+    <button class="btn main-btn w-auto" (click)="findLocation()">
+      <h4>
+        @if (isEdit) {
+          <fa-icon [icon]="faSave"></fa-icon>
+        } @else {
+          <fa-icon [icon]="faPlus"></fa-icon>
+        }
+      </h4>
+    </button>
+  </div>
+</div>

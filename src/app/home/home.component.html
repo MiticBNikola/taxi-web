@@ -1,0 +1,85 @@
+<div class="row home align-items-center">
+  <div class="col-12">
+    <div class="welcome row">
+      <div class="col-12 mt-auto">
+        <div class="row justify-content-center">
+          <div class="col-10 col-md-9">
+            <h1 class="heading">DOBRODOŠLI NA ZVANIČNI SAJT ELFAK TAKSIJA</h1>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="row justify-content-center">
+          <div class="col-10 col-md-3 mt-5">
+            <button type="button" class="themed-btn" routerLink="/dashboard">
+              @if (isDriver()) {
+                <h3>PRIHVATI VOŽNJU</h3>
+              } @else {
+                <h3>PORUČI VOZILO</h3>
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="infos py-5 col-12 d-flex align-items-center justify-content-center">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-12">
+        <div class="row justify-content-center">
+          <div class="col-10 col-md-9 text-center py-2">
+            <h1 class="heading">
+              Zašto
+              <span class="my-orange-color">ElFak</span>
+              Taksi?
+            </h1>
+          </div>
+        </div>
+      </div>
+      <div class="col-10 col-md-3 mt-5">
+        <div class="row">
+          <div class="col-12 text-center">
+            <fa-icon [icon]="faMap" size="2x" class="my-orange-color"></fa-icon>
+          </div>
+          <div class="col-12 text-center">
+            <h3>Prikaz lokacije vozila</h3>
+          </div>
+          <div class="col-12 text-center mt-4">
+            <h4>
+              Nakon što je vozač prihvatio vožnju, moći ćete da vidite njegovu lokaciju na mapi dok se kreće ka Vama!
+            </h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-10 col-md-3 mt-5">
+        <div class="row">
+          <div class="col-12 text-center">
+            <fa-icon [icon]="faRoad" size="2x" class="my-orange-color"></fa-icon>
+          </div>
+          <div class="col-12 text-center">
+            <h3>Vizuelizacija putanje</h3>
+          </div>
+          <div class="col-12 text-center mt-4">
+            <h4>
+              Ukoliko unesete adresu konačne destinacije, na mapi će se iscrtati putanja kojom ćete proći. Na ovaj
+              način, uverićete se u poštenost naših vozača.
+            </h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-10 col-md-3 mt-5">
+        <div class="row">
+          <div class="col-12 text-center">
+            <fa-icon [icon]="faGift" size="2x" class="my-orange-color"></fa-icon>
+          </div>
+          <div class="col-12 text-center">
+            <h3>Bonus vožnje</h3>
+          </div>
+          <div class="col-12 text-center mt-4">
+            <h4>Ukoliko se registrujete ostvarujete mogućnost da Vam svaka 10. vožnja bude GRATIS!</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

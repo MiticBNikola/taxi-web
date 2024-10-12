@@ -1,0 +1,5 @@
+@if (isDriver()) {
+  <app-driver-dashboard [cityCenter]="cityCenter" [icons]="icons"></app-driver-dashboard>
+} @else {
+  <app-customer-dashboard [cityCenter]="cityCenter" [icons]="icons"></app-customer-dashboard>
+}

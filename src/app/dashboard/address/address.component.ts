@@ -84,8 +84,9 @@ export class AddressComponent {
     const modalRef = this.modalService.open(AddCustomAddressComponent, {
       backdrop: 'static',
       backdropClass: 'z-index-2 modal-backdrop',
-      windowClass: 'z-index-2',
-      size: 'md',
+      windowClass: 'z-index-2 d-flex justify-content-center align-items-center',
+      size: 'lg',
+      modalDialogClass: 'w-100',
     });
     modalRef.componentInstance.oldAddress = this.address();
     modalRef.componentInstance.isEdit = true;
@@ -123,7 +124,8 @@ export class AddressComponent {
     const modalRef = this.modalService.open(ConfirmationComponent, {
       backdrop: 'static',
       backdropClass: 'modal-backdrop',
-      size: 'md',
+      windowClass: 'd-flex justify-content-center align-items-center',
+      size: 'lg',
     });
     modalRef.componentInstance.title = 'Upozorenje';
     modalRef.componentInstance.sentence = 'Da li ste sigurni da želite da uklonite adresu?';
@@ -147,7 +149,8 @@ export class AddressComponent {
     const modalRef = this.modalService.open(ConfirmationComponent, {
       backdrop: 'static',
       backdropClass: 'modal-backdrop',
-      size: 'md',
+      windowClass: 'd-flex justify-content-center align-items-center',
+      size: 'lg',
     });
 
     modalRef.componentInstance.title = 'Potvrda';

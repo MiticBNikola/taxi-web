@@ -140,8 +140,9 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     const modalRef = this.modalService.open(AddCustomAddressComponent, {
       backdrop: 'static',
       backdropClass: 'z-index-2 modal-backdrop',
-      windowClass: 'z-index-2',
-      size: 'md',
+      windowClass: 'z-index-2 d-flex justify-content-center align-items-center',
+      size: 'lg',
+      modalDialogClass: 'w-100',
     });
     modalRef.componentInstance.center = this.cityCenter();
     modalRef.result
@@ -334,7 +335,8 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     const modalRef = this.modalService.open(ConfirmationComponent, {
       backdrop: 'static',
       backdropClass: 'modal-backdrop',
-      size: 'md',
+      windowClass: 'd-flex justify-content-center align-items-center',
+      size: 'lg',
     });
 
     let totalDistance = 0;
@@ -388,7 +390,8 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     const modalRef = this.modalService.open(ConfirmationComponent, {
       backdrop: 'static',
       backdropClass: 'modal-backdrop',
-      size: 'md',
+      windowClass: 'd-flex justify-content-center align-items-center',
+      size: 'lg',
     });
 
     modalRef.componentInstance.title = 'Potvrda';

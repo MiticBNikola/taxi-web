@@ -130,7 +130,8 @@ export class UserDetailComponent implements OnInit {
     const modalRef = this.modalService.open(ConfirmationComponent, {
       backdrop: 'static',
       backdropClass: 'modal-backdrop',
-      size: 'md',
+      windowClass: 'd-flex justify-content-center align-items-center aaa',
+      size: 'lg',
     });
     modalRef.componentInstance.title = 'Upozorenje';
     modalRef.componentInstance.sentence = 'Da li ste sigurni da želite da izbrišete svoj nalog?';

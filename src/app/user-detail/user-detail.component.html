@@ -84,49 +84,51 @@
                   </div>
                 }
                 <div class="col-12">
-                  <table class="table table-bordered table-hover table-responsive">
-                    <thead>
-                      <tr>
-                        <th scope="col">
-                          @if (isCustomer()) {
-                            Vozac
-                          } @else {
-                            Korisnik
-                          }
-                        </th>
-                        <th scope="col">Početna adresa</th>
-                        <th scope="col">Završna adresa</th>
-                        <th scope="col">Kraj vožnje</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @if (!rides.length) {
+                  <div class="overflow-auto">
+                    <table class="table table-bordered table-hover">
+                      <thead>
                         <tr>
-                          <td colspan="4" class="text-center">Nema vožnji</td>
-                        </tr>
-                      }
-                      @for (ride of rides; track ride) {
-                        <tr>
-                          <td>
+                          <th scope="col">
                             @if (isCustomer()) {
-                              {{ (ride.driver?.first_name ?? 'N') + ' ' + (ride.driver?.last_name ?? 'N') }}
+                              Vozac
                             } @else {
-                              {{ (ride.customer?.first_name ?? 'N') + ' ' + (ride.customer?.last_name ?? 'N') }}
+                              Korisnik
                             }
-                          </td>
-                          <td>
-                            {{ ride.start_location }}
-                          </td>
-                          <td>
-                            {{ ride.end_location ?? '-' }}
-                          </td>
-                          <td>
-                            {{ (ride.end_time | date: 'short') ?? 'U toku' }}
-                          </td>
+                          </th>
+                          <th scope="col">Početna adresa</th>
+                          <th scope="col">Završna adresa</th>
+                          <th scope="col">Kraj vožnje</th>
                         </tr>
-                      }
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        @if (!rides.length) {
+                          <tr>
+                            <td colspan="4" class="text-center">Nema vožnji</td>
+                          </tr>
+                        }
+                        @for (ride of rides; track ride) {
+                          <tr>
+                            <td>
+                              @if (isCustomer()) {
+                                {{ (ride.driver?.first_name ?? 'N') + ' ' + (ride.driver?.last_name ?? 'N') }}
+                              } @else {
+                                {{ (ride.customer?.first_name ?? 'N') + ' ' + (ride.customer?.last_name ?? 'N') }}
+                              }
+                            </td>
+                            <td>
+                              {{ ride.start_location }}
+                            </td>
+                            <td>
+                              {{ ride.end_location ?? '-' }}
+                            </td>
+                            <td>
+                              {{ (ride.end_time | date: 'short') ?? 'U toku' }}
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
                 <div class="col-12">
                   <div class="d-flex justify-content-between">

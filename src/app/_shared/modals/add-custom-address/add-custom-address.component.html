@@ -1,16 +1,11 @@
-<div class="row my-gray-transparent-background border-radius mx-auto mt-5" style="max-width: 80vw">
-  <div class="col-12 py-3">
-    <div class="row justify-content-between">
-      <div class="col-8 text-left">
-        <h2>Unesite adresu</h2>
-      </div>
-      <div class="col-auto">
-        <fa-icon [icon]="faClose" size="2x" class="pointer" (click)="hideAddCustomAddressModal()"></fa-icon>
-      </div>
-    </div>
+<div class="my-gray-transparent-background border-radius">
+  <div class="modal-header gap-2">
+    <fa-icon [icon]="faLocationDot" size="lg"></fa-icon>
+    <h4 class="modal-title">Unesite adresu</h4>
+    <button type="button" class="btn-close bg-white" aria-label="Close" (click)="hideAddCustomAddressModal()"></button>
   </div>
   @if (address) {
-    <div class="col-12 py-3">
+    <div class="modal-body">
       <div class="form-group">
         <label for="address" class="form-label">Adresa</label>
         <input
@@ -32,7 +27,7 @@
       </div>
     </div>
   }
-  <div class="col-12 py-3 d-flex justify-content-end gap-2">
+  <div class="modal-footer justify-content-end">
     <button class="btn main-btn w-auto" (click)="findLocation()">
       <h4>
         @if (isEdit) {

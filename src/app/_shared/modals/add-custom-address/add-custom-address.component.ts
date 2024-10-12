@@ -1,19 +1,8 @@
 import { NgClass } from '@angular/common';
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  inject,
-  Input,
-  input,
-  InputSignal,
-  OnInit,
-  viewChild,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, Input, OnInit, viewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faClose, faPlus, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faPlus, faSave } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ToastService } from '../../services/toast.service';
@@ -28,7 +17,7 @@ import { ToastService } from '../../services/toast.service';
 export class AddCustomAddressComponent implements OnInit, AfterViewInit {
   protected readonly faPlus = faPlus;
   protected readonly faSave = faSave;
-  protected readonly faClose = faClose;
+  protected readonly faLocationDot = faLocationDot;
 
   private toastService = inject(ToastService);
   private modalRef = inject(NgbActiveModal);

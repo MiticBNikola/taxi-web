@@ -36,6 +36,9 @@ export class NavComponent {
   protected isCustomer = computed(() => {
     return this.authStore.type() === 'customer';
   });
+  protected isDriver = computed(() => {
+    return this.authStore.type() === 'driver';
+  });
 
   logout() {
     this.authStore.setLoading(true);

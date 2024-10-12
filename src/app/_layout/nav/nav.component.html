@@ -35,7 +35,11 @@
       </div>
       <div class="col-auto nav-item d-none d-md-block">
         <a routerLink="/dashboard" class="aNavbar">
-          <span>PORUČI VOZILO</span>
+          @if (isDriver()) {
+            <span>VOŽNJE</span>
+          } @else {
+            <span>PORUČI VOZILO</span>
+          }
         </a>
       </div>
       @if (isLoggedIn()) {

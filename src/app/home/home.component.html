@@ -12,7 +12,11 @@
         <div class="row justify-content-center">
           <div class="col-10 col-md-3 mt-5">
             <button type="button" class="themed-btn" routerLink="/dashboard">
-              <h3>PORUČI VOZILO</h3>
+              @if (isDriver()) {
+                <h3>PRIHVATI VOŽNJU</h3>
+              } @else {
+                <h3>PORUČI VOZILO</h3>
+              }
             </button>
           </div>
         </div>

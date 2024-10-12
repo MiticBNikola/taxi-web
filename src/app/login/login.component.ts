@@ -28,8 +28,8 @@ export class LoginComponent implements OnInit {
 
   protected submitted = false;
   protected loginForm: FormGroup = this.formBuilder.group({
-    email: ['dzonijus@example.com', [Validators.required, Validators.email]],
-    password: ['password', [Validators.required, Validators.minLength(8)]],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
   protected isLoading: Signal<boolean> = computed(() => {

@@ -38,6 +38,20 @@
                       </ul>
                     }
                   </div>
+                  @if (!isCustomer()) {
+                    <div class="col-12 col-md-6 col-xl-4 mb-1">
+                      <strong>Kategorija dozvole:</strong>
+                      <p>
+                        {{ userDriver?.driving_license_category }}
+                      </p>
+                    </div>
+                    <div class="col'12 col-md-6 col-xl-4 mb-1">
+                      <strong>Broj dozvole:</strong>
+                      <p>
+                        {{ userDriver?.driving_license_number }}
+                      </p>
+                    </div>
+                  }
                 </div>
                 @if (isCustomer()) {
                   <div class="col-md-12 d-flex justify-content-end gap-2">
@@ -158,4 +172,102 @@
       </div>
     </div>
   </div>
+  @if (!isCustomer()) {
+    <div class="col-10 col-md-9 py-5">
+      <div class="row">
+        <div class="col-12">
+          <div class="row">
+            <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+              <h2>Vozila</h2>
+            </div>
+            <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+              <div class="row justify-content-center">
+                @if (isLoading) {
+                  <div class="col-auto">
+                    <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                  </div>
+                } @else {
+                  @if (!userDriver?.has_vehicle) {
+                    <div class="col-12">
+                      <p>Vozač trenutno nema vozilo!</p>
+                    </div>
+                  }
+                  <div class="col-12">
+                    <div class="overflow-auto">
+                      <table class="table table-bordered table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Tip</th>
+                            <th scope="col">Brend</th>
+                            <th scope="col">Model</th>
+                            <th scope="col">Godina proizvodnje</th>
+                            <th scope="col">Registracija</th>
+                            <th scope="col">Upravlja od</th>
+                            <th scope="col">Upravlja do</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @if (!userDriver?.vehicles?.length) {
+                            <tr>
+                              <td colspan="4" class="text-center">Nema vozila</td>
+                            </tr>
+                          }
+                          @for (vehicle of userDriver?.vehicles ?? []; track vehicle) {
+                            <tr>
+                              <td>
+                                {{ vehicle.color ? 'Privatno' : 'Poslovno' }}
+                              </td>
+                              <td>
+                                {{ vehicle.brand }}
+                              </td>
+                              <td>
+                                {{ vehicle.model }}
+                              </td>
+                              <td>
+                                {{ vehicle.model_year }}
+                              </td>
+                              <td>
+                                {{ vehicle.registration_date }}
+                              </td>
+                              <td>
+                                {{ vehicle.steer.date_from | date: 'shortDate' }}
+                              </td>
+                              <td>
+                                {{ (vehicle.steer.date_to | date: 'shortDate') ?? 'U toku' }}
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                      <ngb-pagination
+                        [collectionSize]="collectionSize"
+                        [(page)]="page"
+                        [pageSize]="pageSize"
+                        (pageChange)="refreshRides()"
+                      >
+                      </ngb-pagination>
+                      <select
+                        class="form-select"
+                        style="width: auto; height: 33px"
+                        [(ngModel)]="pageSize"
+                        (ngModelChange)="refreshRides()"
+                      >
+                        <option [ngValue]="5">5 vožnji po stranici</option>
+                        <option [ngValue]="10">10 vožnji po stranici</option>
+                        <option [ngValue]="20">20 vožnji po stranici</option>
+                      </select>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>

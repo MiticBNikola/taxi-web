@@ -45,6 +45,7 @@ export class UserDetailComponent implements OnInit {
   protected isLoadingRides: boolean = false;
   protected isLoadingDelete: boolean = false;
   protected user: Customer | Driver | null = null;
+  protected userDriver: Driver | null = null;
   protected customer: Customer | null = null;
   protected driver: Driver | null = null;
   protected type?: string;
@@ -95,6 +96,7 @@ export class UserDetailComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.user = res as Driver;
+          this.userDriver = res as Driver;
         },
         error: (err) => {
           console.error(err);

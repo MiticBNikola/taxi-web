@@ -1,4 +1,5 @@
 import { PhoneNumber } from './PhoneNumber';
+import { Vehicle } from './Vehicle';
 
 export interface Driver {
   id: number;
@@ -11,4 +12,5 @@ export interface Driver {
   has_vehicle: boolean;
   is_active: boolean;
   numbers: PhoneNumber[];
+  vehicles: Vehicle[];
 }

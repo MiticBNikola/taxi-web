@@ -7,7 +7,9 @@
       <app-header></app-header>
     </div>
     <div class="col-12 d-flex flex-grow-1 flex-column justify-content-center">
-      <router-outlet></router-outlet>
+      @if (googleMapsFullyLoaded) {
+        <router-outlet></router-outlet>
+      }
     </div>
     <div class="col-12 mt-auto">
       <app-footer></app-footer>

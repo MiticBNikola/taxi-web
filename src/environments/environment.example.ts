@@ -4,6 +4,11 @@
 
 export const environment = {
   production: false,
-  API_URL: 'http://localhost:8000/api',
-  API_DOMAIN: 'http://localhost:8000',
+  API_URL: '',
+  API_DOMAIN: '',
+  REVERB_APP_KEY: '',
+  REVERB_APP_SECRET: '',
+  REVERB_WS_HOST: '',
+  REVERB_WS_PORT: '',
+  GOOGLE_API_KEY: '',
 };

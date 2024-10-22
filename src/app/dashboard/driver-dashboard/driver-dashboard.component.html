@@ -34,7 +34,7 @@
                   [rideInProgress]="true"
                 ></app-address>
                 <app-address
-                  [address]="ride()!.end_location ?? 'Nema adrese'"
+                  [address]="ride()!.end_location!"
                   [point]="{ lat: ride()!.end_lat!, lng: ride()!.end_lng! }"
                   [isLast]="true"
                   [rideInProgress]="true"

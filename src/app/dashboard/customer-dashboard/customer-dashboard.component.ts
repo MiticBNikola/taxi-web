@@ -178,7 +178,6 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
         address = result.results[0].formatted_address;
         lat = result.results[0].geometry.location.lat();
         lng = result.results[0].geometry.location.lng();
-        console.log(lat, lng);
       })
       .catch((error) => {
         console.error(error);

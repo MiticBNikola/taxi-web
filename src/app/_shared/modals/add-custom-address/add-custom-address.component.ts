@@ -23,6 +23,7 @@ export class AddCustomAddressComponent implements OnInit, AfterViewInit {
   private modalRef = inject(NgbActiveModal);
 
   @Input() oldAddress: string = '';
+  @Input() oldCoords: { lat: number; lng: number } | null = null;
   @Input() isEdit: boolean = false;
   @Input() center: { lat: number; lng: number } = {
     lat: 43.320994,
@@ -32,10 +33,16 @@ export class AddCustomAddressComponent implements OnInit, AfterViewInit {
   private addressInput = viewChild.required<ElementRef>('addresstext');
 
   protected address: FormControl | null = null;
+  protected addressData: { address?: string; lat?: number; lng?: number } = {};
   protected submitted = false;
 
   ngOnInit() {
     this.address = new FormControl(this.oldAddress, [Validators.required]);
+    this.addressData.address = this.oldAddress;
+    if (this.oldCoords) {
+      this.addressData.lat = this.oldCoords.lat;
+      this.addressData.lng = this.oldCoords.lng;
+    }
   }
 
   ngAfterViewInit(): void {
@@ -59,8 +66,14 @@ export class AddCustomAddressComponent implements OnInit, AfterViewInit {
       types: ['address'],
     };
 
+    this.addressInput().nativeElement.focus();
     const autocomplete = new google.maps.places.Autocomplete(this.addressInput().nativeElement, options);
     google.maps.event.addListener(autocomplete, 'place_changed', () => {
+      this.addressData = {
+        address: autocomplete.getPlace().formatted_address,
+        lat: autocomplete.getPlace().geometry?.location?.lat(),
+        lng: autocomplete.getPlace().geometry?.location?.lng(),
+      };
       this.address?.setValue(autocomplete.getPlace().formatted_address);
     });
   }
@@ -75,6 +88,23 @@ export class AddCustomAddressComponent implements OnInit, AfterViewInit {
       this.toastService.error('Pravilno popunite sva obavezna polja!');
       return;
     }
-    this.modalRef.close(this.address?.value);
+    if (this.address?.value === this.oldAddress) {
+      this.hideAddCustomAddressModal();
+      return;
+    }
+    const submitData = this.prepareSubmitData();
+    this.modalRef.close(submitData);
+  }
+
+  prepareSubmitData() {
+    let submitData = { address: this.address?.value };
+    if (this.address?.value === this.addressData.address) {
+      submitData = {
+        ...submitData,
+        ...(this.addressData.lat && { lat: this.addressData.lat }),
+        ...(this.addressData.lng && { lng: this.addressData.lng }),
+      };
+    }
+    return submitData;
   }
 }

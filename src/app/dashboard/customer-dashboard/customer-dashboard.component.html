@@ -32,13 +32,12 @@
                   [point]="isFirst ? startLocation()! : endLocation()!"
                   [isFirst]="isFirst"
                   [isLast]="isLast"
-                  [center]="cityCenter()"
                   [rideInProgress]="!!ride() || isLoadingCheck"
                   [pickingInProgress]="(isFirst && pickingFirstInProgress) || (isLast && pickingLastInProgress)"
-                  (signalRemoveAddress)="removePoint(i, isLast)"
-                  (signalLocateMe)="locateMe()"
                   (signalOpenEditor)="openEditAddress($event)"
+                  (signalLocateMe)="locateMe()"
                   (signalPickLocation)="enablePickingLocation(isFirst, isLast)"
+                  (signalRemoveAddress)="removePoint(i, isLast)"
                 ></app-address>
               }
               <div class="col-12">

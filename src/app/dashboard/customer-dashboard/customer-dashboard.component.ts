@@ -200,7 +200,6 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
       modalRef.componentInstance.oldAddress = oldData.oldAddress;
       modalRef.componentInstance.oldCoords = { lat: oldData.lat, lng: oldData.lng };
     }
-    modalRef.componentInstance.center = this.cityCenter();
     modalRef.result
       .then((response) => {
         if (response) {

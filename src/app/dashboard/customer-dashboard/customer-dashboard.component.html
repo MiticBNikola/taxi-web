@@ -13,8 +13,15 @@
                         <button
                           class="justify-content-center align-items-center secondary-btn"
                           (click)="openAddCustomAddressDialog('middle')"
+                          [disabled]="isLoadingCheck"
                         >
-                          <p class="my-orange-color m-0">Dodaj <fa-icon [icon]="faSignsPost"></fa-icon></p>
+                          @if (isLoadingCheck) {
+                            <div class="col-auto">
+                              <fa-icon [icon]="faSpinner" class="spinning-icon text-white"></fa-icon>
+                            </div>
+                          } @else {
+                            <p class="my-orange-color m-0">Dodaj <fa-icon [icon]="faSignsPost"></fa-icon></p>
+                          }
                         </button>
                       </div>
                     </div>
@@ -26,7 +33,7 @@
                   [isFirst]="isFirst"
                   [isLast]="isLast"
                   [center]="cityCenter()"
-                  [rideInProgress]="!!ride()"
+                  [rideInProgress]="!!ride() || isLoadingCheck"
                   [pickingInProgress]="(isFirst && pickingFirstInProgress) || (isLast && pickingLastInProgress)"
                   (signalRemoveAddress)="removePoint(i, isLast)"
                   (signalLocateMe)="locateMe()"
@@ -41,8 +48,15 @@
                       <button
                         class="ustify-content-center align-items-center secondary-btn"
                         (click)="openAddCustomAddressDialog('last')"
+                        [disabled]="isLoadingCheck"
                       >
-                        <p class="my-orange-color m-0">Dodaj <fa-icon [icon]="faFlag"></fa-icon></p>
+                        @if (isLoadingCheck) {
+                          <div class="col-auto">
+                            <fa-icon [icon]="faSpinner" class="spinning-icon text-white"></fa-icon>
+                          </div>
+                        } @else {
+                          <p class="my-orange-color m-0">Dodaj <fa-icon [icon]="faFlag"></fa-icon></p>
+                        }
                       </button>
                     </div>
                   </div>
@@ -55,9 +69,9 @@
                           'btn w-auto': true,
                         }"
                         (click)="clearRoute()"
-                        [disabled]="isLoading"
+                        [disabled]="isLoadingCheck || isLoading"
                       >
-                        @if (isLoading) {
+                        @if (isLoadingCheck || isLoading) {
                           <div class="col-auto">
                             <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
                           </div>
@@ -76,9 +90,9 @@
                           'themed-btn-disabled': false,
                         }"
                         (click)="orderVehicle()"
-                        [disabled]="isLoading"
+                        [disabled]="isLoadingCheck || isLoading"
                       >
-                        @if (isLoading) {
+                        @if (isLoadingCheck || isLoading) {
                           <div class="col-auto">
                             <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
                           </div>
@@ -88,8 +102,8 @@
                       </button>
                     }
                     @if (ride() && !ride()?.start_time) {
-                      <button class="btn w-auto" (click)="cancelRide()" [disabled]="isLoading">
-                        @if (isLoadingCancel) {
+                      <button class="btn w-auto" (click)="cancelRide()" [disabled]="isLoadingCheck || isLoadingCancel">
+                        @if (isLoadingCheck || isLoadingCancel) {
                           <div class="col-auto">
                             <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
                           </div>

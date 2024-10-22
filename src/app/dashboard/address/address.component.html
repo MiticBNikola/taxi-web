@@ -1,6 +1,6 @@
 <div class="col-12 my-3">
   <div class="row justify-content-between align-items-center">
-    <div class="col-8">
+    <div class="col-7">
       <div class="row align-items-center">
         <div class="col-auto d-flex justify-content-end">
           @if (isFirst()) {
@@ -17,7 +17,7 @@
       </div>
     </div>
     @if (!isDriver() && !rideInProgress()) {
-      <div class="col-4">
+      <div class="col-5">
         <div class="row gap-2 justify-content-end">
           <div class="col-auto pe-0">
             <button
@@ -28,8 +28,8 @@
               <fa-icon [icon]="faEdit" class="my-orange-color"></fa-icon>
             </button>
           </div>
-          <div class="col-auto ps-0">
-            @if (isFirst()) {
+          @if (isFirst()) {
+            <div class="col-auto px-0">
               <button
                 class="justify-content-center align-items-center secondary-btn p-2"
                 (click)="locateMe()"
@@ -37,7 +37,25 @@
               >
                 <fa-icon [icon]="faLocationDot" class="my-orange-color"></fa-icon>
               </button>
-            } @else {
+            </div>
+          }
+          <div [ngClass]="{ 'col-auto': true, 'ps-0': isFirst(), 'px-0': !isFirst() }">
+            <button
+              [ngClass]="{
+                'justify-content-center align-items-center secondary-btn p-2': true,
+                'picking-active-btn': pickingInProgress(),
+              }"
+              (click)="pickLocation()"
+              style="height: auto"
+            >
+              <fa-icon
+                [icon]="faCrosshairs"
+                [ngClass]="{ black: pickingInProgress(), 'my-orange-color': !pickingInProgress() }"
+              ></fa-icon>
+            </button>
+          </div>
+          @if (!isFirst()) {
+            <div class="col-auto ps-0">
               <button
                 class="justify-content-center align-items-center secondary-btn p-2"
                 (click)="removeAddress()"
@@ -45,8 +63,8 @@
               >
                 <fa-icon [icon]="faTrash" class="text-danger"></fa-icon>
               </button>
-            }
-          </div>
+            </div>
+          }
         </div>
       </div>
     }

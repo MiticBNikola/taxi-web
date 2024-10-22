@@ -3,6 +3,7 @@ import { Component, computed, EventEmitter, inject, input, Output } from '@angul
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faCheck,
+  faCrosshairs,
   faEdit,
   faEye,
   faEyeSlash,
@@ -16,9 +17,7 @@ import {
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { noop } from 'rxjs';
 
-import { AddCustomAddressComponent } from '../../_shared/modals/add-custom-address/add-custom-address.component';
 import { ConfirmationComponent } from '../../_shared/modals/confirmation/confirmation.component';
-import { ToastService } from '../../_shared/services/toast.service';
 import { AuthStore } from '../../_shared/store/auth/auth.store';
 
 @Component({
@@ -39,22 +38,24 @@ export class AddressComponent {
   protected readonly faEyeSlash = faEyeSlash;
   protected readonly faCheck = faCheck;
   protected readonly faSpinner = faSpinner;
+  protected readonly faCrosshairs = faCrosshairs;
 
   private authStore = inject(AuthStore);
   private modalService = inject(NgbModal);
-  private toastService = inject(ToastService);
 
   isFirst = input<boolean>(false);
   isLast = input<boolean>(false);
   address = input.required<string>();
-  center = input.required<{ lat: number; lng: number }>();
+  point = input.required<{ lat: number; lng: number }>();
   rideInProgress = input<boolean>(false);
-  disableActions = input<boolean>(false);
   loading = input<boolean>(false);
-  directions = input<google.maps.DirectionsResult | null>(null);
   displayedDirections = input<boolean>(false);
+  pickingInProgress = input<boolean>(false);
 
-  @Output() signalLocation: EventEmitter<{ lat: number; lng: number }> = new EventEmitter();
+  @Output() signalOpenEditor: EventEmitter<{ position: string; oldAddress: string; lat: number; lng: number }> =
+    new EventEmitter();
+  @Output() signalLocateMe: EventEmitter<void> = new EventEmitter();
+  @Output() signalPickLocation: EventEmitter<void> = new EventEmitter();
   @Output() signalRemoveAddress: EventEmitter<void> = new EventEmitter();
   @Output() signalPreviewRoute: EventEmitter<void> = new EventEmitter();
   @Output() signalHidePreviewRoute: EventEmitter<void> = new EventEmitter();
@@ -64,12 +65,12 @@ export class AddressComponent {
     return this.authStore.type() === 'driver';
   });
 
-  private geocoder: google.maps.Geocoder = new google.maps.Geocoder();
-
   locateMe(): void {
-    navigator.geolocation.getCurrentPosition((position) => {
-      this.signalLocation.emit({ lat: position.coords.latitude, lng: position.coords.longitude });
-    });
+    this.signalLocateMe.emit();
+  }
+
+  pickLocation() {
+    this.signalPickLocation.emit();
   }
 
   changeDestinationByDriver() {
@@ -81,43 +82,12 @@ export class AddressComponent {
   }
 
   changeAddress(): void {
-    const modalRef = this.modalService.open(AddCustomAddressComponent, {
-      backdrop: 'static',
-      backdropClass: 'z-index-2 modal-backdrop',
-      windowClass: 'z-index-2 d-flex justify-content-center align-items-center',
-      size: 'lg',
-      modalDialogClass: 'w-100',
+    this.signalOpenEditor.emit({
+      position: this.isFirst() ? 'first' : 'last',
+      oldAddress: this.address(),
+      lat: this.point().lat,
+      lng: this.point().lng,
     });
-    modalRef.componentInstance.oldAddress = this.address();
-    modalRef.componentInstance.isEdit = true;
-    modalRef.result
-      .then((response) => {
-        if (response) {
-          this.locateAddress(response);
-        }
-      })
-      .catch(() => noop());
-  }
-
-  locateAddress(address: string): void {
-    const defaultBounds = {
-      north: this.center().lat + 0.1,
-      south: this.center().lat - 0.1,
-      east: this.center().lng + 0.1,
-      west: this.center().lng - 0.1,
-    };
-    this.geocoder
-      .geocode({ address, bounds: defaultBounds })
-      .then((results) => {
-        this.signalLocation.emit({
-          lat: results.results[0].geometry.location.lat(),
-          lng: results.results[0].geometry.location.lng(),
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.toastService.error('Nismo pronašli željeno mesto na Google Mapi');
-      });
   }
 
   removeAddress(): void {

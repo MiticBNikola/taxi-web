@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { GoogleMapsModule, MapDirectionsRenderer } from '@angular/google-maps';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faFlag, faSignsPost, faSpinner, faTaxi, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -52,9 +52,11 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   icons = input<HTMLElement[]>([]);
   protected myLocation: { lat: number; lng: number } | null = null;
   protected driverLocation = signal<{ lat: number; lng: number } | null>(null);
-  protected startLocation: { lat: number; lng: number } | null = null;
+  protected startLocation = signal<{ lat: number; lng: number } | null>(null);
   protected middleLocations: { lat: number; lng: number }[] = [];
-  protected endLocation: { lat: number; lng: number } | null = null;
+  protected endLocation = signal<{ lat: number; lng: number } | null>(null);
+  protected pickingFirstInProgress = false;
+  protected pickingLastInProgress = false;
 
   private geocoder = new google.maps.Geocoder();
   private directionsService: google.maps.DirectionsService = new google.maps.DirectionsService();
@@ -64,6 +66,14 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   protected isLoadingCancel = false;
   protected enableStops: boolean = false;
   protected ride = signal<Ride | null>(null);
+
+  constructor() {
+    effect(() => {
+      if (this.startLocation() && this.endLocation()) {
+        this.createRoute();
+      }
+    });
+  }
 
   ngOnInit() {
     this.locateMe();
@@ -90,7 +100,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     this.echoService.listen(`rides.${rideId}`, '\\end-changed', (res: { ride: Ride }) => {
       this.toastService.show('Vozač je promenio krajnju adresu!');
       this.ride.set(res.ride);
-      this.locateAddress('last', res.ride.end_location!);
+      this.findLatLng('last', res.ride.end_location!);
     });
   }
 
@@ -112,31 +122,38 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
 
   locateMe() {
     navigator.geolocation.getCurrentPosition((position) => {
-      this.myLocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      };
-      this.startLocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      };
-      this.setAddress(position.coords.latitude, position.coords.longitude, 'first');
-
-      this.options = {
-        ...this.options,
-        center: {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        },
-      };
-
-      if (this.endLocation) {
-        this.createRoute();
-      }
+      this.findAddress(position.coords.latitude, position.coords.longitude, 'first', true);
     });
   }
 
-  openAddCustomAddressDialog(position: string) {
+  /**
+   * Finding address based on LatLng
+   * Generally used for finding current location
+   *
+   * @param lat
+   * @param lng
+   * @param position
+   * @param myLocation
+   */
+  findAddress(lat: number, lng: number, position: string, myLocation: boolean = false): void {
+    let address = '';
+    this.geocoder
+      .geocode({ location: { lat, lng } })
+      .then((result) => {
+        address = result.results[0].formatted_address;
+        lat = result.results[0].geometry.location.lat();
+        lng = result.results[0].geometry.location.lng();
+      })
+      .catch((error) => {
+        console.error(error);
+        address = 'Nepoznata adresa.';
+      })
+      .finally(() => {
+        this.updatePosition(lat, lng, address, position, myLocation);
+      });
+  }
+
+  openAddCustomAddressDialog(position: string, oldData?: { oldAddress: string; lat: number; lng: number }) {
     const modalRef = this.modalService.open(AddCustomAddressComponent, {
       backdrop: 'static',
       backdropClass: 'z-index-2 modal-backdrop',
@@ -144,31 +161,45 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
       size: 'lg',
       modalDialogClass: 'w-100',
     });
+    if (oldData) {
+      modalRef.componentInstance.oldAddress = oldData.oldAddress;
+      modalRef.componentInstance.oldCoords = { lat: oldData.lat, lng: oldData.lng };
+    }
     modalRef.componentInstance.center = this.cityCenter();
     modalRef.result
       .then((response) => {
         if (response) {
-          this.locateAddress(position, response);
+          if (response.lat && response.lng) {
+            this.updatePosition(response.lat, response.lng, response.address, position);
+            return;
+          }
+          this.findLatLng(position, response.address);
         }
       })
       .catch(() => noop());
   }
 
-  locateAddress(position: string, address: string): void {
-    const defaultBounds = {
-      north: this.cityCenter().lat + 0.1,
-      south: this.cityCenter().lat - 0.1,
-      east: this.cityCenter().lng + 0.1,
-      west: this.cityCenter().lng - 0.1,
-    };
+  /**
+   * Finding LatLng based on address
+   * Generally used in case of end set or driver end change
+   *
+   * @param position
+   * @param address
+   */
+  findLatLng(position: string, address: string): void {
+    const bounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(this.cityCenter().lat - 0.1, this.cityCenter().lng - 0.1),
+      new google.maps.LatLng(this.cityCenter().lat + 0.1, this.cityCenter().lng + 0.1)
+    );
     this.geocoder
-      .geocode({ address, bounds: defaultBounds })
+      .geocode({ address, bounds })
       .then((result) => {
-        this.setMarkers(result.results[0].geometry.location.lat(), result.results[0].geometry.location.lng(), position);
-        this.setAddress(result.results[0].geometry.location.lat(), result.results[0].geometry.location.lng(), position);
-        if (this.endLocation) {
-          this.createRoute();
-        }
+        this.updatePosition(
+          result.results[0].geometry.location.lat(),
+          result.results[0].geometry.location.lng(),
+          result.results[0].formatted_address,
+          position
+        );
       })
       .catch((error) => {
         console.error(error);
@@ -176,13 +207,33 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  setMarkers(latitude: number, longitude: number, position: string): void {
-    switch (position) {
-      case 'first':
-        this.startLocation = {
+  updatePosition(lat: number, lng: number, address: string, position: string, myLocation: boolean = false): void {
+    this.setMarkers(lat, lng, position, myLocation);
+    this.setAddress(address, position);
+  }
+
+  setMarkers(latitude: number, longitude: number, position: string, myLocation: boolean = false): void {
+    if (myLocation) {
+      this.myLocation = {
+        lat: latitude,
+        lng: longitude,
+      };
+    }
+    if (position === 'first' && !this.directionsResult) {
+      this.options = {
+        ...this.options,
+        center: {
           lat: latitude,
           lng: longitude,
-        };
+        },
+      };
+    }
+    switch (position) {
+      case 'first':
+        this.startLocation.set({
+          lat: latitude,
+          lng: longitude,
+        });
         break;
       case 'middle':
         this.middleLocations.push({
@@ -191,52 +242,40 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
         });
         break;
       case 'last':
-        this.endLocation = {
+        this.endLocation.set({
           lat: latitude,
           lng: longitude,
-        };
+        });
         break;
     }
   }
 
-  setAddress(lat: number, lng: number, position: string): void {
-    let address = '';
-    this.geocoder
-      .geocode({ location: { lat, lng } })
-      .then((result) => {
-        address = result.results[0].formatted_address;
-      })
-      .catch((error) => {
-        console.error(error);
-        address = 'Nepoznata adresa.';
-      })
-      .finally(() => {
-        switch (position) {
-          case 'first':
-            this.addresses[0] = address;
-            break;
-          case 'middle':
-            this.addresses.splice(this.addresses.length - 1, 0, address);
-            break;
-          case 'last':
-            if (this.addresses.length === 1) {
-              this.addresses.push(address);
-            } else {
-              this.addresses.splice(this.addresses.length - 1, 1, address);
-            }
-            break;
+  setAddress(address: string, position: string): void {
+    switch (position) {
+      case 'first':
+        this.addresses[0] = address;
+        break;
+      case 'middle':
+        this.addresses.splice(this.addresses.length - 1, 0, address);
+        break;
+      case 'last':
+        if (this.addresses.length === 1) {
+          this.addresses.push(address);
+        } else {
+          this.addresses.splice(this.addresses.length - 1, 1, address);
         }
-      });
+        break;
+    }
   }
 
   createRoute(): void {
-    if (!this.startLocation || !this.endLocation) {
-      this.toastService.error('Morate uneti pošetnu i završnu lokaciju!');
+    if (!this.startLocation() || !this.endLocation()) {
+      this.toastService.error('Morate uneti početnu i završnu lokaciju!');
       return;
     }
 
-    const start = new google.maps.LatLng(this.startLocation.lat, this.startLocation.lng);
-    const end = new google.maps.LatLng(this.endLocation.lat, this.endLocation.lng);
+    const start = new google.maps.LatLng(this.startLocation()!.lat, this.startLocation()!.lng);
+    const end = new google.maps.LatLng(this.endLocation()!.lat, this.endLocation()!.lng);
     const stops: google.maps.DirectionsWaypoint[] = [];
     for (let i = 0; i < this.middleLocations.length; i++) {
       stops.push({
@@ -263,54 +302,54 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   }
 
   clearRoute() {
-    this.startLocation = null;
+    this.startLocation.set(null);
     this.middleLocations = [];
-    this.endLocation = null;
+    this.endLocation.set(null);
     this.addresses = [];
     this.directionsResult = null;
     this.locateMe();
   }
 
-  updatePoint(location: { lat: number; lng: number }, index: number, isFirst: boolean, isLast: boolean): void {
-    let address = '';
-    this.geocoder
-      .geocode({ location })
-      .then((result) => {
-        address = result.results[0].formatted_address;
-      })
-      .catch((error) => {
-        console.error(error);
-        address = 'Nepoznata adresa.';
-      })
-      .finally(() => {
-        if (isFirst) {
-          this.startLocation = location;
-          if (!this.endLocation) {
-            this.options = {
-              ...this.options,
-              center: location,
-            };
-          }
-        } else if (isLast) {
-          this.endLocation = location;
-        } else {
-          // addresses includes start location, so it needs to be minus one
-          this.middleLocations[index - 1] = location;
-        }
-        this.addresses[index] = address;
-        if (this.endLocation) {
-          this.createRoute();
-        }
-      });
+  openEditAddress(data: { position: string; oldAddress: string; lat: number; lng: number }) {
+    this.openAddCustomAddressDialog(data.position, { oldAddress: data.oldAddress, lat: data.lat, lng: data.lng });
+  }
+
+  enablePickingLocation(isFirst: boolean, isLast: boolean) {
+    if (isFirst) {
+      this.pickingFirstInProgress = !this.pickingFirstInProgress;
+      this.pickingLastInProgress = false;
+      if (this.pickingFirstInProgress) {
+        this.toastService.show('Izaberite početnu lokaciju na mapi!');
+      }
+      return;
+    }
+    if (isLast) {
+      this.pickingFirstInProgress = false;
+      this.pickingLastInProgress = !this.pickingLastInProgress;
+      if (this.pickingLastInProgress) {
+        this.toastService.show('Izaberite završnu lokaciju na mapi!');
+      }
+    }
+  }
+
+  handlePickingLocation(event: google.maps.MapMouseEvent | google.maps.IconMouseEvent) {
+    if (!event.latLng?.lat() || !event.latLng?.lng()) {
+      return;
+    }
+    if (this.pickingFirstInProgress || this.pickingLastInProgress) {
+      this.findAddress(event.latLng!.lat(), event.latLng!.lng(), this.pickingFirstInProgress ? 'first' : 'last');
+      this.pickingFirstInProgress = false;
+      this.pickingLastInProgress = false;
+    }
   }
 
   removePoint(index: number, isLast: boolean): void {
     if (isLast) {
       if (this.middleLocations.length) {
-        this.endLocation = this.middleLocations[this.middleLocations.length - 1];
+        this.endLocation.set(this.middleLocations[this.middleLocations.length - 1]);
         this.middleLocations.splice(this.middleLocations.length - 1, 1);
       } else {
-        this.endLocation = null;
+        this.endLocation.set(null);
       }
     } else {
       // addresses includes start location, so it needs to be minus one
@@ -319,16 +358,26 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
 
     this.addresses.splice(index, 1);
 
-    if (this.endLocation) {
-      this.createRoute();
-      return;
+    if (!this.endLocation()) {
+      this.clearRoute();
     }
-    this.clearRoute();
   }
 
   orderVehicle() {
-    if (!this.endLocation) {
+    if (!this.endLocation()) {
       this.toastService.error('Dodajte završnu lokaciju!');
+      return;
+    }
+
+    const bounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(this.cityCenter().lat - 0.1, this.cityCenter().lng - 0.1),
+      new google.maps.LatLng(this.cityCenter().lat + 0.1, this.cityCenter().lng + 0.1)
+    );
+    if (
+      !bounds.contains(new google.maps.LatLng(this.startLocation()!.lat, this.startLocation()!.lng)) ||
+      !bounds.contains(new google.maps.LatLng(this.endLocation()!.lat, this.endLocation()!.lng))
+    ) {
+      this.toastService.error('Zahtevana odredišta su van opsega moguće vožnje!');
       return;
     }
 

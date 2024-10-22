@@ -22,16 +22,20 @@
                 }
                 <app-address
                   [address]="address"
+                  [point]="isFirst ? startLocation()! : endLocation()!"
                   [isFirst]="isFirst"
                   [isLast]="isLast"
                   [center]="cityCenter()"
                   [rideInProgress]="!!ride()"
-                  (signalLocation)="updatePoint($event, i, isFirst, isLast)"
+                  [pickingInProgress]="(isFirst && pickingFirstInProgress) || (isLast && pickingLastInProgress)"
                   (signalRemoveAddress)="removePoint(i, isLast)"
+                  (signalLocateMe)="locateMe()"
+                  (signalOpenEditor)="openEditAddress($event)"
+                  (signalPickLocation)="enablePickingLocation(isFirst, isLast)"
                 ></app-address>
               }
               <div class="col-12">
-                @if (!endLocation) {
+                @if (!endLocation()) {
                   <div class="row justify-content-center">
                     <div class="col-12 text-center">
                       <button
@@ -101,8 +105,13 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-xl-8 p-0 px-xl-3 mt-3 mt-xl-0">
-        <google-map height="65vh" width="100%" [options]="options">
+      <div
+        [ngClass]="{
+          'col-12 col-xl-8 p-0 px-xl-3 mt-3 mt-xl-0': true,
+          picker: pickingFirstInProgress || pickingLastInProgress,
+        }"
+      >
+        <google-map height="65vh" width="100%" [options]="options" (mapClick)="handlePickingLocation($event)">
           @if (myLocation && !directionsResult) {
             <map-advanced-marker
               [position]="{ lat: myLocation.lat, lng: myLocation.lng }"
@@ -116,18 +125,18 @@
             />
           }
           @if (
-            startLocation &&
-            !(startLocation.lng === myLocation?.lng && startLocation.lat === myLocation?.lat) &&
+            startLocation() &&
+            !(startLocation()!.lng === myLocation?.lng && startLocation()!.lat === myLocation?.lat) &&
             !directionsResult
           ) {
             <map-advanced-marker
-              [position]="{ lat: startLocation.lat, lng: startLocation.lng }"
+              [position]="{ lat: startLocation()!.lat, lng: startLocation()!.lng }"
               [content]="icons()[1] || null"
             />
           }
-          @if (endLocation && !directionsResult) {
+          @if (endLocation() && !directionsResult) {
             <map-advanced-marker
-              [position]="{ lat: endLocation.lat, lng: endLocation.lng }"
+              [position]="{ lat: endLocation()!.lat, lng: endLocation()!.lng }"
               [content]="icons()[2] || null"
             />
           }

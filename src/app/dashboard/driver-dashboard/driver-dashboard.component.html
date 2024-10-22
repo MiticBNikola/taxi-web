@@ -3,47 +3,46 @@
     <div class="row py-5">
       <div class="col-12 col-xl-4">
         <div class="row">
-          @if (!rideData()) {
+          @if (!ride()) {
             <!-- if no running ride-->
             <div class="col-12">
               <div class="row py-3 my-gray-transparent-background border-radius">
-                @if (ridesData().length === 0) {
+                @if (newRides().length === 0) {
                   <h4 class="text-center">Nema vožnji</h4>
                 }
-                @for (singleRideData of ridesData(); track i; let i = $index) {
+                @for (singleRideData of newRides(); track i; let i = $index) {
                   <app-address
-                    [address]="singleRideData.ride.start_location"
-                    [center]="cityCenter()"
-                    [directions]="directionsResult"
-                    [displayedDirections]="directionsDisplayed() === i"
+                    [address]="singleRideData.start_location"
+                    [point]="{ lat: singleRideData.start_lat, lng: singleRideData.start_lng }"
+                    [displayedDirections]="directionsDisplayed() === singleRideData.id"
                     [loading]="isLoadingAccept"
-                    (signalPreviewRoute)="previewSelectedRoute(ridesData()[i], i)"
+                    (signalPreviewRoute)="previewSelectedRoute(singleRideData)"
                     (signalHidePreviewRoute)="clearRoute()"
-                    (signalAcceptRide)="acceptRide(i)"
+                    (signalAcceptRide)="acceptRide(singleRideData)"
                   ></app-address>
                 }
               </div>
             </div>
-          } @else if (rideData()) {
+          } @else if (ride()) {
             <!-- if running ride-->
             <div class="col-12">
               <div class="row py-3 my-gray-transparent-background border-radius">
                 <app-address
-                  [address]="rideData()!.ride.start_location"
+                  [address]="ride()!.start_location"
+                  [point]="{ lat: ride()!.start_lat, lng: ride()!.start_lng }"
                   [isFirst]="true"
-                  [center]="cityCenter()"
                   [rideInProgress]="true"
                 ></app-address>
                 <app-address
-                  [address]="rideData()!.ride.end_location ?? 'Nema adrese'"
+                  [address]="ride()!.end_location ?? 'Nema adrese'"
+                  [point]="{ lat: ride()!.end_lat!, lng: ride()!.end_lng! }"
                   [isLast]="true"
-                  [center]="cityCenter()"
                   [rideInProgress]="true"
-                  (signalLocation)="updatePoint($event)"
+                  (signalOpenEditor)="openEditAddress($event)"
                 ></app-address>
                 <div class="col-12">
                   <div class="row justify-content-end gap-2 mt-3">
-                    @if (!rideData()!.ride.start_time) {
+                    @if (!ride()!.start_time) {
                       <!-- ride has not started-->
                       <div class="col-auto">
                         <button

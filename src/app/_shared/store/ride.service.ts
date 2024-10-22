@@ -49,8 +49,8 @@ export class RideService extends BaseApiService {
     return this.put(`${this.baseUrl}/${id}/accept`, { driver_id });
   }
 
-  updateEnd(id: number, end_location: string) {
-    return this.put(`${this.baseUrl}/${id}/update-end`, { end_location });
+  updateEnd(id: number, end_location: string, end_lat: number, end_lng: number) {
+    return this.put(`${this.baseUrl}/${id}/update-end`, { end_location, end_lat, end_lng });
   }
 
   startRide(id: number) {

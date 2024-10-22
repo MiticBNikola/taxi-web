@@ -62,6 +62,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   private directionsService: google.maps.DirectionsService = new google.maps.DirectionsService();
   protected directionsResult: google.maps.DirectionsResult | null = null;
 
+  protected isLoadingCheck = false;
   protected isLoading = false;
   protected isLoadingCancel = false;
   protected enableStops: boolean = false;
@@ -76,7 +77,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.locateMe();
+    this.checkForActiveRide();
   }
 
   listenToRideAccepted(rideId: number) {
@@ -100,7 +101,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     this.echoService.listen(`rides.${rideId}`, '\\end-changed', (res: { ride: Ride }) => {
       this.toastService.show('Vozač je promenio krajnju adresu!');
       this.ride.set(res.ride);
-      this.findLatLng('last', res.ride.end_location!);
+      this.updatePosition(res.ride.end_lat!, res.ride.end_lng!, res.ride.end_location!, 'last');
     });
   }
 
@@ -115,8 +116,11 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     this.echoService.listen(`rides.${rideId}`, '\\ride-ended', () => {
       this.toastService.show('Vožnja je gotova!');
       this.ride.set(null);
+      localStorage.removeItem('customer_ride_id');
       this.driverLocation.set(null);
       this.clearRoute();
+      // Check if somehow user has more than 1 ride
+      this.checkForActiveRide();
     });
   }
 
@@ -124,6 +128,37 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     navigator.geolocation.getCurrentPosition((position) => {
       this.findAddress(position.coords.latitude, position.coords.longitude, 'first', true);
     });
+  }
+
+  checkForActiveRide() {
+    this.isLoadingCheck = true;
+    this.rideService
+      .rideStatus(localStorage.getItem('customer_ride_id'), this.authStore.user()?.id)
+      .pipe(finalize(() => (this.isLoadingCheck = false)))
+      .subscribe({
+        next: (res: Ride) => {
+          if (!res?.id || res?.end_time) {
+            this.locateMe();
+            return;
+          }
+          this.handleSubmittedRideRes(res);
+          this.updatePosition(res.start_lat, res.start_lng, res.start_location, 'first');
+          this.updatePosition(res.end_lat!, res.end_lng!, res.end_location!, 'last');
+          if (!res.driver_id) {
+            this.toastService.success('Vožnja je na čekanju. Sačekajte potvrdu vozača!');
+            return;
+          }
+          if (!res.start_time) {
+            this.toastService.success('Vozač je krenuo ka Vama!');
+            return;
+          }
+          this.toastService.success('Vožnja je u toku!');
+        },
+        error: (err) => {
+          console.error(err);
+          this.locateMe();
+        },
+      });
   }
 
   /**
@@ -143,6 +178,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
         address = result.results[0].formatted_address;
         lat = result.results[0].geometry.location.lat();
         lng = result.results[0].geometry.location.lng();
+        console.log(lat, lng);
       })
       .catch((error) => {
         console.error(error);
@@ -410,16 +446,17 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   requestVehicle() {
     this.isLoading = true;
     this.rideService
-      .makeRequest(this.addresses[0], this.addresses[this.addresses.length - 1], this.authStore.user()?.id)
+      .makeRequest(
+        this.addresses[0],
+        this.startLocation()!,
+        this.addresses[this.addresses.length - 1],
+        this.endLocation()!,
+        this.authStore.user()?.id
+      )
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
         next: (res: Ride) => {
-          this.ride.set(res);
-          this.listenToRideAccepted(res.id);
-          this.listenToDriverPosition(res.id);
-          this.listenToRideEndChanged(res.id);
-          this.listenToRideStarted(res.id);
-          this.listenToRideEnded(res.id);
+          this.handleSubmittedRideRes(res);
           this.toastService.success('Vožnja je kreirana. Sačekajte potvrdu vozača!');
         },
         error: (err) => {
@@ -429,9 +466,19 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
+  handleSubmittedRideRes(res: Ride) {
+    this.ride.set(res);
+    localStorage.setItem('customer_ride_id', res.id.toString());
+    this.listenToRideAccepted(res.id);
+    this.listenToDriverPosition(res.id);
+    this.listenToRideEndChanged(res.id);
+    this.listenToRideStarted(res.id);
+    this.listenToRideEnded(res.id);
+  }
+
   cancelRide() {
     if (!this.ride()) {
-      this.toastService.error('Nemate akticnu vožnju!');
+      this.toastService.error('Nemate aktivnu vožnju!');
       return;
     }
     const rideId = this.ride()!.id;
@@ -461,9 +508,12 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.ride.set(null);
+          localStorage.removeItem('customer_ride_id');
           this.driverLocation.set(null);
           this.clearRoute();
           this.toastService.success('Vožnja je otkazana.');
+          // Check if somehow user has more than 1 ride
+          this.checkForActiveRide();
         },
         error: (err) => {
           console.error(err);

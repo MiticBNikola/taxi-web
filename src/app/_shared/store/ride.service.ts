@@ -15,10 +15,27 @@ export class RideService extends BaseApiService {
     return this.get(`${this.baseUrl}`, { params });
   }
 
-  makeRequest(start_location: string, end_location: string, customer_id?: number) {
+  rideStatus(rideId: string | null, userId?: number) {
+    let params = new HttpParams();
+    params = rideId ? params.set('ride_id', +rideId) : params;
+    params = userId ? params.set('user_id', userId) : params;
+    return this.get(`${this.baseUrl}/status`, { params });
+  }
+
+  makeRequest(
+    start_location: string,
+    start_point: { lat: number; lng: number },
+    end_location: string,
+    end_point: { lat: number; lng: number },
+    customer_id?: number
+  ) {
     return this.post(`${this.baseUrl}`, {
       start_location,
+      start_lat: start_point.lat,
+      start_lng: start_point.lng,
       end_location,
+      end_lat: end_point.lat,
+      end_lng: end_point.lng,
       ...(customer_id && { customer_id }),
       request_time: new Date().toISOString(),
     });

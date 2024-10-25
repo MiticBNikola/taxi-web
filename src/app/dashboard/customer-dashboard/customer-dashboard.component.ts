@@ -133,7 +133,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   checkForActiveRide() {
     this.isLoadingCheck = true;
     this.rideService
-      .rideStatus(localStorage.getItem('customer_ride_id'), this.authStore.user()?.id)
+      .rideStatus(localStorage.getItem('customer_ride_id'), 'customer', this.authStore.user()?.id)
       .pipe(finalize(() => (this.isLoadingCheck = false)))
       .subscribe({
         next: (res: Ride) => {

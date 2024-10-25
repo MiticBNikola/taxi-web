@@ -54,6 +54,8 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   protected directionsResult: google.maps.DirectionsResult | null = null;
   protected directionsDisplayed = signal<number>(0);
 
+  protected isLoadingCheck = false;
+  protected isLoadingRequested = false;
   protected isLoadingAccept = false;
   protected isLoadingEndUpdate = false;
   protected isLoadingStart = false;
@@ -73,11 +75,43 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.locateMe();
+    this.checkForActiveRide();
     this.listenToRideRequests();
     this.listenToRideAccepted();
     this.listenToRideCanceled();
     this.listenToRideEndChanged();
+  }
+
+  checkForActiveRide() {
+    if (!this.authStore.user()) {
+      return;
+    }
+    this.isLoadingCheck = true;
+    this.rideService
+      .rideStatus(localStorage.getItem('driver_ride_id'), 'driver', this.authStore.user()!.id)
+      .pipe(finalize(() => (this.isLoadingCheck = false)))
+      .subscribe({
+        next: (res: Ride) => {
+          if (!res?.id || res?.end_time) {
+            this.locateMe();
+            this.checkForRequestedRides();
+            return;
+          }
+          this.ride.set(res);
+          this.previewRoute(res);
+          this.handleSubmittedRideRes(res);
+          if (!res.start_time) {
+            this.toastService.success('Klijent Vas očekuje!');
+            return;
+          }
+          this.toastService.success('Vožnja je u toku!');
+        },
+        error: (err) => {
+          console.error(err);
+          this.locateMe();
+          this.checkForRequestedRides();
+        },
+      });
   }
 
   locateMe() {
@@ -96,6 +130,21 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
         };
       }
     });
+  }
+
+  checkForRequestedRides() {
+    this.isLoadingRequested = true;
+    this.rideService
+      .requestedRides()
+      .pipe(finalize(() => (this.isLoadingRequested = false)))
+      .subscribe({
+        next: (res: Ride[]) => {
+          this.newRides.set(res);
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
   }
 
   private listenToRideRequests() {
@@ -151,8 +200,11 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
       if (this.ride()?.id === res.ride.id) {
         this.toastService.show('Vožnja je otkazana!');
         this.ride.set(null);
+        localStorage.removeItem('driver_ride_id');
         this.clearRoute();
         this.timeoutsForDispatchingMyLocation().forEach((timeoutId) => clearTimeout(timeoutId));
+        // Check if somehow driver has more than 1 ride
+        this.checkForActiveRide();
       }
     });
   }
@@ -216,8 +268,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
       .pipe(finalize(() => (this.isLoadingAccept = false)))
       .subscribe({
         next: (res: Ride) => {
-          this.ride.set(res);
-          this.previewRoute(res);
+          this.handleSubmittedRideRes(res);
         },
         error: (err) => {
           console.error(err);
@@ -226,6 +277,12 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
           this.clearRoute();
         },
       });
+  }
+
+  handleSubmittedRideRes(res: Ride) {
+    this.ride.set(res);
+    localStorage.setItem('driver_ride_id', res.id.toString());
+    this.previewRoute(res);
   }
 
   openEditAddress(data: { position: string; oldAddress: string; lat: number; lng: number }) {
@@ -329,9 +386,12 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.ride.set(null);
+          localStorage.removeItem('driver_ride_id');
           this.clearRoute();
           this.timeoutsForDispatchingMyLocation().forEach((timeoutId) => clearTimeout(timeoutId));
           this.toastService.show('Vožnja je završena!');
+          // Check if somehow user has more than 1 ride
+          this.checkForActiveRide();
         },
         error: (err) => {
           console.error(err);

@@ -3,92 +3,96 @@
     <div class="row py-5">
       <div class="col-12 col-xl-4">
         <div class="row">
-          @if (!ride()) {
-            <!-- if no running ride-->
-            <div class="col-12">
-              <div class="row py-3 my-gray-transparent-background border-radius">
-                @if (newRides().length === 0) {
-                  <h4 class="text-center">Nema vožnji</h4>
-                }
-                @for (singleRideData of newRides(); track i; let i = $index) {
-                  <app-address
-                    [address]="singleRideData.start_location"
-                    [point]="{ lat: singleRideData.start_lat, lng: singleRideData.start_lng }"
-                    [displayedDirections]="directionsDisplayed() === singleRideData.id"
-                    [loading]="isLoadingAccept"
-                    (signalPreviewRoute)="previewSelectedRoute(singleRideData)"
-                    (signalHidePreviewRoute)="clearRoute()"
-                    (signalAcceptRide)="acceptRide(singleRideData)"
-                  ></app-address>
-                }
-              </div>
-            </div>
-          } @else if (ride()) {
-            <!-- if running ride-->
-            <div class="col-12">
-              <div class="row py-3 my-gray-transparent-background border-radius">
-                <app-address
-                  [address]="ride()!.start_location"
-                  [point]="{ lat: ride()!.start_lat, lng: ride()!.start_lng }"
-                  [isFirst]="true"
-                  [rideInProgress]="true"
-                ></app-address>
-                <app-address
-                  [address]="ride()!.end_location!"
-                  [point]="{ lat: ride()!.end_lat!, lng: ride()!.end_lng! }"
-                  [isLast]="true"
-                  [rideInProgress]="true"
-                  (signalOpenEditor)="openEditAddress($event)"
-                ></app-address>
-                <div class="col-12">
-                  <div class="row justify-content-end gap-2 mt-3">
-                    @if (!ride()!.start_time) {
-                      <!-- ride has not started-->
-                      <div class="col-auto">
-                        <button
-                          [ngClass]="{
-                            'btn myStrongOrange w-auto': true,
-                            'main-btn': true,
-                            'themed-btn-disabled': false,
-                          }"
-                          (click)="startRide()"
-                          [disabled]="isLoadingStart || isLoadingEndUpdate"
-                        >
-                          @if (isLoadingStart || isLoadingEndUpdate) {
-                            <div class="col-auto">
-                              <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
-                            </div>
-                          } @else {
-                            <h4>Započni <fa-icon [icon]="faTaxi"></fa-icon></h4>
-                          }
-                        </button>
-                      </div>
-                    } @else {
-                      <!-- ride has started-->
-                      <div class="col-auto">
-                        <button
-                          [ngClass]="{
-                            'btn secondary-btn w-auto': true,
-                            'themed-btn-disabled': false,
-                          }"
-                          (click)="endRide()"
-                          [disabled]="isLoadingEnd || isLoadingEndUpdate"
-                        >
-                          @if (isLoadingEnd || isLoadingEndUpdate) {
-                            <div class="col-auto">
-                              <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
-                            </div>
-                          } @else {
-                            <h4 class="text-white">Završi <fa-icon [icon]="faTaxi"></fa-icon></h4>
-                          }
-                        </button>
-                      </div>
-                    }
-                  </div>
+          <div class="col-12">
+            <div
+              class="row py-3 my-gray-transparent-background border-radius justify-content-center align-items-center"
+            >
+              @if (isLoadingCheck || isLoadingRequested) {
+                <div class="col-auto">
+                  <fa-icon [icon]="faSpinner" class="spinning-icon text-white"></fa-icon>
                 </div>
-              </div>
+              } @else {
+                @if (!ride()) {
+                  <!-- if no running ride-->
+                  @if (newRides().length === 0) {
+                    <h4 class="text-center">Nema vožnji</h4>
+                  }
+                  @for (singleRideData of newRides(); track i; let i = $index) {
+                    <app-address
+                      [address]="singleRideData.start_location"
+                      [point]="{ lat: singleRideData.start_lat, lng: singleRideData.start_lng }"
+                      [displayedDirections]="directionsDisplayed() === singleRideData.id"
+                      [loading]="isLoadingAccept"
+                      (signalPreviewRoute)="previewSelectedRoute(singleRideData)"
+                      (signalHidePreviewRoute)="clearRoute()"
+                      (signalAcceptRide)="acceptRide(singleRideData)"
+                    ></app-address>
+                  }
+                } @else if (ride()) {
+                  <!-- if running ride-->
+                  <app-address
+                    [address]="ride()!.start_location"
+                    [point]="{ lat: ride()!.start_lat, lng: ride()!.start_lng }"
+                    [isFirst]="true"
+                    [rideInProgress]="true"
+                  ></app-address>
+                  <app-address
+                    [address]="ride()!.end_location!"
+                    [point]="{ lat: ride()!.end_lat!, lng: ride()!.end_lng! }"
+                    [isLast]="true"
+                    [rideInProgress]="true"
+                    (signalOpenEditor)="openEditAddress($event)"
+                  ></app-address>
+                  <div class="col-12">
+                    <div class="row justify-content-end gap-2 mt-3">
+                      @if (!ride()!.start_time) {
+                        <!-- ride has not started-->
+                        <div class="col-auto">
+                          <button
+                            [ngClass]="{
+                              'btn myStrongOrange w-auto': true,
+                              'main-btn': true,
+                              'themed-btn-disabled': false,
+                            }"
+                            (click)="startRide()"
+                            [disabled]="isLoadingStart || isLoadingEndUpdate"
+                          >
+                            @if (isLoadingStart || isLoadingEndUpdate) {
+                              <div class="col-auto">
+                                <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                              </div>
+                            } @else {
+                              <h4>Započni <fa-icon [icon]="faTaxi"></fa-icon></h4>
+                            }
+                          </button>
+                        </div>
+                      } @else {
+                        <!-- ride has started-->
+                        <div class="col-auto">
+                          <button
+                            [ngClass]="{
+                              'btn secondary-btn w-auto': true,
+                              'themed-btn-disabled': false,
+                            }"
+                            (click)="endRide()"
+                            [disabled]="isLoadingEnd || isLoadingEndUpdate"
+                          >
+                            @if (isLoadingEnd || isLoadingEndUpdate) {
+                              <div class="col-auto">
+                                <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                              </div>
+                            } @else {
+                              <h4 class="text-white">Završi <fa-icon [icon]="faTaxi"></fa-icon></h4>
+                            }
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              }
             </div>
-          }
+          </div>
         </div>
       </div>
       <div class="col-12 col-xl-8 p-0 px-xl-3 mt-3 mt-xl-0">

@@ -15,11 +15,15 @@ export class RideService extends BaseApiService {
     return this.get(`${this.baseUrl}`, { params });
   }
 
-  rideStatus(rideId: string | null, userId?: number) {
+  rideStatus(rideId: string | null, type: string, userId?: number) {
     let params = new HttpParams();
     params = rideId ? params.set('ride_id', +rideId) : params;
-    params = userId ? params.set('user_id', userId) : params;
+    params = userId ? params.set(`${type}_id`, userId) : params;
     return this.get(`${this.baseUrl}/status`, { params });
+  }
+
+  requestedRides() {
+    return this.get(`${this.baseUrl}/requested`);
   }
 
   makeRequest(

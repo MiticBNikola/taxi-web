@@ -23,4 +23,7 @@ export class HomeComponent {
   protected isDriver = computed(() => {
     return this.authStore.type() === 'driver';
   });
+  protected isManager = computed(() => {
+    return this.authStore.type() === 'manager';
+  });
 }

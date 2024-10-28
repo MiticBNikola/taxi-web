@@ -14,6 +14,8 @@
             <button type="button" class="themed-btn" routerLink="/dashboard">
               @if (isDriver()) {
                 <h3>PRIHVATI VOŽNJU</h3>
+              } @else if (isManager()) {
+                <h3>PREGLED</h3>
               } @else {
                 <h3>PORUČI VOZILO</h3>
               }

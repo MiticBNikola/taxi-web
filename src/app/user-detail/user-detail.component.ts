@@ -10,12 +10,14 @@ import { finalize, noop } from 'rxjs';
 import { ConfirmationComponent } from '../_shared/modals/confirmation/confirmation.component';
 import { Customer } from '../_shared/models/Customer';
 import { Driver } from '../_shared/models/Driver';
+import { Manager } from '../_shared/models/Manager';
 import { Ride } from '../_shared/models/Ride';
 import { ToastService } from '../_shared/services/toast.service';
 import { AuthStore } from '../_shared/store/auth/auth.store';
 import { RideService } from '../_shared/store/ride.service';
 import { CustomerService } from '../_shared/store/user/customer.service';
 import { DriverService } from '../_shared/store/user/driver.service';
+import { ManagerService } from '../_shared/store/user/manager.service';
 
 @Component({
   selector: 'app-user-detail',
@@ -27,6 +29,7 @@ import { DriverService } from '../_shared/store/user/driver.service';
 export class UserDetailComponent implements OnInit {
   private customerService = inject(CustomerService);
   private driverService = inject(DriverService);
+  private managerService = inject(ManagerService);
   private rideService = inject(RideService);
   private authStore = inject(AuthStore);
   private router = inject(Router);
@@ -35,6 +38,12 @@ export class UserDetailComponent implements OnInit {
 
   protected isCustomer = computed(() => {
     return this.authStore.type() === 'customer';
+  });
+  protected isDriver = computed(() => {
+    return this.authStore.type() === 'driver';
+  });
+  protected isManager = computed(() => {
+    return this.authStore.type() === 'manager';
   });
 
   protected readonly faTrash = faTrash;
@@ -65,8 +74,13 @@ export class UserDetailComponent implements OnInit {
     }
     if (this.type === 'customer') {
       this.getCustomerData(user.id);
-    } else {
+    }
+    if (this.type === 'driver') {
       this.getDriverData(user.id);
+    }
+    if (this.type === 'manager') {
+      this.getManagerData(user.id);
+      return;
     }
     this.getRides(this.type, user.id);
   }
@@ -106,10 +120,27 @@ export class UserDetailComponent implements OnInit {
       });
   }
 
+  getManagerData(userId: number) {
+    this.isLoading = true;
+    this.managerService
+      .show(userId)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (res) => {
+          this.user = res as Manager;
+        },
+        error: (err) => {
+          console.error(err);
+          this.toastService.error('Nešto je iskrslo. Pokušajte ponovo kasnije!');
+          this.router.navigate(['/']);
+        },
+      });
+  }
+
   getRides(type: string, userId: number) {
     this.isLoadingRides = true;
     this.rideService
-      .index(this.page, this.pageSize, { key: `${type}_id`, value: userId })
+      .index(this.page, this.pageSize, '', false, true, { key: `${type}_id`, value: userId })
       .pipe(finalize(() => (this.isLoadingRides = false)))
       .subscribe({
         next: (res) => {

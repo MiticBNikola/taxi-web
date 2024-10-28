@@ -38,7 +38,7 @@
                       </ul>
                     }
                   </div>
-                  @if (!isCustomer()) {
+                  @if (isDriver()) {
                     <div class="col-12 col-md-6 col-xl-4 mb-1">
                       <strong>Kategorija dozvole:</strong>
                       <p>
@@ -75,104 +75,114 @@
       </div>
     </div>
   </div>
-  <div class="col-10 col-md-9 py-5">
-    <div class="row">
-      <div class="col-12">
-        <div class="row">
-          <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
-            <h2>Vožnje</h2>
-          </div>
-          <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
-            <div class="row justify-content-center">
-              @if (isLoadingRides) {
-                <div class="col-auto">
-                  <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
-                </div>
-              } @else {
-                @if (isCustomer()) {
+  @if (!isManager()) {
+    <div class="col-10 col-md-9 py-5">
+      <div class="row">
+        <div class="col-12">
+          <div class="row">
+            <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+              <h2>Vožnje</h2>
+            </div>
+            <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+              <div class="row justify-content-center">
+                @if (isLoadingRides) {
+                  <div class="col-auto">
+                    <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                  </div>
+                } @else {
+                  @if (isCustomer()) {
+                    <div class="col-12">
+                      <p>
+                        Ukupan broj vožnji <strong>{{ user?.number_of_rides ?? 0 }}</strong
+                        >, još <strong>{{ 10 - (user?.number_of_rides ?? 0 % 10) }}</strong> do besplatne vožnje!
+                      </p>
+                    </div>
+                  }
                   <div class="col-12">
-                    <p>
-                      Ukupan broj vožnji <strong>{{ user?.number_of_rides ?? 0 }}</strong
-                      >, još <strong>{{ 10 - (user?.number_of_rides ?? 0 % 10) }}</strong> do besplatne vožnje!
-                    </p>
+                    <div class="overflow-auto">
+                      <table class="table table-bordered table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">
+                              @if (isCustomer()) {
+                                Vozač
+                              } @else {
+                                Korisnik
+                              }
+                            </th>
+                            <th scope="col">Početna adresa</th>
+                            <th scope="col">Završna adresa</th>
+                            <th scope="col">Kraj vožnje</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @if (!rides.length) {
+                            <tr>
+                              <td colspan="4" class="text-center">Nema vožnji</td>
+                            </tr>
+                          }
+                          @for (ride of rides; track ride) {
+                            <tr>
+                              <td>
+                                @if (isCustomer()) {
+                                  {{
+                                    ride.driver ? ride.driver!.first_name + ' ' + ride.driver!.last_name : 'Nedodeljen'
+                                  }}
+                                } @else {
+                                  {{ (ride.customer?.first_name ?? 'N') + ' ' + (ride.customer?.last_name ?? 'N') }}
+                                }
+                              </td>
+                              <td>
+                                {{ ride.start_location }}
+                              </td>
+                              <td>
+                                {{ ride.end_location ?? '-' }}
+                              </td>
+                              <td>
+                                {{
+                                  ride.end_time
+                                    ? (ride.end_time | date: 'short')
+                                    : ride.driver_id
+                                      ? 'U toku'
+                                      : 'Zahtevana'
+                                }}
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                      <ngb-pagination
+                        [collectionSize]="collectionSize"
+                        [(page)]="page"
+                        [pageSize]="pageSize"
+                        (pageChange)="refreshRides()"
+                      >
+                      </ngb-pagination>
+                      <select
+                        class="form-select"
+                        style="width: auto; height: 33px"
+                        [(ngModel)]="pageSize"
+                        (ngModelChange)="refreshRides()"
+                      >
+                        <option [ngValue]="5">5 vožnji po stranici</option>
+                        <option [ngValue]="10">10 vožnji po stranici</option>
+                        <option [ngValue]="20">20 vožnji po stranici</option>
+                      </select>
+                    </div>
                   </div>
                 }
-                <div class="col-12">
-                  <div class="overflow-auto">
-                    <table class="table table-bordered table-hover">
-                      <thead>
-                        <tr>
-                          <th scope="col">
-                            @if (isCustomer()) {
-                              Vozac
-                            } @else {
-                              Korisnik
-                            }
-                          </th>
-                          <th scope="col">Početna adresa</th>
-                          <th scope="col">Završna adresa</th>
-                          <th scope="col">Kraj vožnje</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @if (!rides.length) {
-                          <tr>
-                            <td colspan="4" class="text-center">Nema vožnji</td>
-                          </tr>
-                        }
-                        @for (ride of rides; track ride) {
-                          <tr>
-                            <td>
-                              @if (isCustomer()) {
-                                {{ (ride.driver?.first_name ?? 'N') + ' ' + (ride.driver?.last_name ?? 'N') }}
-                              } @else {
-                                {{ (ride.customer?.first_name ?? 'N') + ' ' + (ride.customer?.last_name ?? 'N') }}
-                              }
-                            </td>
-                            <td>
-                              {{ ride.start_location }}
-                            </td>
-                            <td>
-                              {{ ride.end_location ?? '-' }}
-                            </td>
-                            <td>
-                              {{ (ride.end_time | date: 'short') ?? 'U toku' }}
-                            </td>
-                          </tr>
-                        }
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="d-flex justify-content-between">
-                    <ngb-pagination
-                      [collectionSize]="collectionSize"
-                      [(page)]="page"
-                      [pageSize]="pageSize"
-                      (pageChange)="refreshRides()"
-                    >
-                    </ngb-pagination>
-                    <select
-                      class="form-select"
-                      style="width: auto; height: 33px"
-                      [(ngModel)]="pageSize"
-                      (ngModelChange)="refreshRides()"
-                    >
-                      <option [ngValue]="5">5 vožnji po stranici</option>
-                      <option [ngValue]="10">10 vožnji po stranici</option>
-                      <option [ngValue]="20">20 vožnji po stranici</option>
-                    </select>
-                  </div>
-                </div>
-              }
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  @if (!isCustomer()) {
+  }
+  @if (isDriver()) {
     <div class="col-10 col-md-9 py-5">
       <div class="row">
         <div class="col-12">

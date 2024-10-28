@@ -15,7 +15,15 @@
         </button>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic2" class="nav-dropdown dropdown-menu-end">
           <button ngbDropdownItem routerLink="/">POČETNA</button>
-          <button ngbDropdownItem routerLink="/dashboard">PORUČI VOZILO</button>
+          <button ngbDropdownItem routerLink="/dashboard">
+            @if (isDriver()) {
+              PRIHVATI VOŽNJU
+            } @else if (isManager()) {
+              PREGLED
+            } @else {
+              PORUČI VOZILO
+            }
+          </button>
           @if (isLoggedIn()) {
             <button ngbDropdownItem routerLink="/user">PROFIL</button>
             @if (isCustomer()) {
@@ -37,6 +45,8 @@
         <a routerLink="/dashboard" class="aNavbar">
           @if (isDriver()) {
             <span>PRIHVATI VOŽNJU</span>
+          } @else if (isManager()) {
+            <span>PREGLED</span>
           } @else {
             <span>PORUČI VOZILO</span>
           }

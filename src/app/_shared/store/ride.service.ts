@@ -7,12 +7,26 @@ import { BaseApiService } from './base-api.service';
 export class RideService extends BaseApiService {
   baseUrl = `${this.apiURL}/ride`;
 
-  index(page: number, per_page: number, userParams?: { key: string; value: number }) {
+  index(
+    page: number,
+    per_page: number,
+    search: string,
+    withRequested: boolean,
+    withInProgress: boolean,
+    userParams?: { key: string; value: number }
+  ) {
     let params = new HttpParams();
-    params = page ? params.set('page', page) : params;
-    params = per_page ? params.set('per_page', per_page) : params;
+    params = params.set('page', page);
+    params = params.set('per_page', per_page);
+    params = !userParams && search ? params.set('search', search) : params;
+    params = !userParams ? params.set('requested', withRequested ? 1 : 0) : params;
+    params = !userParams ? params.set('in_progress', withInProgress ? 1 : 0) : params;
     params = userParams ? params.set(userParams.key, userParams.value) : params;
     return this.get(`${this.baseUrl}`, { params });
+  }
+
+  bestDrivers() {
+    return this.get(`${this.baseUrl}/best-month-drivers`);
   }
 
   rideStatus(rideId: string | null, type: string, userId?: number) {

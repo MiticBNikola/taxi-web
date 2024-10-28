@@ -13,4 +13,5 @@ export interface Driver {
   is_active: boolean;
   numbers: PhoneNumber[];
   vehicles: Vehicle[];
+  current_vehicles?: Vehicle[];
 }

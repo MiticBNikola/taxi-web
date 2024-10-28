@@ -1,5 +1,7 @@
 @if (isDriver()) {
   <app-driver-dashboard [cityCenter]="cityCenter" [icons]="icons"></app-driver-dashboard>
+} @else if (isManger()) {
+  <app-manager-dashboard></app-manager-dashboard>
 } @else {
   <app-customer-dashboard [cityCenter]="cityCenter" [icons]="icons"></app-customer-dashboard>
 }

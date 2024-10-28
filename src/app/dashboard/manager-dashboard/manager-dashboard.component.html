@@ -1,0 +1,293 @@
+<div class="row align-items-center justify-content-center">
+  <div class="col-10 col-md-9 py-5">
+    <div class="row">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12 p-3 my-gray-transparent-background border-radius">
+            <div class="row justify-content-center align-items-center">
+              <div class="col-auto d-flex flex-column align-items-center">
+                <h4>Radnici sa najvećim brojem vožnji ovog meseca:</h4>
+                @if (isLoadingBestDrivers) {
+                  <div class="col-auto mt-3">
+                    <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                  </div>
+                } @else if (!bestDrivers.length || bestDrivers[0].times === 0) {
+                  <p>!! Još nije bilo vožnji ovog meseca !!</p>
+                } @else {
+                  <ul class="d-flex justify-content-center flex-column">
+                    @for (bestDriver of bestDrivers; track bestDriver.driver_id) {
+                      <li>
+                        {{
+                          bestDriver.driver.first_name +
+                            ' ' +
+                            bestDriver.driver.last_name +
+                            ' [' +
+                            bestDriver.times +
+                            ']'
+                        }}
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 mt-3">
+        <div class="row">
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+            <h2>Vožnje</h2>
+          </div>
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+            <div class="row justify-content-center">
+              <div class="col-12">
+                <div class="row">
+                  <div class="col-auto">
+                    <label for="table-search" class="col-form-label">Pretraga:</label>
+                    <div>
+                      <input
+                        id="table-search"
+                        type="text"
+                        class="form-control"
+                        placeholder="Adresa"
+                        [formControl]="search"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-auto d-flex flex-column">
+                    <label for="table-requested" class="col-form-label">Zahtevane:</label>
+                    <label class="switch">
+                      <input
+                        type="checkbox"
+                        id="table-requested"
+                        [(ngModel)]="withRequested"
+                        (ngModelChange)="refreshRides()"
+                      />
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                  <div class="col-auto d-flex flex-column">
+                    <label for="table-in-progress" class="col-form-label">U toku:</label>
+                    <label class="switch">
+                      <input
+                        type="checkbox"
+                        id="table-in-progress"
+                        [(ngModel)]="withInProgress"
+                        (ngModelChange)="refreshRides()"
+                      />
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              @if (isLoadingRides) {
+                <div class="col-auto mt-3">
+                  <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                </div>
+              } @else {
+                <div class="col-12 mt-3">
+                  <div class="overflow-auto">
+                    <table class="table table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <th scope="col">Vozač</th>
+                          <th scope="col">Korisnik</th>
+                          <th scope="col">Početna adresa</th>
+                          <th scope="col">Završna adresa</th>
+                          <th scope="col">Kraj vožnje</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @if (!rides.length) {
+                          <tr>
+                            <td colspan="5" class="text-center">Nema vožnji</td>
+                          </tr>
+                        }
+                        @for (ride of rides; track ride) {
+                          <tr>
+                            <td>
+                              {{ ride.driver ? ride.driver!.first_name + ' ' + ride.driver!.last_name : 'Nedodeljen' }}
+                            </td>
+                            <td>
+                              {{ (ride.customer?.first_name ?? 'N') + ' ' + (ride.customer?.last_name ?? 'N') }}
+                            </td>
+                            <td>
+                              {{ ride.start_location }}
+                            </td>
+                            <td>
+                              {{ ride.end_location ?? '-' }}
+                            </td>
+                            <td>
+                              {{
+                                ride.end_time
+                                  ? (ride.end_time | date: 'short')
+                                  : ride.driver_id
+                                    ? 'U toku'
+                                    : 'Zahtevana'
+                              }}
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-12 mt-3">
+                  <div class="d-flex justify-content-between">
+                    <ngb-pagination
+                      [collectionSize]="collectionSize"
+                      [(page)]="page"
+                      [pageSize]="pageSize"
+                      (pageChange)="refreshRides()"
+                    >
+                    </ngb-pagination>
+                    <select
+                      class="form-select"
+                      style="width: auto; height: 33px"
+                      [(ngModel)]="pageSize"
+                      (ngModelChange)="refreshRides()"
+                    >
+                      <option [ngValue]="5">5 vožnji po stranici</option>
+                      <option [ngValue]="10">10 vožnji po stranici</option>
+                      <option [ngValue]="20">20 vožnji po stranici</option>
+                    </select>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 mt-3">
+        <div class="row">
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-top">
+            <h2>Vozači</h2>
+          </div>
+          <div class="col-12 p-3 my-gray-transparent-background border-radius-bottom">
+            <div class="row justify-content-center">
+              <div class="col-12">
+                <div class="row">
+                  <div class="col-auto">
+                    <label for="table-driver-search" class="col-form-label">Pretraga:</label>
+                    <div>
+                      <input
+                        id="table-driver-search"
+                        type="text"
+                        class="form-control"
+                        placeholder="Ime Prezime"
+                        [formControl]="searchDriver"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-auto d-flex flex-column">
+                    <label for="table-driver-active" class="col-form-label">Samo u smeni:</label>
+                    <label class="switch">
+                      <input
+                        type="checkbox"
+                        id="table-driver-active"
+                        [(ngModel)]="withActive"
+                        (ngModelChange)="refreshDrivers()"
+                      />
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              @if (isLoadingDrivers) {
+                <div class="col-auto mt-3">
+                  <fa-icon [icon]="faSpinner" class="spinning-icon"></fa-icon>
+                </div>
+              } @else {
+                <div class="col-12 mt-3">
+                  <div class="overflow-auto">
+                    <table class="table table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <th scope="col">Ime</th>
+                          <th scope="col">Prezime</th>
+                          <th scope="col">E-adresa</th>
+                          <th scope="col">Telefonski broj</th>
+                          <th scope="col">Broj vožnji</th>
+                          <th scope="col">Tablice</th>
+                          <th scope="col">Kategorija dozvole</th>
+                          <th scope="col">Broj dozvole</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @if (!drivers.length) {
+                          <tr>
+                            <td colspan="5" class="text-center">Nema vozača</td>
+                          </tr>
+                        }
+                        @for (driver of drivers; track driver) {
+                          <tr>
+                            <td>
+                              {{ driver.first_name }}
+                            </td>
+                            <td>
+                              {{ driver.last_name }}
+                            </td>
+                            <td>
+                              {{ driver.email }}
+                            </td>
+                            <td>
+                              @if (!driver.numbers.length) {
+                                {{ '-' }}
+                              }
+                              @for (number of driver.numbers; track number.id; let isLast = $last) {
+                                {{ number.number }}{{ isLast ? '' : ', ' }}
+                              }
+                            </td>
+                            <td>
+                              {{ driver.number_of_rides }}
+                            </td>
+                            <td>
+                              @if (!driver.current_vehicles?.length) {
+                                {{ '-' }}
+                              }
+                              @for (vehicle of driver.current_vehicles; track vehicle.id; let isLast = $last) {
+                                {{ vehicle.license_plate }}{{ isLast ? '' : ', ' }}
+                              }
+                            </td>
+                            <td>
+                              {{ driver.driving_license_category }}
+                            </td>
+                            <td>
+                              {{ driver.driving_license_number }}
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-12 mt-3">
+                  <div class="d-flex justify-content-between">
+                    <ngb-pagination
+                      [collectionSize]="collectionSizeDriver"
+                      [(page)]="pageDriver"
+                      [pageSize]="pageSizeDriver"
+                      (pageChange)="refreshDrivers()"
+                    >
+                    </ngb-pagination>
+                    <select
+                      class="form-select"
+                      style="width: auto; height: 33px"
+                      [(ngModel)]="pageSizeDriver"
+                      (ngModelChange)="refreshDrivers()"
+                    >
+                      <option [ngValue]="5">5 vozača po stranici</option>
+                      <option [ngValue]="10">10 vozača po stranici</option>
+                      <option [ngValue]="20">20 vozača po stranici</option>
+                    </select>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

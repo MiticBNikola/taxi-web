@@ -6,6 +6,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { AddressComponent } from './address/address.component';
 import { CustomerDashboardComponent } from './customer-dashboard/customer-dashboard.component';
 import { DriverDashboardComponent } from './driver-dashboard/driver-dashboard.component';
+import { ManagerDashboardComponent } from './manager-dashboard/manager-dashboard.component';
 
 import { AuthStore } from '../_shared/store/auth/auth.store';
 
@@ -20,6 +21,7 @@ import { AuthStore } from '../_shared/store/auth/auth.store';
     FaIconComponent,
     CustomerDashboardComponent,
     DriverDashboardComponent,
+    ManagerDashboardComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -29,6 +31,9 @@ export class DashboardComponent implements OnInit {
 
   protected isDriver = computed(() => {
     return this.authStore.user() && this.authStore.type() === 'driver';
+  });
+  protected isManger = computed(() => {
+    return this.authStore.user() && this.authStore.type() === 'manager';
   });
 
   protected cityCenter: { lat: number; lng: number } = {

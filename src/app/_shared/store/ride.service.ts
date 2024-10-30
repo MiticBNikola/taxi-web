@@ -36,8 +36,8 @@ export class RideService extends BaseApiService {
     return this.get(`${this.baseUrl}/status`, { params });
   }
 
-  requestedRides() {
-    return this.get(`${this.baseUrl}/requested`);
+  requestedRides(driver_id: number) {
+    return this.get(`${this.baseUrl}/requested/driver/${driver_id}`);
   }
 
   makeRequest(

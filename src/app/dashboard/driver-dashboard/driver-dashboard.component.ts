@@ -137,7 +137,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   checkForRequestedRides() {
     this.isLoadingRequested = true;
     this.rideService
-      .requestedRides()
+      .requestedRides(this.authStore.user()!.id)
       .pipe(finalize(() => (this.isLoadingRequested = false)))
       .subscribe({
         next: (res: Ride[]) => {

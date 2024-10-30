@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
         this.authStore.setToken(getCookie('XSRF-TOKEN'));
       },
       error: (error) => {
-        console.log(error);
+        console.error(error);
         this.toastService.error('Greška prilikom pribavljanja tokena. Nije moguće prijaviti se.');
       },
     });

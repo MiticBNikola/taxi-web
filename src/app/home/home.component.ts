@@ -26,4 +26,10 @@ export class HomeComponent {
   protected isManager = computed(() => {
     return this.authStore.type() === 'manager';
   });
+  protected driveInProgress = computed(() => {
+    if (this.authStore.type() === 'driver') {
+      return !!localStorage.getItem('driver_ride_id');
+    }
+    return !!localStorage.getItem('customer_ride_id');
+  });
 }

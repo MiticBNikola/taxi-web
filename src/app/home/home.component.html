@@ -13,11 +13,19 @@
           <div class="col-10 col-md-3 mt-5">
             <button type="button" class="themed-btn" routerLink="/dashboard">
               @if (isDriver()) {
-                <h3>PRIHVATI VOŽNJU</h3>
+                @if (driveInProgress()) {
+                  <h3>PREGLED AKTIVNE VOŽNJE</h3>
+                } @else {
+                  <h3>PRIHVATI VOŽNJU</h3>
+                }
               } @else if (isManager()) {
                 <h3>PREGLED</h3>
               } @else {
-                <h3>PORUČI VOZILO</h3>
+                @if (driveInProgress()) {
+                  <h3>PREGLED AKTIVNE VOŽNJE</h3>
+                } @else {
+                  <h3>PORUČI VOZILO</h3>
+                }
               }
             </button>
           </div>

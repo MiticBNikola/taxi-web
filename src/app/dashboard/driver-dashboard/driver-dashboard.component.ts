@@ -18,7 +18,6 @@ import { AddressComponent } from '../address/address.component';
   selector: 'app-driver-dashboard',
   standalone: true,
   imports: [NgClass, GoogleMapsModule, AddressComponent, MapDirectionsRenderer, FaIconComponent],
-  providers: [EchoService],
   templateUrl: './driver-dashboard.component.html',
   styleUrl: './driver-dashboard.component.scss',
 })

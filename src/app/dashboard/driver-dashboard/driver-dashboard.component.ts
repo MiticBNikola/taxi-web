@@ -76,6 +76,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.locateMe();
     this.checkForActiveRide();
     this.listenToLocationRequests();
     this.listenToRideRequests();
@@ -99,8 +100,6 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
             this.checkForRequestedRides();
             return;
           }
-          this.ride.set(res);
-          this.previewRoute(res);
           this.handleSubmittedRideRes(res);
           if (!res.start_time) {
             this.toastService.success('Klijent Vas očekuje!');
@@ -118,17 +117,25 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
 
   locateMe() {
     navigator.geolocation.getCurrentPosition((position) => {
-      this.myLocation.set({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      });
+      // const latlng = {
+      //   lat: position.coords.latitude,
+      //   lng: position.coords.longitude,
+      // };
+      const latlng =
+        this.authStore.user()!.id === 1
+          ? {
+              lat: 43.311445,
+              lng: 21.926225,
+            }
+          : {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+      this.myLocation.set(latlng);
       if (!this.directionsResult) {
         this.options = {
           ...this.options,
-          center: {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          },
+          center: latlng,
         };
       }
     });

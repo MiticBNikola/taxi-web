@@ -115,6 +115,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   listenToRideEnded(rideId: number) {
     this.echoService.listen(`rides.${rideId}`, '\\ride-ended', () => {
       this.toastService.show('Vožnja je gotova!');
+      this.echoService.leave(`rides.${rideId}`);
       this.ride.set(null);
       localStorage.removeItem('customer_ride_id');
       this.driverLocation.set(null);
@@ -505,6 +506,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
       .pipe(finalize(() => (this.isLoadingCancel = false)))
       .subscribe({
         next: () => {
+          this.echoService.leave(`rides.${rideId}`);
           this.ride.set(null);
           localStorage.removeItem('customer_ride_id');
           this.driverLocation.set(null);
@@ -525,6 +527,9 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.echoService.disconnect();
+    const rideId = this.ride()?.id;
+    if (rideId) {
+      this.echoService.leave(`rides.${rideId}`);
+    }
   }
 }

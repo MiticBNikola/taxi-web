@@ -1,11 +1,12 @@
 import { NgSwitch } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { FooterComponent } from './_layout/footer/footer.component';
 import { HeaderComponent } from './_layout/header/header.component';
 import { NavComponent } from './_layout/nav/nav.component';
 import { ToastComponent } from './_shared/components/toast/toast.component';
+import { EchoService } from './_shared/services/echo.service';
 import { ToastService } from './_shared/services/toast.service';
 
 import { environment } from '../environments/environment';
@@ -17,14 +18,16 @@ import { environment } from '../environments/environment';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
   private toastService = inject(ToastService);
+  private echoService = inject(EchoService);
 
   title = 'taxi-web';
   googleMapsFullyLoaded = false;
 
   constructor() {
     this.loadGoogleMaps();
+    this.echoService.initEcho();
   }
 
   loadGoogleMaps(): Promise<void> {
@@ -58,5 +61,9 @@ export class AppComponent {
         reject(error);
       };
     });
+  }
+
+  ngOnDestroy() {
+    this.echoService.disconnect();
   }
 }

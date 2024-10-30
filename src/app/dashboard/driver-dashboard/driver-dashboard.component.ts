@@ -470,6 +470,10 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.echoService.disconnect();
+    const driverId = this.authStore.user()?.id;
+    if (driverId) {
+      this.echoService.leave(`drivers.${driverId}`);
+    }
+    this.echoService.leave(`drivers`);
   }
 }

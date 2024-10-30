@@ -225,18 +225,18 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   }
 
   private listenToRideCanceled() {
-    this.echoService.listen('drivers', '\\ride-canceled', (res: { ride: Ride }) => {
+    this.echoService.listen('drivers', '\\ride-canceled', (res: { ride_id: number }) => {
       this.newRides.set(
         this.newRides().filter((singleRide) => {
-          if (this.directionsDisplayed() === res.ride.id) {
+          if (this.directionsDisplayed() === res.ride_id) {
             this.clearRoute();
           }
-          return singleRide.id !== res.ride.id;
+          return singleRide.id !== res.ride_id;
         })
       );
     });
-    this.echoService.listen(`drivers.${this.authStore.user()!.id}`, '\\ride-canceled', (res: { ride: Ride }) => {
-      if (this.ride()?.id === res.ride.id) {
+    this.echoService.listen(`drivers.${this.authStore.user()!.id}`, '\\ride-canceled', (res: { ride_id: number }) => {
+      if (this.ride()?.id === res.ride_id) {
         this.toastService.show('Vožnja je otkazana!');
         this.ride.set(null);
         localStorage.removeItem('driver_ride_id');

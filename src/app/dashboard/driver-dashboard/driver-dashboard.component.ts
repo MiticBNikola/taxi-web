@@ -169,7 +169,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   sendMyLocation(myLoc: { lat: number; lng: number }, driverId: number, rideId: number) {
     this.driverService.sendMyLocation(myLoc, driverId, rideId).subscribe({
       next: (res: boolean) => {
-        console.info(`System is ${!res && 'not'} notified about my location`);
+        console.info(`System is ${res ? '' : 'not'} notified about my location`);
       },
       error: (error) => {
         console.error('System is not notified about my location: ', error);

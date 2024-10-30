@@ -12,6 +12,7 @@ import { EchoService } from '../../_shared/services/echo.service';
 import { ToastService } from '../../_shared/services/toast.service';
 import { AuthStore } from '../../_shared/store/auth/auth.store';
 import { RideService } from '../../_shared/store/ride.service';
+import { DriverService } from '../../_shared/store/user/driver.service';
 import { AddressComponent } from '../address/address.component';
 
 @Component({
@@ -27,6 +28,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
 
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
+  private driverService = inject(DriverService);
   private rideService = inject(RideService);
   private authStore = inject(AuthStore);
   private echoService = inject(EchoService);
@@ -75,6 +77,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.checkForActiveRide();
+    this.listenToLocationRequests();
     this.listenToRideRequests();
     this.listenToRideAccepted();
     this.listenToRideCanceled();
@@ -144,6 +147,27 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
           console.error(err);
         },
       });
+  }
+
+  private listenToLocationRequests() {
+    this.echoService.listen('drivers', '\\location-requested', (res: { ride: Ride }) => {
+      const myLoc = this.myLocation();
+      const driverId = this.authStore.user()?.id;
+      if (myLoc && driverId && !this.ride()) {
+        this.sendMyLocation(myLoc, driverId, res.ride.id);
+      }
+    });
+  }
+
+  sendMyLocation(myLoc: { lat: number; lng: number }, driverId: number, rideId: number) {
+    this.driverService.sendMyLocation(myLoc, driverId, rideId).subscribe({
+      next: (res: boolean) => {
+        console.info(`System is ${!res && 'not'} notified about my location`);
+      },
+      error: (error) => {
+        console.error('System is not notified about my location: ', error);
+      },
+    });
   }
 
   private listenToRideRequests() {

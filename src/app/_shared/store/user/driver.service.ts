@@ -19,4 +19,8 @@ export class DriverService extends BaseApiService {
   show(id: number) {
     return this.get(`${this.baseUrl}/${id}`);
   }
+
+  sendMyLocation(myLocation: { lat: number; lng: number }, driverId: number, rideId: number) {
+    return this.post(`${this.baseUrl}/${driverId}/possible-ride/${rideId}/position`, { ...myLocation });
+  }
 }

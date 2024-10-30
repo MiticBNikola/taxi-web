@@ -179,8 +179,17 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
 
   private listenToRideRequests() {
     this.echoService.listen('drivers', '\\ride-requested', (res: { ride: Ride }) => {
-      this.newRides.set([...this.newRides(), res.ride]);
-      this.toastService.show('Dostupna je nova vožnja!');
+      const exits = this.newRides().find((newRide) => newRide.id === res.ride.id);
+      if (!exits) {
+        this.newRides.set([...this.newRides(), res.ride]);
+        this.toastService.show('Dostupna je nova vožnja!');
+      }
+    });
+    this.echoService.listen(`drivers.${this.authStore.user()!.id}`, '\\ride-requested', (res: { ride: Ride }) => {
+      if (!this.ride()) {
+        this.newRides.set([...this.newRides(), res.ride]);
+        this.toastService.show('Dostupna je nova vožnja! Vi ste najbliži!');
+      }
     });
   }
 

@@ -322,6 +322,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
     this.ride.set(res);
     localStorage.setItem('driver_ride_id', res.id.toString());
     this.previewRoute(res);
+    this.directionsDisplayed.set(res.id);
   }
 
   openEditAddress(data: { position: string; oldAddress: string; lat: number; lng: number }) {

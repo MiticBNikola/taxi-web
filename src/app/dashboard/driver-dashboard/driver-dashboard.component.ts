@@ -197,7 +197,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
     this.echoService.listen('drivers', '\\ride-accepted', (res: { ride: Ride }) => {
       this.newRides.set(
         this.newRides().filter((singleRide) => {
-          if (this.directionsDisplayed() === res.ride.id) {
+          if (this.ride()?.id !== res.ride.id && this.directionsDisplayed() === res.ride.id) {
             this.clearRoute();
           }
           return singleRide.id !== res.ride.id;

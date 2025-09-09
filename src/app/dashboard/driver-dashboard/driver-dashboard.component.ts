@@ -254,7 +254,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   }
 
   previewRoute(ride: Ride, imitateDrive = true): void {
-    const start = this.myLocation()!;
+    const start = this.directionsResult ? this.directionsResult.routes[0].legs[0].start_location : this.myLocation()!;
     let stops: google.maps.DirectionsWaypoint[] = [
       {
         location: { lat: ride.start_lat, lng: ride.start_lng },

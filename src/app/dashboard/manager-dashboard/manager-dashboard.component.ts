@@ -1,5 +1,6 @@
-import { DatePipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { DatePipe, registerLocaleData } from '@angular/common';
+import localEnGb from '@angular/common/locales/en-GB';
+import { Component, inject, LOCALE_ID, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -14,12 +15,15 @@ import { AuthStore } from '../../_shared/store/auth/auth.store';
 import { RideService } from '../../_shared/store/ride.service';
 import { DriverService } from '../../_shared/store/user/driver.service';
 
+registerLocaleData(localEnGb, 'en-GB');
+
 @Component({
   selector: 'app-manager-dashboard',
   standalone: true,
   imports: [DatePipe, FaIconComponent, FormsModule, NgbPagination, ReactiveFormsModule],
   templateUrl: './manager-dashboard.component.html',
   styleUrl: './manager-dashboard.component.scss',
+  providers: [{ provide: LOCALE_ID, useValue: 'en-GB' }],
 })
 export class ManagerDashboardComponent implements OnInit {
   private router = inject(Router);

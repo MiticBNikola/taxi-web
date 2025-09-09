@@ -1,5 +1,6 @@
-import { DatePipe } from '@angular/common';
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { DatePipe, registerLocaleData } from '@angular/common';
+import localEnGb from '@angular/common/locales/en-GB';
+import { Component, computed, inject, LOCALE_ID, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -19,12 +20,15 @@ import { CustomerService } from '../_shared/store/user/customer.service';
 import { DriverService } from '../_shared/store/user/driver.service';
 import { ManagerService } from '../_shared/store/user/manager.service';
 
+registerLocaleData(localEnGb, 'en-GB');
+
 @Component({
   selector: 'app-user-detail',
   standalone: true,
   imports: [RouterLink, FaIconComponent, NgbPagination, FormsModule, DatePipe],
   templateUrl: './user-detail.component.html',
   styleUrl: './user-detail.component.scss',
+  providers: [{ provide: LOCALE_ID, useValue: 'en-GB' }],
 })
 export class UserDetailComponent implements OnInit {
   private customerService = inject(CustomerService);
